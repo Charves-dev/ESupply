@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>ERD툴을 만들어보자</title>
+    <style type="text/css">
+      body          { font: 16px sans-serif; line-height: 1.8; padding: 0 40px; margin-bottom: 200px; }
+      .inputActive  { border:solid 2px #D2691E; background: #dcdcdc; }
+      .titleTable   { text-align: center; font-weight:bold; background: #aadada; }
+      table         { width: 100%; border: 1px solid #444444; }
+      tr            { height: 20px; }
+      .titleTr      { background: #daaada; text-align: center; }
+      .pkTr         { background: #babadd; }
+      td            { border: 1px solid #B9B9B9; }
+      th            { border: 1px solid #B9B9B9; font-weight: bold; text-align: center; }
+      div           { border: 1px solid #a9a9a9; background: #CDCDCD}
+      .noselect {
+        -webkit-touch-callout   : none;
+        -webkit-user-select     : none;
+        -khtml-user-select      : none;
+        -moz-user-select        : none;
+        -ms-user-select         : none;
+        user-select             : none;
+      }
+      .inputTable               { width:300px; }
+      .inputColumn              { width:150px; }
+      .pop-layer .pop-container { padding: 20px 25px; }
+      .pop-layer p.ctxt         { color: #666; line-height: 25px; }
+      .pop-layer .btn-r {
+        width: 100%;
+        margin: 10px 0 20px;
+        padding-top: 10px;
+        border-top: 1px solid #DDD;
+        text-align: center;
+      }
+      .pop-layer {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: auto;
+        height: auto;
+        background-color: #fff;
+        border: 5px solid #3571B5;
+        z-index: 10;
+        text-align: center;
+      }
+      .btn-delColInfo {
+        cursor:pointer;
+      }
+      .edit-activefocus{
+        background-color: #FFFF55;
+      }
+      #virtualTable.dragStart{
+        width:420px;
+        height:80px;
+        border: 5px solid #fa9664;
+        background:rgba(0,0,0,0.1);
+      }
+    </style>
+    <!--<script charset="UTF-8" type="text/javascript" src="../js/jquery.js"></script>-->
+    <!--
+      integrity는 스크립트나 리소스 파일의 무결성을 검증하기 위해 사용되는 속성입니다. 브라우저는 지정된 해시 알고리즘을 사용하여 해당 파일의 내용을 계산하고, 속성에 지정된 해시 값과 계산한 해시 값이 일치하는지 확인합니다. 이를 통해 파일이 외부로부터 변경되지 않았는지 확인할 수 있습니다. integrity 속성은 웹 페이지의 보안을 강화하고 외부로부터의 악성 스크립트 주입을 방지하는 데 사용될 수 있습니다.
+      crossorigin은 해당 스크립트나 리소스 파일이 다른 도메인에서 가져오는 경우, 브라우저에게 해당 파일을 어떻게 처리해야 하는지를 알려주는 역할을 합니다. cross-origin 리소스는 기본적으로 동일 출처 정책(same-origin policy)에 의해 제한되는데, crossorigin 속성을 사용하여 브라우저가 해당 리소스를 요청할 때 추가적인 처리를 할 수 있도록 합니다.
+      referrerpolicy는 브라우저가 리소스를 요청할 때 HTTP 리퍼러(Referer) 헤더를 어떻게 처리해야 하는지를 지정하는 속성입니다. 리퍼러 헤더는 현재 페이지의 URL을 서버로 전송하여 사용자의 이전 페이지 정보를 제공하는 역할을 합니다. referrerpolicy 속성은 이러한 정보의 공개 범위를 제어하고 개인 정보 보호를 강화하는 데 사용될 수 있습니다. 
+      "no-referrer" 값은 리퍼러 헤더를 보내지 않도록 지시합니다.
+    -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script charset="UTF-8" type="text/javascript" src="../js/BTrackManager.js"></script>
+    <script charset="UTF-8" type="text/javascript" src="../js/BTrackERD.js"></script>
+    <script charset="UTF-8" type="text/javascript">
+      
+      var charvesCanvas = null;
+      var bTrackManager = null;
+      var currEditTable = null;
+      var currEditClsNm = null;
+      var dc            = null;
+      var curFileName   = '';
+      var isRellyMode   = false;
+      var delKey        = 46;
+      var escKey        = 27;
+      var editPopOn     = false;
+      var layerName     = '';
+
+      $(document).keydown(function(e) {
+        if(e.keyCode == escKey){
+          if(layerName == "#miniMapLayer"){
+            $("#mapCloseBtn").click();
+          } else {
+            $(layerName).find('a.btn-layerClose').click();
+          }
+          
+        }else if(e.keyCode == delKey){
+          if(!editPopOn)  delBox();
+        }
+        
+      });
+      //*******************************************************************************************
+      //
+      //*******************************************************************************************
+      $(function(){
+        $("#TTL_Input_L").on("keydown", function(e){
+          if(e.keyCode == 13){
+            $("#TTL_Input_P").focus();
+          }
+        });
+        $("#TTL_Input_P").on("keydown", function(e){
+          if(e.keyCode == 13){
+            $("#TCL_Input1").focus();
+          }
+        });
+        $("#TTL_Input_L").on("focus", function(){
+          $(this).select();
+        });
+        $("#TTL_Input_P").on("focus", function(){
+          $(this).select();
+        });
+        $("#searchText").on('keydown', function(event){
+          if(event.keyCode == 13) $("#searchLayer").find('a.btn-searchDo').click();
+          if(event.keyCode == 27) $("#searchLayer").find('a.btn-layerClose').click();
+        });
+        $("#editPopLayer").find("a.btn-tableAdd").on("click", function(){
+          if(currEditTable == null) return;
+          currEditTable.tLogicalName = $("#TTL_Input_L").val();
+          currEditTable.tPysicalName = $("#TTL_Input_P").val();
+          currEditTable.cPysicalNames   = [];
+          currEditTable.cLogicalNames   = [];
+          currEditTable.cTypes          = [];
+          currEditTable.cLengths        = [];
+          currEditTable.cIsPks          = [];
+          currEditTable.cNullables      = [];
+          currEditTable.cDefaults       = [];
+          currEditTable.cDescriptions   = [];
+          for(let i=1;i< $("input[name=TCL_Input1]").length;i++){
+            currEditTable.addColumn(dc, [
+              $("input[name=TCL_Input1]").eq(i).val(),
+              $("input[name=TCL_Input2]").eq(i).val(),
+              $("input[name=TCL_Input3]").eq(i).val(),
+              $("input[name=TCL_Input4]").eq(i).val(),
+              $("input[name=TCL_Input5]").eq(i).val(),
+              $("input[name=TCL_Input6]").eq(i).val(),
+              $("input[name=TCL_Input7]").eq(i).val(),
+              $("input[name=TCL_Input8]").eq(i).val()]
+            );
+          }
+          currEditTable.draw(dc, true);
+          $('a.btn-layerClose').click();
+          editPopOn = false;
+        });
+
+        $("#editPopLayer").find('a.btn-layerClose').on("click", function(){
+          //팝업 초기화
+          $("#editPopLayer").fadeOut();
+          $("#TTL_Input_L").val('');
+          $("#TTL_Input_P").val('');
+          $("#TableDefBody").find(".btn-delColInfo").each(function(index, item){
+            if($(item).text() == '-') $(item).parent().parent().remove();
+            else {
+              $("input[name=TCL_Input1]").eq(1).val('');
+              $("input[name=TCL_Input2]").eq(1).val('');
+              $("input[name=TCL_Input3]").eq(1).val('');
+              $("input[name=TCL_Input4]").eq(1).val('');
+              $("input[name=TCL_Input5]").eq(1).val('');
+              $("input[name=TCL_Input6]").eq(1).val('');
+              $("input[name=TCL_Input7]").eq(1).val('');
+              $("input[name=TCL_Input8]").eq(1).val('');
+            }
+          });
+          editPopOn = false;
+        });
+
+        $("#searchLayer").find('a.btn-layerClose').on("click", function(){
+          $("#searchLayer").fadeOut();
+            return;
+        });
+        $("#searchLayer").find("a.btn-searchDo").on("click", function(){
+          bTrackManager.searchInData($("#searchText").val(), function(data){
+            curSearchNm = "";
+            curSearchId = "";
+            alert("못찾겠다 꽤꼬리 : " + $("#searchText").val());
+          });
+        });
+
+        $('#TCL_Input5,#TCL_Input6').on('input', function(e){
+          let value = e.target.value.toUpperCase();
+          if(value !== 'N' && value !== 'Y'){
+            e.target.value = '';
+          }else{
+            e.target.value = value;
+          }
+        });
+
+        charvesCanvas = document.getElementById("charvesCanvas");
+        dc = charvesCanvas.getContext('2d');
+        bTrackManager = new BTrackManager('charvesCanvas');
+        bTrackManager.init();
+        bTrackManager.dc = dc;
+        bTrackManager.gridColor = '#969696';
+
+        resetScreen();  
+
+        $(".drag").draggable({
+          start:function(event){
+            $(this).addClass("dragStart");
+          },
+          stop:function(event){
+            // var Stoppos = $(this).position();
+            // console.log(Stoppos.left + ", " + Stoppos.top);
+          }
+        });
+
+        //*****************************************************************************************
+        // 드롭다운영역 
+        //*****************************************************************************************
+        $("#charvesCanvas").droppable({
+          drop: function (event, ui) {            // drop되었을때 발생
+            var $newPosX = ui.offset.left - $(this).offset().left;
+            var $newPosY = ui.offset.top - $(this).offset().top;
+            bTrackManager.addNewTable($newPosX, $newPosY);
+            $(".drag").removeClass("dragStart");
+            $(".drag").css("left", 0);
+            $(".drag").css("top", 0);
+          }
+        });
+        //*****************************************************************************************
+        $("#fileLayer").find('a.btn-layerClose').on("click", function(){
+          $("#fileLayer").fadeOut();
+          return;
+        });
+        $("#fileLayer").find('a.btn-fileSave').on("click", function(){
+          if($("#saveFileName").val() == '') {
+            alert("파일명을 입력하세요");
+            return;
+          }
+          FileSave($("#saveFileName").val());
+          $("#fileLayer").fadeOut();
+          return;
+        });
+        //*****************************************************************************************
+        $("#sqlLayer").find('a.btn-layerClose').on("click", function(){
+          $("#sqlLayer").fadeOut();
+          return;
+        });
+        $("#sqlLayer").find('a.btn-fileSave').on("click", function(){
+          if($("#sqlFileName").val() == '') {
+            alert("스크립트 파일명을 입력하세요");
+            return;
+          }
+          ScriptSave($("#sqlFileName").val());
+          $("#sqlLayer").fadeOut();
+          return;
+        });
+        //*****************************************************************************************
+
+
+        //*****************************************************************************************
+        // 테이블 따블클릭하면 여기로 오게 해났다.
+        //*****************************************************************************************
+        bTrackManager.setBiEditFunction(function(editTable, clsName){
+          let $el         = $("#editPopLayer");
+          let $elWidth    = $el.outerWidth();
+          let $elHeight   = $el.outerHeight();
+          let docWidth    = $(document).width();
+          let docHeight   = $(document).height();
+          $el.fadeIn();
+          if ($elHeight < docHeight || $elWidth < docWidth) {
+              $el.css({
+                  marginTop   : -$elHeight / 2,
+                  marginLeft  : -$elWidth  / 2
+              });
+          } else {
+              $el.css({top: 0, left: 0});
+          }
+          currEditClsNm = clsName;
+          currEditTable = editTable;
+
+          loadFromTablePopObj(editTable);
+          editPopOn = true;
+          $("#TTL_Input_L").focus();
+          layerName = "#editPopLayer";
+        });
+        //*****************************************************************************************
+
+
+        setNextStepEvent();
+        $(window).on("beforeunload", function(){
+          return true;
+        }); 
+      });
+      //*******************************************************************************************
+
+      function searchPopup(){
+        let $el         = $("#searchLayer");
+        let $elWidth    = $el.outerWidth();
+        let $elHeight   = $el.outerHeight();
+        let docWidth    = $(document).width();
+        let docHeight   = $(document).height();
+        $el.fadeIn();
+        if ($elHeight < docHeight || $elWidth < docWidth) {
+          $el.css({
+            marginTop   : -$elHeight / 2,
+            marginLeft  : -$elWidth  / 2
+          });
+        } else {
+          $el.css({top: 0, left: 0});
+        }
+        $("#searchText").focus();
+        layerName = "#searchLayer";
+      }
+
+      //*******************************************************************************************
+      //
+      //*******************************************************************************************
+      function resetScreen(){
+        var w = 0, h = 0;
+        if (typeof (window.innerWidth) == 'number') { //Chrome
+          w = window.innerWidth;
+          h = window.innerHeight;
+        } else if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
+          w = document.documentElement.clientWidth;
+          h = document.documentElement.clientHeight;
+        } else if (document.body && (document.body.clientWidth || document.body.clientHeight)) { //IE9
+          w = document.body.clientWidth;
+          h = document.body.clientHeight;
+        }
+        charvesCanvas.width  = w-4;
+        charvesCanvas.height = h-4;
+        bTrackManager.drawAll();
+      }
+      //*******************************************************************************************
+
+
+
+      //*******************************************************************************************
+      // 팝업관련 함수
+      //*******************************************************************************************
+      function addTableColumnPopInfo(){
+        let cloneObj = $("#TableColumnInfo").clone();
+        cloneObj.find(".btn-delColInfo").on('click', function(){
+          $(this).parent().parent().remove();
+        });
+        cloneObj.find("input[name='TCL_Input5']").on('input', function(e){
+          let value = e.target.value.toUpperCase();
+console.log(value);
+          if(value !== 'N' && value !== 'Y'){
+            e.target.value = '';
+          }else{
+            e.target.value = value;
+          }
+        });
+        $("#TableDefBody").append(cloneObj);
+        setNextStepEvent();
+      }
+
+      function loadFromTablePopObj(tableObj){
+        $("#TTL_Input_L").val(tableObj.tLogicalName);
+        $("#TTL_Input_P").val(tableObj.tPysicalName);
+
+        $("#TableDefBody").find("#TCL_Input1").val(tableObj.cPysicalNames[0]);
+        $("#TableDefBody").find("#TCL_Input2").val(tableObj.cLogicalNames[0]);
+        $("#TableDefBody").find("#TCL_Input3").val(tableObj.cTypes[0]       );
+        $("#TableDefBody").find("#TCL_Input4").val(tableObj.cLengths[0]     );
+        $("#TableDefBody").find("#TCL_Input5").val(tableObj.cIsPks[0]       );
+        $("#TableDefBody").find("#TCL_Input6").val(tableObj.cNullables[0]   );
+        $("#TableDefBody").find("#TCL_Input7").val(tableObj.cDefaults[0]    );
+        $("#TableDefBody").find("#TCL_Input8").val(tableObj.cDescriptions[0]);
+
+        for(let i=1; i<tableObj.cPysicalNames.length; i++){
+          let cloneObj = $("#TableColumnInfo").clone();
+          cloneObj.find("input[name=TCL_Input1]").eq(0).val(tableObj.cPysicalNames[i]);
+          cloneObj.find("input[name=TCL_Input2]").eq(0).val(tableObj.cLogicalNames[i]);
+          cloneObj.find("input[name=TCL_Input3]").eq(0).val(tableObj.cTypes[i]);
+          cloneObj.find("input[name=TCL_Input4]").eq(0).val(tableObj.cLengths[i]);
+          cloneObj.find("input[name=TCL_Input5]").eq(0).val(tableObj.cIsPks[i]);
+          cloneObj.find("input[name=TCL_Input6]").eq(0).val(tableObj.cNullables[i]);
+          cloneObj.find("input[name=TCL_Input7]").eq(0).val(tableObj.cDefaults[i]);
+          cloneObj.find("input[name=TCL_Input8]").eq(0).val(tableObj.cDescriptions[i]);
+          cloneObj.find(".btn-delColInfo").on('click', function(){
+            $(this).parent().parent().remove();
+            setNextStepEvent();
+          });
+          $("#TableDefBody").append(cloneObj);
+        }
+        setNextStepEvent();
+      }
+      //*******************************************************************************************
+
+      function setNextStepEvent(){
+        let len = $("input[name=TCL_Input1]").length;
+        for(let i=1;i<len;i++) {
+          $("input[name=TCL_Input1]").eq(i).on("keydown",function(event){
+            if(event.keyCode == 13){
+              if(i+1 == len)  $("input[name=TCL_Input1]").eq(1).focus();
+              else            $("input[name=TCL_Input1]").eq(i+1).focus();
+            }
+          });
+          $("input[name=TCL_Input2]").eq(i).on("keydown",function(event){
+            if(event.keyCode == 13){
+              if(i+1 == len)  $("input[name=TCL_Input2]").eq(1).focus();
+              else            $("input[name=TCL_Input2]").eq(i+1).focus();
+            }
+          });
+          $("input[name=TCL_Input3]").eq(i).on("keydown",function(event){
+            if(event.keyCode == 13){
+              if(i+1 == len)  $("input[name=TCL_Input3]").eq(1).focus();
+              else {
+                if($("input[name=TCL_Input3]").eq(i+1).val() == '') $("input[name=TCL_Input3]").eq(i+1).val($("input[name=TCL_Input3]").eq(i).val());
+                $("input[name=TCL_Input3]").eq(i+1).focus();  
+              } 
+            }
+          });
+          $("input[name=TCL_Input4]").eq(i).on("keydown",function(event){
+            if(event.keyCode == 13){
+              if(i+1 == len)  $("input[name=TCL_Input4]").eq(1).focus();
+              else            $("input[name=TCL_Input4]").eq(i+1).focus();
+            }
+          });
+          $("input[name=TCL_Input5]").eq(i).on("keydown",function(event){
+            if(event.keyCode == 13){
+              if(i+1 == len)  $("input[name=TCL_Input5]").eq(1).focus();
+              else {
+                if($("input[name=TCL_Input5]").eq(i+1).val() == '') $("input[name=TCL_Input5]").eq(i+1).val($("input[name=TCL_Input5]").eq(i).val());
+                $("input[name=TCL_Input5]").eq(i+1).focus();  
+              }
+            }
+          });
+          $("input[name=TCL_Input6]").eq(i).on("keydown",function(event){
+            if(event.keyCode == 13){
+              if(i+1 == len)  $("input[name=TCL_Input6]").eq(1).focus();
+              else {
+                if($("input[name=TCL_Input6]").eq(i+1).val() == '') $("input[name=TCL_Input6]").eq(i+1).val($("input[name=TCL_Input6]").eq(i).val());
+                $("input[name=TCL_Input6]").eq(i+1).focus();  
+              } 
+            }
+          });
+          $("input[name=TCL_Input7]").eq(i).on("keydown",function(event){
+            if(event.keyCode == 13){
+              if(i+1 == len)  $("input[name=TCL_Input7]").eq(1).focus();
+              else            $("input[name=TCL_Input7]").eq(i+1).focus();
+            }
+          });
+          $("input[name=TCL_Input8]").eq(i).on("keydown",function(event){
+            if(event.keyCode == 13){
+              if(i+1 == len)  $("input[name=TCL_Input8]").eq(1).focus();
+              else            $("input[name=TCL_Input8]").eq(i+1).focus();
+            }
+          });
+        }
+
+        $("input[name=TCL_Input1]").on("focus", function(event){
+          let idx = $("[name=TCL_Input1]").index(this);
+          this.select();
+          $("[name=TCL_Input1]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input2]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input3]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input4]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input5]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input6]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input7]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input8]").eq(idx).addClass('edit-activefocus');
+        });
+        $("input[name=TCL_Input2]").on("focus", function(event){
+          let idx = $("[name=TCL_Input2]").index(this);
+          this.select();
+          $("[name=TCL_Input1]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input2]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input3]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input4]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input5]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input6]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input7]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input8]").eq(idx).addClass('edit-activefocus');
+        });
+        $("input[name=TCL_Input3]").on("focus", function(event){
+          let idx = $("[name=TCL_Input3]").index(this);
+          this.select();
+          $("[name=TCL_Input1]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input2]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input3]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input4]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input5]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input6]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input7]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input8]").eq(idx).addClass('edit-activefocus');
+        });
+        $("input[name=TCL_Input4]").on("focus", function(event){
+          let idx = $("[name=TCL_Input4]").index(this);
+          this.select();
+          $("[name=TCL_Input1]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input2]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input3]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input4]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input5]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input6]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input7]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input8]").eq(idx).addClass('edit-activefocus');
+        });
+        $("input[name=TCL_Input5]").on("focus", function(event){
+          let idx = $("[name=TCL_Input5]").index(this);
+          this.select();
+          $("[name=TCL_Input1]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input2]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input3]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input4]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input5]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input6]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input7]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input8]").eq(idx).addClass('edit-activefocus');
+        });
+        $("input[name=TCL_Input6]").on("focus", function(event){
+          let idx = $("[name=TCL_Input6]").index(this);
+          this.select();
+          $("[name=TCL_Input1]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input2]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input3]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input4]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input5]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input6]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input7]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input8]").eq(idx).addClass('edit-activefocus');
+        });
+        $("input[name=TCL_Input7]").on("focus", function(event){
+          let idx = $("[name=TCL_Input7]").index(this);
+          this.select();
+          $("[name=TCL_Input1]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input2]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input3]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input4]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input5]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input6]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input7]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input8]").eq(idx).addClass('edit-activefocus');
+        });
+        $("input[name=TCL_Input8]").on("focus", function(event){
+          let idx = $("[name=TCL_Input8]").index(this);
+          this.select();
+          $("[name=TCL_Input1]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input2]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input3]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input4]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input5]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input6]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input7]").eq(idx).addClass('edit-activefocus');
+          $("[name=TCL_Input8]").eq(idx).addClass('edit-activefocus');
+        });
+
+        $("input[name=TCL_Input1]").on("focusout", function(event){
+          let idx = $("[name=TCL_Input1]").index(this);
+          $("[name=TCL_Input1]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input2]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input3]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input4]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input5]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input6]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input7]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input8]").eq(idx).removeClass('edit-activefocus');
+        });
+        $("input[name=TCL_Input2]").on("focusout", function(event){
+          let idx = $("[name=TCL_Input2]").index(this);
+          $("[name=TCL_Input1]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input2]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input3]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input4]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input5]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input6]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input7]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input8]").eq(idx).removeClass('edit-activefocus');
+        });
+        $("input[name=TCL_Input3]").on("focusout", function(event){
+          let idx = $("[name=TCL_Input3]").index(this);
+          $("[name=TCL_Input1]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input2]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input3]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input4]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input5]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input6]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input7]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input8]").eq(idx).removeClass('edit-activefocus');
+        });
+        $("input[name=TCL_Input4]").on("focusout", function(event){
+          let idx = $("[name=TCL_Input4]").index(this);
+          $("[name=TCL_Input1]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input2]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input3]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input4]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input5]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input6]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input7]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input8]").eq(idx).removeClass('edit-activefocus');
+        });
+        $("input[name=TCL_Input5]").on("focusout", function(event){
+          let idx = $("[name=TCL_Input5]").index(this);
+          $("[name=TCL_Input1]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input2]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input3]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input4]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input5]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input6]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input7]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input8]").eq(idx).removeClass('edit-activefocus');
+        });
+        $("input[name=TCL_Input6]").on("focusout", function(event){
+          let idx = $("[name=TCL_Input6]").index(this);
+          $("[name=TCL_Input1]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input2]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input3]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input4]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input5]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input6]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input7]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input8]").eq(idx).removeClass('edit-activefocus');
+        });
+        $("input[name=TCL_Input7]").on("focusout", function(event){
+          let idx = $("[name=TCL_Input7]").index(this);
+          $("[name=TCL_Input1]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input2]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input3]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input4]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input5]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input6]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input7]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input8]").eq(idx).removeClass('edit-activefocus');
+        });
+        $("input[name=TCL_Input8]").on("focusout", function(event){
+          let idx = $("[name=TCL_Input8]").index(this);
+          $("[name=TCL_Input1]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input2]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input3]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input4]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input5]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input6]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input7]").eq(idx).removeClass('edit-activefocus');
+          $("[name=TCL_Input8]").eq(idx).removeClass('edit-activefocus');
+        });
+
+      }
+      function FileSave(fileName){
+        curFileName     = fileName;
+        document.title  = fileName;
+        fileName        = fileName + ".CBErd";
+        let textPlan    = "text/plain";  // "application/json";
+        let jsonData    = bTrackManager.getJsonData();
+        //console.log(JSON.stringify(jsonData));
+        download(fileName,JSON.stringify(jsonData), textPlan);
+      }
+      function ScriptSave(fileName){
+        fileName        = fileName + ".sql";
+        let textPlan    = "text/plain";  // "application/json";
+        let sqlData     = bTrackManager.getScriptText();
+        download(fileName, sqlData, textPlan);
+      }
+      function ImageSave(fileName){
+        const image = document.getElementById("charvesCanvas").toDataURL();
+        const link = document.createElement("a");
+        link.href = image;
+        link.download = fileName;
+        link.click();
+      }
+      //*******************************************************************************************
+
+      
+      //*******************************************************************************************
+      //
+      //*******************************************************************************************
+      function download(filename, data, type) {
+        var file = new Blob([data], {type: type});
+        if (window.navigator.msSaveOrOpenBlob) // IE10+
+          window.navigator.msSaveOrOpenBlob(file, filename);
+        else { // Others
+          var a = document.createElement("a"),
+          url = URL.createObjectURL(file);
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);  
+          }, 0); 
+        }
+      }
+      //*******************************************************************************************
+      
+
+      //*******************************************************************************************
+      //
+      //*******************************************************************************************
+      function fileSavePopup(){
+        let $el         = $("#fileLayer");
+        let $elWidth    = $el.outerWidth();
+        let $elHeight   = $el.outerHeight();
+        let docWidth    = $(document).width();
+        let docHeight   = $(document).height();
+        $el.fadeIn();
+        if ($elHeight < docHeight || $elWidth < docWidth) {
+          $el.css({
+            marginTop   : -$elHeight / 2,
+            marginLeft  : -$elWidth  / 2
+          });
+        } else {
+          $el.css({top: 0, left: 0});
+        }
+        $("#saveFileName").focus();
+        $("#saveFileName").val(curFileName);
+        layerName = "#fileLayer";
+      }
+      //*******************************************************************************************
+
+
+      //*******************************************************************************************
+      //
+      //*******************************************************************************************
+      function scriptSavePopup(){
+        let $el         = $("#sqlLayer");
+        let $elWidth    = $el.outerWidth();
+        let $elHeight   = $el.outerHeight();
+        let docWidth    = $(document).width();
+        let docHeight   = $(document).height();
+        $el.fadeIn();
+        if ($elHeight < docHeight || $elWidth < docWidth) {
+          $el.css({
+            marginTop   : -$elHeight / 2,
+            marginLeft  : -$elWidth  / 2
+          });
+        } else {
+          $el.css({top: 0, left: 0});
+        }
+        $("#sqlFileName").focus();
+        $("#sqlFileName").val('');
+        layerName = "#sqlLayer";
+      }
+      //*******************************************************************************************
+
+
+      //*******************************************************************************************
+      //
+      //*******************************************************************************************
+      function loadFile(){
+        var input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".CBErd";
+        input.click();
+        input.onchange = function (event) {
+          loadFromFile(event.target.files[0]);
+        };
+      }
+      //*******************************************************************************************
+
+
+      //*******************************************************************************************
+      //
+      //*******************************************************************************************
+      function loadFromFile(file){
+        var reader = new FileReader();
+        reader.readAsText(file,"utf-8");
+        reader.onload = function () {
+          let jsonObj = JSON.parse(reader.result);
+
+          if(bTrackManager == null){
+            charvesCanvas = document.getElementById("charvesCanvas");
+            dc = charvesCanvas.getContext('2d');
+            bTrackManager = new BTrackManager('charvesCanvas'); 
+            bTrackManager.dc = dc;
+            bTrackManager.gridColor = '#969696';
+          }
+          bTrackManager.loadFromJson(jsonObj, dc);
+          let dotIdx = file.name.lastIndexOf(".");
+          if(dotIdx > 0){
+            document.title = file.name.substring(0,dotIdx);
+            curFileName = file.name.substring(0,dotIdx);
+          }else{
+            document.title = file.name;
+            curFileName = file.name;
+          }
+        };
+      }
+      function showMap(){
+        let $el         = $("#miniMapLayer");
+        let $elWidth    = $el.outerWidth();
+        let $elHeight   = $el.outerHeight();
+        let docWidth    = $(document).width();
+        let docHeight   = $(document).height();
+        $el.fadeIn();
+        if ($elHeight < docHeight || $elWidth < docWidth) {
+          $el.css({
+            marginTop   : -$elHeight / 2,
+            marginLeft  : -$elWidth  / 2
+          });
+        } else {
+          $el.css({top: 0, left: 0});
+        }
+
+        let canvas  = document.getElementById('miniMapCanvas');
+        let dc      = canvas.getContext('2d');
+        let cWidth  = document.getElementById('miniMapCanvas').width;
+        let cHeight = document.getElementById('miniMapCanvas').height;
+        bTrackManager.drawMiniMap(dc, cWidth, cHeight);
+      }
+      function setRellyMode(){
+        bTrackManager.rellyStart();
+      }
+      function delBox(){
+        if(( Object.keys(bTrackManager.selTables).length
+            + Object.keys(bTrackManager.selRellys).length ) <= 0) return;
+        if(!confirm("진짜 지워여?")) return;
+        bTrackManager.deleteSelItems();
+        bTrackManager.drawAll();
+      }
+      
+      //*******************************************************************************************
+    </script>
+</head>
+<body onresize="resetScreen();">
+  <canvas id="charvesCanvas" width='1900' height='950' style="position:absolute; left:0px; top:0px; border:solid 1px #000000; z-index:1;">
+  </canvas>
+  <div id="menuBar" style="position:absolute; left:0px; top:0px; width:70px; height:170px; z-index:10;" >
+    <input type="button" value="검색하기" id="searchButtonn"  onclick="searchPopup();" />
+    <input type="button" value="지도보기" id="entityButton"   onclick="showMap()"       />
+    <input type="button" value="저장하기" id="saveButton"     onclick="fileSavePopup();"/>
+    <input type="button" value="읽어오기" id="loadButton"     onclick="loadFile();"     />
+    <input type="button" value="내보내기" id="getOutButton"   onclick="scriptSavePopup();"/>
+    <input type="button" value="관계맺기" id="setRellyButton" onclick="setRellyMode();"/>
+    <div id="virtualTable" class="drag" style="border:solid 2px #fa9664; cursor:pointer; background-color: #F2A95E;">새테이블</div>
+  </div>
+  <div style="display:none">
+    <table>
+      <tr id="TableColumnInfo">
+        <td><input type="text" name="TCL_Input1" style="width:180px;" /></td>	              <!--물리명-->
+        <td><input type="text" name="TCL_Input2" style="width:180px;" maxlength="30"/></td> <!--논리명-->
+        <td><input type="text" name="TCL_Input3" style="width:120px;" maxlength="20"/></td> <!--타입-->
+        <td><input type="text" name="TCL_Input4" style="width:48px;"  maxlength="6"/></td>  <!--크기-->
+        <td><input type="text" name="TCL_Input5" style="width:26px;"  maxlength="1"/></td>  <!--PK-->
+        <td><input type="text" name="TCL_Input6" style="width:26px;"  maxLength="1"/></td>  <!--Null-->
+        <td><input type="text" name="TCL_Input7" style="width:60px;"  /></td>               <!--Default-->
+        <td><input type="text" name="TCL_Input8" style="width:235px;" />&nbsp;<span class="btn-delColInfo">-</span></td>
+      </tr>
+    </table>
+  </div>
+  <!--////////////////////////////////////////////////////////////////////////////////////////-->
+  <div id="editPopLayer" class="pop-layer noselect" style="width:1009px; height:700px; overflow:auto;">
+    <table id="editTTL" name="editObj" style="width:1007px;">
+      <tr>
+        <td>논리명:&nbsp;<input type="text" id="TTL_Input_L" style="width:350px"/></td>
+        <td>물리명:&nbsp;<input type="text" id="TTL_Input_P" style="width:350px"/></td>
+        <td>
+          <button class="btn-addColInfo" onclick="addTableColumnPopInfo();">추가</button>
+        </td>
+      </tr>
+    </table>
+    <table id="editTCL" name="editObj" style="width:1007px;">
+      <colgroup>
+        <col width="19.5%">             <!--물리명-->
+        <col width="19.5%">             <!--논리명-->
+        <col width="12.5%">             <!--타입-->
+        <col width="6%">                <!--크기-->
+        <col width="4%">                <!--PK-->
+        <col width="4%">                <!--Null-->
+        <col width="6.5%">              <!--Default-->
+        <col width="28%">               <!--상세설명-->
+      </colgroup>
+      <thead>
+        <tr>
+          <th>물리명</th>
+          <th>논리명</th>
+          <th>타입</th>
+          <th>크기</th>
+          <th>PK</th>
+          <th>Null</th>
+          <th>Default</th>
+          <th>상세설명</th>
+        </tr>
+      </thead>
+      <tbody id="TableDefBody">
+        <tr><td> <input type="text" id="TCL_Input1" name="TCL_Input1" style="width:180px;" />
+        </td><td><input type="text" id="TCL_Input2" name="TCL_Input2" style="width:180px;" />
+        </td><td><input type="text" id="TCL_Input3" name="TCL_Input3" style="width:120px;" />
+        </td><td><input type="text" id="TCL_Input4" name="TCL_Input4" style="width:48px;"  />
+        </td><td><input type="text" id="TCL_Input5" name="TCL_Input5" style="width:26px;"  />
+        </td><td><input type="text" id="TCL_Input6" name="TCL_Input6" style="width:26px;"  />
+        </td><td><input type="text" id="TCL_Input7" name="TCL_Input7" style="width:60px;"  />
+        </td><td><input type="text" id="TCL_Input8" name="TCL_Input8" style="width:235px;" />&nbsp;<span class="btn-delColInfo">/</span>
+        </td></tr>
+      </tbody>
+    </table>
+    <div class="btn-r" style="width:1007px">
+      <a href="#" class="btn-tableAdd">적용</a>
+      <a href="#" class="btn-layerClose">닫기</a>
+    </div>
+  </div>
+  <!--////////////////////////////////////////////////////////////////////////////////////////-->
+
+  <!--////////////////////////////////////////////////////////////////////////////////////////-->
+  <div id="fileLayer" class="pop-layer noselect">
+    <div class="pop-container">
+      <div class="pop-conts">
+        <input type="text" class="inputTable" id="saveFileName" onfocus="this.select()" placeholder="파일명" autocomplete="off"/> .CBErd
+        <div class="btn-r">
+          <a href="#" class="btn-fileSave">적용</a>
+          <a href="#" class="btn-layerClose">닫기</a>
+        </div>
+        <!--// content-->
+      </div>
+    </div>
+  </div>
+  <!--////////////////////////////////////////////////////////////////////////////////////////-->
+
+  <div id="sqlLayer" class="pop-layer noselect">
+    <div class="pop-container">
+      <div class="pop-conts">
+        <input type="text" class="inputTable" id="sqlFileName" onfocus="this.select()" placeholder="script 파일명" autocomplete="off"/> .sql
+        <div class="btn-r">
+          <a href="#" class="btn-fileSave">적용</a>
+          <a href="#" class="btn-layerClose">닫기</a>
+        </div>
+        <!--// content-->
+      </div>
+    </div>
+  </div>
+
+  <!--////////////////////////////////////////////////////////////////////////////////////////-->
+  <div id="miniMapLayer" class="pop-layer noselect" style="width:812px; height:635px;">
+    <input type="button" value="닫기" id="mapCloseBtn" onclick="$('#miniMapLayer').fadeOut();"/>
+    <canvas id="miniMapCanvas" width='800' height='600' style="position:absolute; left:5px; top:30px; border:solid 1px #000000; z-index:1;"></canvas>
+  </div>
+  <!--////////////////////////////////////////////////////////////////////////////////////////-->
+
+  <div id="searchLayer" class="pop-layer noselect">
+    <div class="pop-container">
+      <div class="pop-conts">
+        <input type="text" class="inputTable" id="searchText" onfocus="this.select()" placeholder="검색어" autocomplete="off"/>
+          <br>
+          <div class="btn-r">
+              <a href="#" class="btn-searchDo">찾기</a>
+              <a href="#" class="btn-layerClose">닫기</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!--
+  <div id="editRaw" style="position:absolute; z-index:10;">
+    <table id="editTTL" name="editObj">
+      <tr><td><input type="text" id="TTL_Input"/></td></tr>
+    </table>
+    <table id="editTCL" name="editObj">
+      <tr><td> <input type="text" id="TCL_Input1" name="TCL_Input"/>
+      </td><td><input type="text" id="TCL_Input2" name="TCL_Input"/>
+      </td><td><input type="text" id="TCL_Input3" name="TCL_Input"/>
+      </td><td><input type="text" id="TCL_Input4" name="TCL_Input"/>
+      </td><td><input type="text" id="TCL_Input5" name="TCL_Input"/>
+      </td><td><input type="text" id="TCL_Input6" name="TCL_Input"/>
+      </td><td><input type="text" id="TCL_Input7" name="TCL_Input"/>
+      </td><td><input type="text" id="TCL_Input8" name="TCL_Input"/>
+      </td></tr>
+    </table>
+  </div>
+-->
+</body>
+</html>
