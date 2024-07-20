@@ -29,7 +29,7 @@ ESupply/
 │   │   ├── index.html
 │   ├── src/
 │   │   ├── index.js
-│   │   ├── App.js		   # 화면 출력
+│   │   ├── App.js       # 화면 출력
 │   │   ├── styles.css
 │   ├── .gitignore
 │   ├── package-lock.json
