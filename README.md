@@ -22,7 +22,7 @@ node index.js
 
 ### 프로젝트 구조
 ```
-my-project/
+ESupply/
 ├── client/              # React 애플리케이션 폴더
 │   ├── build/           # npm run build 후 생성됨
 │   ├── public/
