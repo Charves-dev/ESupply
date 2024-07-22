@@ -1,8 +1,17 @@
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Login from "./Login.js";
+import Main from './Main';
+
 function App() {
   return (
-    <div className="App">
-      리액트 화면 테스트333
-    </div>
+    <Router>
+      <div className="App">        
+        <Routes>
+          <Route path="/" element={<Login/>} />
+          <Route path="/main" element={<Main />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
