@@ -124,7 +124,7 @@ input{
   cursor: pointer;
 }
 
-/* Main page */
+/* Main page s*/
 
 .MainWrap{
   display: flex;
@@ -204,3 +204,30 @@ display:-webkit-box;overflow:hidden;height:105px;
 }
 
 /* Main page e*/
+
+/* 반응형 */
+
+/* 모바일 스타일 적용 */
+@media (max-width: 600px) {
+  .loginWrap .box{
+    width: 88%;
+  }
+}
+
+/* 태블릿 스타일 적용 */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .loginWrap .box{
+    width: 40%;
+  }
+}
+
+/* 데스크탑 스타일 적용 */
+@media (min-width: 1025px) and (max-width: 1440px) {
+}
+
+/* 대형 데스크탑 스타일 적용 */
+@media (min-width: 1441px) {
+  .loginWrap .box{
+    width: 388px;
+  }
+}

@@ -1,36 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './styles/Common.css'
 import Counter from './Counter';
 import { useNavigate } from 'react-router-dom';
 
 function Main() {  
   let productObj = {    
-    pData :  { 
-          count : 3, 
-          pList : [ 
-            { product_nm  : "라떼판다-4G,64GB", 
-              product_id  : "cap_2349809" ,
-              image       : "/assets/Img/img1.png",
-              product_desc: "인텔 Cherry trail 1.8GHz 쿼드코어, windows10 기본 탑재, 아두이노 호환, 안드로이드, 우분투 사용 가능, latte panda",
-              price       : "20000",
-              count       : "3"
-            }, 
-            { product_nm  : "라떼판다 알파 864s DFR0547", 
-              product_id  : "cap_2349810" ,
-              image       : "/assets/Img/img2.png",
-              product_desc: "kc인증완료, 인텔 8세대 CPU로 업그레이드된 new버전 라떼판다 알파 입니다.",
-              price       : "40000",
-              count       : "1"
-            },
-            { product_nm  : "HELP! 전자공학으로 아두이노 실습 문제 해결하기 교재 + 키트", 
-              product_id  : "cap_2349811" ,
-              image       : "/assets/Img/img3.png",
-              product_desc: "전자공학으로 아두이노 실습 문제 해결하기 키트와 함께 볼 수 있는 14개의 예제!",
-              price       : "50000",
-              count       : "5"
-            },  
-          ]
-    }
+        count : 3, 
+        pList : [ 
+          { product_nm  : "라떼판다-4G,64GB", 
+            product_id  : "cap_2349809" ,
+            image       : "/assets/Img/img1.png",
+            product_desc: "인텔 Cherry trail 1.8GHz 쿼드코어, windows10 기본 탑재, 아두이노 호환, 안드로이드, 우분투 사용 가능, latte panda",
+            price       : "20000",
+            count       : "3"
+          }, 
+          { product_nm  : "라떼판다 알파 864s DFR0547", 
+            product_id  : "cap_2349810" ,
+            image       : "/assets/Img/img2.png",
+            product_desc: "kc인증완료, 인텔 8세대 CPU로 업그레이드된 new버전 라떼판다 알파 입니다.",
+            price       : "40000",
+            count       : "1"
+          },
+          { product_nm  : "HELP! 전자공학으로 아두이노 실습 문제 해결하기 교재 + 키트", 
+            product_id  : "cap_2349811" ,
+            image       : "/assets/Img/img3.png",
+            product_desc: "전자공학으로 아두이노 실습 문제 해결하기 키트와 함께 볼 수 있는 14개의 예제!",
+            price       : "50000",
+            count       : "5"
+          },  
+        ]    
   }
 
   // 기본 주문 개수 초기화, 재고가 0인 경우 0으로 설정
@@ -43,7 +41,7 @@ function Main() {
   };
   
 
-  const [orderCnt, setOrderCnt] = useState(initializeOrderCnt(productObj.pData.pList));
+  const [orderCnt, setOrderCnt] = useState(initializeOrderCnt(productObj.pList));
   const [username, setUsername] = useState(null);
   const navigate = useNavigate();
 
@@ -57,20 +55,24 @@ function Main() {
 
 
   // 상품 주문 개수 증가
-  const handleIncrement = (index) => {
-      const newCounts = [...orderCnt];
-      newCounts[index] += 1;
-      setOrderCnt(newCounts);
-  };
+  const handleIncrement = useCallback((index) => {
+    setOrderCnt(prevOrderCnt => {
+      const newCounts = [...prevOrderCnt];
+      newCounts[index] += 1;      
+      return newCounts;
+    });
+  }, []);
 
 
   // 상품 주문 개수 감소
   const handleDecrement = (index) => {
-      let newCounts = [...orderCnt];
-      if (newCounts[index] > 0) {
-        newCounts[index] -= 1;
-      }
-      setOrderCnt(newCounts);
+      setOrderCnt(prevOrderCnt => {
+        const newCounts = [...prevOrderCnt];
+        if (newCounts[index] > 0) {
+          newCounts[index] -= 1;
+        }
+        return newCounts;
+      });
   };  
 
 
@@ -80,20 +82,24 @@ function Main() {
   const handleOrder = () => {
     /* /product/neworder */
     const orderDetails = [];
-    const p_count = productObj.pData.count;   // 상품 전체 개수
+    const p_count = productObj.count;   // 상품 전체 개수
     for (let i = 0; i < p_count; i++) {
-      const product = productObj.pData.pList[i];
+      const product = productObj.pList[i];
       if(orderCnt[i] <= 0){ 
         continue;
       }
       orderDetails.push({
-        product_id: product.product_id,
-        orderCnt  : orderCnt[i]
+        product_id : product.product_id,
+        orderCnt   : orderCnt[i]
       });
     }
 
-    console.log(username);
-    console.log(orderDetails);
+    let orderData = {};
+    orderData = {
+      user_id : username,
+      order   : orderDetails
+    }
+    console.log(orderData);
   };
   //***********************************************************************************************
 
@@ -101,10 +107,10 @@ function Main() {
   //***********************************************************************************************
   //상품 목록 출력
   //***********************************************************************************************
-  const productRender = () =>{
+  const productRender = () =>{    
     const productList = [];
-    const p_count = productObj.pData.count;   // 상품 전체 개수
-    const pList   = productObj.pData.pList;   // 상품 정보    
+    const p_count = productObj.count;   // 상품 전체 개수
+    const pList   = productObj.pList;   // 상품 정보    
     
     for (let i = 0; i < p_count; i++) {
       const product = pList[i];
