@@ -21,6 +21,27 @@ app.post('/login', (req, res) => {
     res.send(`Received login data for userName: ${userName}, userId: ${userId}`);
 });
 
+app.post('/product/add', async (req, res) => {
+	const { class_id, product_id, product_nm, price, weight, size_h, size_v, size_z } = req.body;
+	try{
+		conn = await pool.getConnection();
+		const query = 'INSERT INTO esupply.product_master (class_id, product_id, product_nm, price, weight, size_h, size_v, size_z) '
+		            + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+    	const result = await conn.query(query, [class_id, product_id, product_nm, price, weight, size_h, size_v, size_z]);
+		let rtnMsg = {
+			result : 'Success',
+			count  : result.affectedRows
+		};
+		res.send(rtnMsg);
+	}catch(err){
+		res.status(500).send(err.toString());
+	}finally{
+		if(conn) conn.release();
+	}
+});
+
+
+
 app.post('/product/goodList', async (req, res) => {
 	const { product_nm, product_id } = req.body;
 	console.log(`product_nm = ${product_nm}`);
@@ -28,15 +49,14 @@ app.post('/product/goodList', async (req, res) => {
 	try{
 		conn = await pool.getConnection();
     	const rows = await conn.query('select CLASS_ID '
-	+'    , PRODUCT_ID'
-	+'    , PRODUCT_NM'
-	+'    , PRICE'
-	+'    , WEIGHT'
-	+'    , SIZE_H'
-	+'    , SIZE_V'
-	+'    , SIZE_Z'
-    +' from esupply.product_master ');
-    
+		+'    , PRODUCT_ID'
+		+'    , PRODUCT_NM'
+		+'    , PRICE'
+		+'    , WEIGHT'
+		+'    , SIZE_H'
+		+'    , SIZE_V'
+		+'    , SIZE_Z'
+		+' from esupply.product_master ');
     	res.json(rows);
 	}catch(err){
 		res.status(500).send(err.toString());
