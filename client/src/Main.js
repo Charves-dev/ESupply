@@ -2,9 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './styles/Common.css'
 import Counter from './Counter';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Main() {  
-  let productObj = {    
+  let productObj_hard = {    
         count : 3, 
         pList : [ 
           { product_nm  : "라떼판다-4G,64GB", 
@@ -35,33 +36,45 @@ function Main() {
   const initializeOrderCnt = (productList) => {
     const initOrderCnt = [];
     for (let i = 0; i < productList.length; i++) {
-      initOrderCnt.push(productList[i].count > 0 ? 1 : 0);
+      initOrderCnt.push(productList[i].COUNT > 0 ? 1 : 0);
     }
     return initOrderCnt;
   };
   
 
-  const [orderCnt, setOrderCnt] = useState(initializeOrderCnt(productObj.pList));
-  const [username, setUsername] = useState(null);
+  const [orderCnt, setOrderCnt]   = useState([]);
+  const [username, setUsername]   = useState(null);
+  const [productNm, setProductNm] = useState('');
+  const [productObj, setProductObj] = useState({ count: 0, pList: [] });  
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // 세션에서 사용자 아이디를 가져와서 username에 설정
-    const savedUsername = sessionStorage.getItem('username');
-    if (savedUsername) {
-      setUsername(savedUsername);
-    }
-  }, []);
 
-
+  let hasAlerted = false;
+  let prenIndex = -1;
   // 상품 주문 개수 증가
   const handleIncrement = useCallback((index) => {
     setOrderCnt(prevOrderCnt => {
       const newCounts = [...prevOrderCnt];
-      newCounts[index] += 1;      
+
+      if(index !== prenIndex){
+        prenIndex = index;
+        hasAlerted = false;
+      }
+
+      if ( newCounts[index] <= productObj.pList[index].COUNT-1 ) {
+        newCounts[index] += 1;      
+        hasAlerted = false;
+      }else{
+        if (!hasAlerted) {
+          alert('더 이상 재고가 없습니다.')
+          hasAlerted = true;
+        }
+        return newCounts;
+      }
+      
       return newCounts;
     });
-  }, []);
+  }, [productObj]);
 
 
   // 상품 주문 개수 감소
@@ -73,7 +86,98 @@ function Main() {
         }
         return newCounts;
       });
-  };  
+  };
+
+  // 전체 제품 목록 가져오기 / 검색시 상품 목록 가져오기
+  const searchResProducts = async () => {
+// console.log('검색 상품 가져오기 요청');
+// console.log('search_key_word: ' + search_key_word);
+    const search_key_word = productNm;
+    try{
+      const res = await axios.post('http://localhost:1092/product/goodList',{
+        product_nm : search_key_word,            // 상품명
+        product_id : "",    // 상품 ID
+      });
+
+      // 상품 리스트 설정
+      setProductObj({ count: res.data.length, pList: res.data }); 
+      
+      // 주문 개수 1로 초기화
+      setOrderCnt(initializeOrderCnt(res.data));        
+// console.log(res.data);
+    }catch(e){
+      console.log('상품 목록 가져오기 애러: ' + e);
+    }
+  };
+
+
+  useEffect(() => {
+    /* 상품목록 불러오기 */
+    searchResProducts();
+
+    // 세션에서 사용자 아이디를 가져와서 username에 설정
+    const savedUsername = sessionStorage.getItem('username');
+    if (savedUsername) {
+      setUsername(savedUsername);
+    };
+  }, []);
+
+
+  //***********************************************************************************************
+  //상품 목록 렌더링
+  //***********************************************************************************************
+  const productRender = () =>{    
+    const productList = [];
+    const p_count = productObj.count;   // 상품 전체 개수
+    const pList   = productObj.pList;   // 상품 정보    
+
+    for (let i = 0; i < p_count; i++) {
+      const product = pList[i];
+      let   price   = parseFloat(product.PRICE).toLocaleString('ko-KR');
+
+      //재고 개수가 0개 이하일경우 상품을 출력하지 않고 건너뜀
+      if(product.COUNT <= 0){        
+        continue;
+      }
+      
+      productList.push(
+        <li className='mt30 mb44' key={product.PRODUCT_ID}>
+            <figure className="thumb-photo" style={{ backgroundImage: `url(/assets/Img/img1.png)` }}>
+            {/* <figure className="thumb-photo" style={{ backgroundImage: `url(${product.image}})` }}> */}
+            </figure>            
+            <div className='desc'>
+                <a href="">
+                  <div className='product_nm'>
+                    {product.PRODUCT_NM}
+                  </div>
+                  <div className='priceText'>
+                    {price}원
+                  </div>
+                  <div className='product_detail'>
+                    높이: {product.SIZE_H} mm
+                  </div>
+                  <div className='product_detail'>
+                    너비: {product.SIZE_V} mm
+                  </div>
+                  <div className='product_detail'>
+                    깊이: {product.SIZE_Z} mm
+                  </div>
+                </a>
+            </div>
+            <div className='ml20 flex f_d_column a_i_center j_c_center'>
+                <p className='mb10 pt5 pb5 fs16 w100 t_a_center border-top-bottom'>수량</p>
+                <Counter 
+                  count={orderCnt[i]}
+                  onIncrement={() => handleIncrement(i)}
+                  onDecrement={() => handleDecrement(i)}
+                />
+            </div>
+        </li>
+      )
+    }
+    return <ul className="thumb-list row-line2">{productList}</ul>;;
+  }
+  //***********************************************************************************************
 
 
   //***********************************************************************************************
@@ -104,55 +208,6 @@ function Main() {
   //***********************************************************************************************
 
 
-  //***********************************************************************************************
-  //상품 목록 출력
-  //***********************************************************************************************
-  const productRender = () =>{    
-    const productList = [];
-    const p_count = productObj.count;   // 상품 전체 개수
-    const pList   = productObj.pList;   // 상품 정보    
-    
-    for (let i = 0; i < p_count; i++) {
-      const product = pList[i];
-      let   price   = parseFloat(product.price).toLocaleString('ko-KR');
-
-      //재고 개수가 0개 이하일경우 상품을 출력하지 않고 건너뜀
-      if(product.count <= 0){        
-        continue;
-      }
-      
-      productList.push(
-        <li className='mt30 mb44' key={product.product_id}>
-            <figure className="thumb-photo" style={{ backgroundImage: `url(${product.image})` }}>
-            </figure>            
-            <div className='desc'>
-                <a href="">
-                  <div className='product_nm'>
-                    {product.product_nm}
-                  </div>
-                  <div className='priceText'>
-                    {price}원
-                  </div>
-                  <div className='product_detail'>
-                    {product.product_desc}
-                  </div>
-                </a>
-            </div>
-            <div className='ml20 flex f_d_column a_i_center j_c_center'>
-                <p className='mb10 pt5 pb5 fs16 w100 t_a_center border-top-bottom'>수량</p>
-                <Counter 
-                  count={orderCnt[i]}
-                  onIncrement={() => handleIncrement(i)}
-                  onDecrement={() => handleDecrement(i)}
-                />
-            </div>
-        </li>
-      )
-    }
-    return <ul className="thumb-list row-line2">{productList}</ul>;;
-  }
-  //***********************************************************************************************
-
 
   const handleLogout = () => {
     // 로그아웃 시 세션에서 아이디를 제거하고 상태 초기화
@@ -161,13 +216,57 @@ function Main() {
     navigate('/login');
   };
 
+  const goDeliveryView = () => {
+    navigate('/deliveryView');
+  };
+
+
+  const addProductTest = async () => {
+// console.log('상품등록 요청');
+    try{
+      const res = await axios.post('http://localhost:1092/product/add',{
+        "class_id" : "DIO_121",
+        "product_id" : "DIO_121_DLCGBB999341",
+        "product_nm" : "광다이오드_121",
+        "price" : "900",
+        "weight" : "80",
+        "size_h" : "52",
+        "size_v" : "12",
+        "size_z" : "12"
+      });
+
+// console.log(res);
+    }catch(e){
+      console.log('상품등록 요청 에러: ' + e);
+    }
+  }
 
   return (
     <div className='MainWrap'>
+      <header className='w100'>
+        <div className='menuBox w100 flex f_d_column a_i_center'>
+          <ul>
+            <li className='mr10'>관리자</li>            
+            <li className='mr10' onClick={goDeliveryView}>배송조회</li>
+          </ul>
+          <div>ID: {username}</div>
+          <button className="logOut" onClick={handleLogout}><b>로그아웃</b></button>
+          <button className="logOut" onClick={addProductTest}><b>상품등록테스트</b></button>
+        </div>
+      </header>      
+      
       <div className='MainContent'>
-        <div>ID: {username}</div>
-        <button className="logOut" onClick={handleLogout}><b>로그아웃</b></button>
-        {productRender()}        
+        {/* 검색 */}
+        <section className='w100'> 
+          <div className='flex'>
+            <input type='text' className='search' onChange={(e) => setProductNm(e.target.value)}/>
+            <div onClick={searchResProducts} className='searchBtn bgSlate100 fw700 fs18 flex a_i_center j_c_center'>검색</div>
+          </div>  
+        </section>              
+      
+        {/* 상품목록 */}
+        {productRender()}
+
         <div className='flex'>
           <button className="orderBtn" onClick={handleOrder}><b>주문하기</b></button>
         </div>

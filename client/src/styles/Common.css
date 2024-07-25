@@ -29,6 +29,11 @@ input{
   padding-left: 10px;
 }
 
+ul{
+  margin: 0;
+  padding: 0;
+}
+
 #root, .App{
   width: 100%;
   height: 100%;
@@ -132,6 +137,17 @@ input{
   align-items: center;
 }
 
+.MainWrap .menuBox{
+  /* box-shadow: hsl(202, 55%, 16%) 0px 5px, hsl(200, 24%, 40%) 0px 10px, hsl(200, 26%, 54%) 0px 15px, hsl(203, 41%, 72%) 0px 20px, hsl(202, 86%, 94%) 0px 25px; */
+  /* box-shadow: rgb(85, 91, 255) 0px 0px 0px 3px, rgb(31, 193, 27) 0px 0px 0px 6px, rgb(255, 217, 19) 0px 0px 0px 9px, rgb(255, 156, 85) 0px 0px 0px 12px, rgb(255, 85, 85) 0px 0px 0px 15px; */
+  /* box-shadow: blue 0px 0px 0px 2px inset, rgb(255, 255, 255) 10px -10px 0px -3px, rgb(31, 193, 27) 10px -10px, rgb(255, 255, 255) 20px -20px 0px -3px, rgb(255, 217, 19) 20px -20px, rgb(255, 255, 255) 30px -30px 0px -3px, rgb(255, 156, 85) 30px -30px, rgb(255, 255, 255) 40px -40px 0px -3px, rgb(255, 85, 85) 40px -40px; */
+}
+
+.MainWrap li{
+  list-style: none;
+  cursor: pointer;
+}
+
 .MainContent{
   width: 60%;
 }
@@ -203,6 +219,11 @@ display:-webkit-box;overflow:hidden;height:105px;
   margin: 0 auto;
 }
 
+.MainWrap .searchBtn{
+  width: 80px;
+  border: 1px solid;
+  cursor: pointer;
+}
 /* Main page e*/
 
 /* 반응형 */
