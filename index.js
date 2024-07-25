@@ -62,18 +62,26 @@ app.post('/product/goodList', async (req, res) => {
 	const { product_nm, product_id } = req.body;
 console.log(`product_nm = ${product_nm}`);
 console.log(`product_id = ${product_id}`);
+	let nm_where = '';
+	let id_where = '';
+	if(product_id !== '' && product_id !== undefined){
+		id_where = ` and PRODUCT_ID like '%${product_id}%'`;
+	}
+	if(product_nm !== '' && product_nm !== undefined){
+		nm_where = ` and PRODUCT_NM like '%${product_nm}%'`;
+	}
+console.log(id_where);
+console.log(nm_where);	
+	let query = 'select CLASS_ID , PRODUCT_ID, PRODUCT_NM, PRICE, WEIGHT, SIZE_H, SIZE_V, SIZE_Z'
+		      + ' from esupply.product_master ';
 	try{
 		conn = await pool.getConnection();
-    	const rows = await conn.query('select CLASS_ID '
-		+'    , PRODUCT_ID'
-		+'    , PRODUCT_NM'
-		+'    , PRICE'
-		+'    , WEIGHT'
-		+'    , SIZE_H'
-		+'    , SIZE_V'
-		+'    , SIZE_Z'
-		+' from esupply.product_master ');
-    	res.json(rows);
+		if(id_where !== '' || nm_where !== ''){
+			query = query + ' where 1 = 1' + id_where + nm_where;
+		}
+console.log(query);
+    	let result = await conn.query(query);
+    	res.json(result);
 	}catch(err){
 		res.status(500).send(err.toString());
 	}finally{
