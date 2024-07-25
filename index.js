@@ -65,15 +65,17 @@ console.log(`product_id = ${product_id}`);
 	let nm_where = '';
 	let id_where = '';
 	if(product_id !== '' && product_id !== undefined){
-		id_where = ` and PRODUCT_ID like '%${product_id}%'`;
+		id_where = ` and mst.PRODUCT_ID like '%${product_id}%'`;
 	}
 	if(product_nm !== '' && product_nm !== undefined){
-		nm_where = ` and PRODUCT_NM like '%${product_nm}%'`;
+		nm_where = ` and mst.PRODUCT_NM like '%${product_nm}%'`;
 	}
 console.log(id_where);
 console.log(nm_where);	
-	let query = 'select CLASS_ID , PRODUCT_ID, PRODUCT_NM, PRICE, WEIGHT, SIZE_H, SIZE_V, SIZE_Z'
-		      + ' from esupply.product_master ';
+	let query = 'select mst.CLASS_ID , mst.PRODUCT_ID, mst.PRODUCT_NM, mst.PRICE, mst.WEIGHT, mst.SIZE_H, mst.SIZE_V, mst.SIZE_Z, ifnull(inv.COUNT , 0) as COUNT '
+              + ' from esupply.product_master mst '
+ 			  + ' left join esupply.good_inventory inv on mst.CLASS_ID = inv.CLASS_ID and mst.PRODUCT_ID = inv.PRODUCT_ID'
+			  ;
 	try{
 		conn = await pool.getConnection();
 		if(id_where !== '' || nm_where !== ''){
