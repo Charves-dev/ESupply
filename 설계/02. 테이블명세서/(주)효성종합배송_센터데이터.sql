@@ -1,3 +1,4 @@
+insert into center_info( CENTER_ID ,CENTER_NM ,LATITUDE ,LONGITUDE ,ADDRESS)
 select 'C_0001','강원강릉시',37.74913611,128.8784972,'강원강릉시' from dual union all
 select 'C_0002','강원고성군',38.37796111,128.4701639,'강원고성군' from dual union all
 select 'C_0003','강원동해시',37.52193056,129.1166333,'강원동해시' from dual union all
