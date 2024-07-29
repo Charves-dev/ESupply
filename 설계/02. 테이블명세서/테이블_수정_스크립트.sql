@@ -52,3 +52,9 @@ select 'OUT_TYPE', 'DISPOSE', '폐기_처분' from dual
 
 -- 2024.07.29 : esupply 상품 출고 테이블에 출고구분 칼럼 추가
 ALTER TABLE order_out_good ADD COLUMN `OUT_TYPE` VARCHAR(10) DEFAULT NULL COMMENT '출고_구분';
+
+
+-- 2024.07.29 : esupply 오타로 인한 칼럼명 수정 및 칼럼 추가
+ALTER TABLE good CHANGE COLUMN SEREAL_NO SERIAL_NO VARCHAR(20);
+alter table order_out_good change column SEREAL_NO SERIAL_NO VARCHAR(20);
+alter table order_out_good add column ORDER_NO varchar(30) default null COMMENT '주문_번호';

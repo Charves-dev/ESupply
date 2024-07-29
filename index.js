@@ -104,8 +104,48 @@ console.log("****************************************************");
 // 상품 입고 (재고 등록) - 입고 : 공장에서 상품이 제작되어서 들어옴
 //*************************************************************************************************
 app.post('/product/addgoods', async (req, res) => {
-	//insert into GOOD
-	//insert or update into GOOD_INVENTORY
+	
+	const { class_id, product_id, manufacturing_dttm, lot_no, count } = req.body;
+	const prod = product_id.replact(class_id, '');
+	const serial_h = class_id.substring(0,3) + prod.substring(0,4) + manufacturing_dttm.substring(0,8);
+	const seqName  = 'seq' + class_id.substring(0,3).toLowerCase();
+
+	const nextQuery = `select nextval(${seqName}) as nextSN from dual`; 
+
+	const goodQuery = 'insert into GOOD (CLASS_ID, PRODUCT_ID, SERIAL_NO, MANUFACTURING_DTTM, LOT_NO) '
+					+ 'VALUES ( ? '
+					+ '       , ? '
+					+ '		  , concat(? , ?) '
+                    + '       , DATE_FORMAT(CURRENT_TIMESTAMP(), \'%Y%m%d%H%i%s\') '
+                    + '       , ? )'
+					;
+
+	const updQuery = 'update good_inventory set COUNT = COUNT + 1 where CLASS_ID = ? and PRODUCT_ID  = ?';
+
+	let conn = null;
+	let iCount = 0;
+	let arrSerialNos = [];
+	try{
+		conn = await pool.getConnection();
+		for(let i=0;i<count; i++){
+			let nextResult = await conn.query(nextQuery);
+			let nextSN = nextResult[0].nextSN;
+			arrSerialNos.push(nextSN);
+			let goodResult = await conn.query(goodQuery, [class_id, product_id, serial_h, nextSN, lot_no]);
+			iCount += goodResult.affectedRows;
+		}
+	
+		await conn.query(updQuery, [class_id, product_id]);
+
+		let returnJson = {
+			SERIAL_NOS : arrSerialNos
+		}
+		res.send(returnJson);
+	}catch(err){
+		res.status(500).send(err.toString());
+	}finally{
+		if(conn) conn.release();
+	}
 	
 });
 //*************************************************************************************************
