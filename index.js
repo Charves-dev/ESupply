@@ -106,7 +106,7 @@ console.log("****************************************************");
 app.post('/product/addgoods', async (req, res) => {
 	//insert into GOOD
 	//insert or update into GOOD_INVENTORY
-
+	
 });
 //*************************************************************************************************
 
