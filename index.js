@@ -106,7 +106,7 @@ console.log("****************************************************");
 app.post('/product/addgoods', async (req, res) => {
 	
 	const { class_id, product_id, manufacturing_dttm, lot_no, count } = req.body;
-	const prod = product_id.replact(class_id, '');
+	const prod = product_id.replace(class_id, '');
 	const serial_h = class_id.substring(0,3) + prod.substring(0,4) + manufacturing_dttm.substring(0,8);
 	const seqName  = 'seq' + class_id.substring(0,3).toLowerCase();
 
