@@ -29,4 +29,5 @@ use esupply;                    /* esupply database 진임 */
 use hyosungtotal;               /* hyosungtotal database 진임 */
 
 /* (주)효성종합배송_TableScript 실행 */
+/* (주)효성종합배송_센터데이터.sql 실행  -- 센터 데이터 생성 */
 /**********************************************************************************/
