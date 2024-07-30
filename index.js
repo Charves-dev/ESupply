@@ -156,15 +156,17 @@ app.post('/product/addgoods', async (req, res) => {
 // 공통 코드 리스트 가져오기 (콤보박스용)
 //*************************************************************************************************
 app.get('/comm/codelist', async (req, res) => {
-	const { group_id } = req.body;
+	const { group_id } = req.query;
+console.log(group_id);
 	let conn = null;
 	const codeQuery = 'select CODE_ID, CODE_NM from comm_code where GROUP_ID = ? ';
 
 	try{
 		conn = await pool.getConnection();
-		const result = conn.query(codeQuery, [group_id]);
+		const result = await conn.query(codeQuery, [group_id]);
 console.log(result);
 		res.send(result);
+
 	}catch(err){
 		res.status(500).send(err.toString());
 	}finally{
@@ -179,12 +181,12 @@ console.log(result);
 // 공통 제품 리스트 가져오기 (콤보박스용)
 //*************************************************************************************************
 app.get('/comm/productlist', async (req, res) => {
-	const { class_id } = req.body;
+	const { class_id } = req.query;
 	let conn = null;
 	const prodQuery = 'select PRODUCT_ID, PRODUCT_NM from esupply.product_master where CLASS_ID = ? ';
 	try{
 		conn = await pool.getConnection();
-		const result = conn.query(prodQuery, [class_id]);
+		const result = await conn.query(prodQuery, [class_id]);
 console.log(result);
 		res.send(result);
 	}catch(err){
