@@ -58,3 +58,13 @@ ALTER TABLE order_out_good ADD COLUMN `OUT_TYPE` VARCHAR(10) DEFAULT NULL COMMEN
 ALTER TABLE good CHANGE COLUMN SEREAL_NO SERIAL_NO VARCHAR(20);
 alter table order_out_good change column SEREAL_NO SERIAL_NO VARCHAR(20);
 alter table order_out_good add column ORDER_NO varchar(30) default null COMMENT '주문_번호';
+
+
+-- 2024.07.30 : esupply 공통_파일 테이블 추가
+CREATE TABLE `COMM_FILES` (
+ `FILE_ID` int(10) NOT NULL AUTO_INCREMENT COMMENT '파일_아이디',
+ `TABLE_NM` varchar(40) NOT NULL COMMENT '테이블_이름',
+ `ORIGIN_NM` varchar(200) NOT NULL COMMENT '오리지널_이름',
+ `STORE_NM` varchar(100) NOT NULL COMMENT '저장된_이름',
+ PRIMARY KEY (`FILE_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='공통_파일';

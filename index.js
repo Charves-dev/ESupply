@@ -1,9 +1,25 @@
 const express 	= require('express');
 const cors 		= require('cors');
 const pool 		= require('./config/db');
+const multer 	= require('multer');
 const path 		= require('path');
 const app 		= express();
 const port 		= 1092;
+
+// Multer 설정
+const storage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, 'uploads/');
+	},
+	filename: (req, file, cb) => {
+		cb(null, Date.now() + path.extname(file.originalname));
+	}
+});
+  
+const upload = multer({ storage: storage });
+
+// Static 파일 제공을 위한 설정
+app.use('/uploads', express.static('uploads'));
 
 app.use(cors());
 app.use(express.json());
@@ -11,6 +27,34 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, '/client/build/index.html'));
+});
+
+app.get('/uploadTest', (req, res) => {
+  res.send(`
+    <h2>Image Upload</h2>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+      <input type="file" name="image" />
+      <button type="submit">Upload</button>
+    </form>
+  `);
+});
+
+// 이미지 업로드 처리
+app.post('/upload', upload.single('image'), (req, res) => {
+	if (!req.file) {
+	  return res.status(400).send('No file uploaded.');
+	}
+	const originName = req.file.originalname;
+	const storedName = req.file.filename;
+
+	
+
+	const imageUrl = `http://localhost:${port}/uploads/${req.file.filename}`;
+	res.send(`
+	  <h2>Image Uploaded</h2>
+	  <img src="${imageUrl}" alt="Uploaded Image" />
+	  <p><a href="/uploadTest">Upload another image</a></p>
+	`);
 });
 
 //*************************************************************************************************
