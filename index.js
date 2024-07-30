@@ -153,6 +153,51 @@ app.post('/product/addgoods', async (req, res) => {
 
 
 //*************************************************************************************************
+// 공통 코드 리스트 가져오기 (콤보박스용)
+//*************************************************************************************************
+app.get('/comm/codelist', async (req, res) => {
+	const { group_id } = req.body;
+	let conn = null;
+	const codeQuery = 'select CODE_ID, CODE_NM from comm_code where GROUP_ID = ? ';
+
+	try{
+		conn = await pool.getConnection();
+		const result = conn.query(codeQuery, [group_id]);
+console.log(result);
+		res.send(result);
+	}catch(err){
+		res.status(500).send(err.toString());
+	}finally{
+		if (conn) conn.release();
+	}
+});
+//*************************************************************************************************
+
+
+
+//*************************************************************************************************
+// 공통 제품 리스트 가져오기 (콤보박스용)
+//*************************************************************************************************
+app.get('/comm/productlist', async (req, res) => {
+	const { class_id } = req.body;
+	let conn = null;
+	const prodQuery = 'select PRODUCT_ID, PRODUCT_NM from esupply.product_master where CLASS_ID = ? ';
+	try{
+		conn = await pool.getConnection();
+		const result = conn.query(prodQuery, [class_id]);
+console.log(result);
+		res.send(result);
+	}catch(err){
+		res.status(500).send(err.toString());
+	}finally{
+		if (conn) conn.release();
+	}
+});
+//*************************************************************************************************
+
+
+
+//*************************************************************************************************
 // 제품 리스트 조회(상품리스트 조회)
 //*************************************************************************************************
 app.post('/product/goodList', async (req, res) => {
@@ -173,6 +218,7 @@ console.log(nm_where);
               + ' from esupply.product_master mst '
  			  + ' left join esupply.good_inventory inv on mst.CLASS_ID = inv.CLASS_ID and mst.PRODUCT_ID = inv.PRODUCT_ID'
 			  ;
+	let conn = null;
 	try{
 		conn = await pool.getConnection();
 		if(id_where !== '' || nm_where !== ''){
