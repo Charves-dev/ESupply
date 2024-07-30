@@ -88,7 +88,7 @@ function Main() {
       });
   };
 
-  // 전체 제품 목록 가져오기 / 검색시 상품 목록 가져오기
+  // 전체 상품 목록 가져오기 or 검색시 대상 상품 목록 가져오기
   const searchResProducts = async () => {
 // console.log('검색 상품 가져오기 요청');
 // console.log('search_key_word: ' + search_key_word);
@@ -160,7 +160,10 @@ function Main() {
                     너비: {product.SIZE_V} mm
                   </div>
                   <div className='product_detail'>
-                    깊이: {product.SIZE_Z} mm
+                    길이: {product.SIZE_Z} mm
+                  </div>
+                  <div className='product_detail'>
+                    무게: {product.WEIGHT} g
                   </div>
                 </a>
             </div>
@@ -175,7 +178,7 @@ function Main() {
         </li>
       )
     }
-    return <ul className="thumb-list row-line2">{productList}</ul>;;
+    return <ul className="thumb-list row-line2">{productList}</ul>;
   }
   //***********************************************************************************************
 
@@ -217,7 +220,11 @@ function Main() {
   };
 
   const goDeliveryView = () => {
-    navigate('/deliveryView');
+    navigate('/deliveryView', { state: { type: 'P' }});
+  };
+
+  const goAdminView = () => {
+    navigate('/admin');
   };
 
 
@@ -246,7 +253,7 @@ function Main() {
       <header className='w100'>
         <div className='menuBox w100 flex f_d_column a_i_center'>
           <ul>
-            <li className='mr10'>관리자</li>            
+            <li className='mr10' onClick={goAdminView}>관리자</li>            
             <li className='mr10' onClick={goDeliveryView}>배송조회</li>
           </ul>
           <div>ID: {username}</div>
