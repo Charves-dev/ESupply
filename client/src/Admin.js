@@ -2,10 +2,10 @@ import React, {useEffect, useState, useCallback} from 'react';
 import './styles/Common.css'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Counter from './Counter';
+import ProductForm from './ProductForm';
 
 function Admin() {
-  // 기본 주문 개수 초기화, 재고가 0인 경우 0으로 설정
+  // 재고 초기화
   const initializeOrderCnt = (productList) => {
     const initOrderCnt = [];
     for (let i = 0; i < productList.length; i++) {
@@ -159,19 +159,26 @@ function Admin() {
   //***********************************************************************************************
 
   const goodsCRUD = () => {
-    let test = <div className='mb10'>제품등록</div>
-    return test
+    let goodsForm = <div className='mb10'>상품등록.. 작업예정</div>
+    return goodsForm
   }
 
   const productCRUD = () => {
-    let test = <div className='mb10'>상품등록</div>
-    return test
+    let prodcutForm = <div><ProductForm /></div>
+    return prodcutForm
   }
 
   const renderContent = () => {
     switch (currentView) {
       case 'productList':
-        return productRender();
+        return (
+          <>
+            {searchContent()}
+            {productRender()}
+          </>
+        )
+      case 'goodsCRUD':
+        return goodsCRUD();
       case 'productCRUD':
         return productCRUD();
       default:
@@ -179,27 +186,35 @@ function Admin() {
     }
   };
 
-  const searchContent = () =>{
-    
-  }
+  const searchContent = () => {
+    return (
+      <section className='w100'> 
+        <div className='flex'>
+          <input 
+            type='text' 
+            className='search' 
+            onChange={(e) => setProductNm(e.target.value)}
+          />
+          <div 
+            onClick={searchResProducts} 
+            className='searchBtn bgSlate100 fw700 fs18 flex a_i_center j_c_center'
+          >
+            검색
+          </div>
+        </div>  
+      </section>
+    );
+  };
 
   return (
     <div className='adminWrap'>
       <div onClick={() => setCurrentView('productList')}>상품재고목록</div>  
       <div style={{color: '#b0b0b0'}}>부품재고목록 및 주문</div>  
-      <div onClick={() => setCurrentView('goodsCRUD')} className='cursor'>제품등록</div>  
-      <div onClick={() => setCurrentView('productCRUD')}>상품등록</div>  
+      <div onClick={() => setCurrentView('goodsCRUD')} className='cursor'>상품등록</div>  
+      <div onClick={() => setCurrentView('productCRUD')} className='cursor'>제품등록</div>  
       <button onClick={goMain} className='loginBtn'>메인으로 돌아가기</button>    
       <div className='adminContent'>       
-        {/* 검색 */}
-        <section className='w100'> 
-        <div className='flex'>
-          <input type='text' className='search' onChange={(e) => setProductNm(e.target.value)}/>
-          <div onClick={searchResProducts} className='searchBtn bgSlate100 fw700 fs18 flex a_i_center j_c_center'>검색</div>
-        </div>  
-        </section>  
-        {currentView === 'default' ? productRender() : renderContent()}                 
-              
+        {currentView === 'default' ? productRender() : renderContent()}                  
       </div>
     </div>
   );

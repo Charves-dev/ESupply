@@ -104,7 +104,7 @@ function Main() {
       
       // 주문 개수 1로 초기화
       setOrderCnt(initializeOrderCnt(res.data));        
-// console.log(res.data);
+console.log(res.data);
     }catch(e){
       console.log('상품 목록 가져오기 애러: ' + e);
     }
@@ -142,7 +142,7 @@ function Main() {
       
       productList.push(
         <li className='mt30 mb44' key={product.PRODUCT_ID}>
-            <figure className="thumb-photo" style={{ backgroundImage: `url(/assets/Img/img1.png)` }}>
+            <figure className="thumb-photo" style={{ backgroundImage: `url(/assets/Img/${product.IMAGE})` }}>
             {/* <figure className="thumb-photo" style={{ backgroundImage: `url(${product.image}})` }}> */}
             </figure>            
             <div className='desc'>

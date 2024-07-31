@@ -10,7 +10,7 @@ const port 		= 1092;
 // Multer 설정
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		cb(null, 'uploads/');
+		cb(null, 'client/public/assets/Img/');
 	},
 	filename: (req, file, cb) => {
 		cb(null, Date.now() + path.extname(file.originalname));
@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Static 파일 제공을 위한 설정
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static('client/public/assets/Img'));
 
 app.use(cors());
 

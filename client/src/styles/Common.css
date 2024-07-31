@@ -187,14 +187,14 @@ ul{
   border-radius: 4px;
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 110%;
+  background-size: cover;
   margin-right: 10px;
   flex-shrink: 0;
   margin-right: 1.5rem;
 }
 
 .thumb-list li:nth-child(2) .thumb-photo{
-  background-size: 110%;
+  background-size: cover;
 }
 
 /* thumb-list 2 */

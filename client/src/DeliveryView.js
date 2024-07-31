@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 function DeliveryView() {
   const location = useLocation();
-  const { type } = location.state || { type: 'P' }; // 배송 조회 타입 'P' : 상품 배송 조회 , 'G' : 부품 배송 조회
+  const { type } = location.state || { type: 'P' }; // 배송 조회 타입 'P' : 상품 배송 조회 , 'C' : 부품 배송 조회
   const [searchOption, setSearchOption] = useState('invoiceNo');
   const [dlGroupCount, setDlGroupCount] = useState(0);
   const deliveryViewWrapRef = useRef(null);
