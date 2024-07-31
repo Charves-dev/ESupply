@@ -5,7 +5,7 @@ const pool = mariadb.createPool({
   user: 'root',
   password: '',
   database: 'ESupply',
-  connectionLimit: 10
+  connectionLimit: 5
 });
 
 module.exports = pool;

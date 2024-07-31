@@ -3,6 +3,7 @@ const cors 		= require('cors');
 const pool 		= require('./config/db');
 const multer 	= require('multer');
 const path 		= require('path');
+const bodyParser = require('body-parser');
 const app 		= express();
 const port 		= 1092;
 
@@ -22,23 +23,44 @@ const upload = multer({ storage: storage });
 app.use('/uploads', express.static('uploads'));
 
 app.use(cors());
-app.use(express.json());
+
+
+//app.use(express.json());
+//app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, '/client/build/index.html'));
 });
 
+
+
+//*********** */
+// 요고는 테스트용
 app.get('/uploadTest', (req, res) => {
   res.send(`
     <h2>Image Upload</h2>
-    <form action="/upload" method="post" enctype="multipart/form-data">
+    <form action="/product/add" method="post" enctype="multipart/form-data">
+	  <input type="text" name="class_id" />
+	  <input type="text" name="product_id" />
+	  <input type="text" name="product_nm" />
+	  <input type="text" name="price" />
+	  <input type="text" name="weight" />
+	  <input type="text" name="size_h" />
+	  <input type="text" name="size_v" />
+	  <input type="text" name="size_z" />
       <input type="file" name="image" />
       <button type="submit">Upload</button>
     </form>
   `);
 });
+//*********** */
 
+//************* */
+// 요고도 테스트용
 // 이미지 업로드 처리
 app.post('/upload', upload.single('image'), (req, res) => {
 	if (!req.file) {
@@ -47,8 +69,6 @@ app.post('/upload', upload.single('image'), (req, res) => {
 	const originName = req.file.originalname;
 	const storedName = req.file.filename;
 
-	
-
 	const imageUrl = `http://localhost:${port}/uploads/${req.file.filename}`;
 	res.send(`
 	  <h2>Image Uploaded</h2>
@@ -56,6 +76,9 @@ app.post('/upload', upload.single('image'), (req, res) => {
 	  <p><a href="/uploadTest">Upload another image</a></p>
 	`);
 });
+//**************** */
+
+
 
 //*************************************************************************************************
 //
@@ -86,15 +109,35 @@ app.get('/product/sequencecheck', async (req, res) => {
 //*************************************************************************************************
 // 제품등록
 //*************************************************************************************************
-app.post('/product/add', async (req, res) => {
-	const { class_id, product_id, product_nm, price, weight, size_h, size_v, size_z } = req.body;
+app.post('/product/add', upload.single('image'), async (req, res) => {
+
 console.log("****************************************************");
 console.log("req.body");
 console.log(req.body);
 console.log("****************************************************");
+	const { class_id, product_id, product_nm, price, weight, size_h, size_v, size_z } = req.body;
+
+	let originalName = null;
+	let storedName = null;
+	let file_id = null;
+
+	if (req.file) {
+		originalName = req.file.originalname;
+		storedName = req.file.filename;
+	}
+
 	let conn = null;
 	try{
 		conn = await pool.getConnection();
+		//await conn.beginTransaction();
+
+		if (req.file) {
+			const insertFileResult = await conn.query(
+				'insert into comm_files (TABLE_NM, ORIGIN_NM, STORE_NM) values (? , ? , ?)',
+				['product_master', originalName, storedName]
+			);
+			file_id = insertFileResult.insertId;
+		}
 
 		//*****************************************************************************************
 		// 클레스(모델) 시퀀스 존재 여부 체크 ( 없으면 생성한다 - 상품등록시에 시리얼번호 채번하기 위함 )
@@ -115,10 +158,12 @@ console.log("****************************************************");
 		const checkQuery = 'SELECT COUNT(*) as cnt from esupply.product_master where class_id = ? and product_id = ? ';
 		const checkResult = await conn.query(checkQuery, [class_id, product_id]);
 
-		if(checkResult.cnt <= 0){
-			const query = 'INSERT INTO esupply.product_master (class_id, product_id, product_nm, price, weight, size_h, size_v, size_z) '
-						+ 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-			const result = await conn.query(query, [class_id, product_id, product_nm, price, weight, size_h, size_v, size_z]);
+		if(checkResult[0].cnt <= 0){
+			const query = 'INSERT INTO esupply.product_master (class_id, product_id, product_nm, price, weight, size_h, size_v, size_z, image) '
+						+ 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+			const result = await conn.query(query, [class_id, product_id, product_nm, price, weight, size_h, size_v, size_z, file_id]);
+			const rst = await conn.commit();
+
 			let rtnMsg = {
 				result : 'Success',
 				message : '성공',
@@ -126,6 +171,7 @@ console.log("****************************************************");
 			};
 			res.send(rtnMsg);
 		}else{
+			await conn.rollback();
 			let rtnMsg = {
 				result :  'Failed',
 				message : `이미 존재합니다.( ${class_id} , ${product_id} )`,
@@ -171,6 +217,7 @@ app.post('/product/addgoods', async (req, res) => {
 	let arrSerialNos = [];
 	try{
 		conn = await pool.getConnection();
+		await conn.beginTransaction();
 		for(let i=0;i<count; i++){
 			let nextResult = await conn.query(nextQuery);
 			let nextSN = nextResult[0].nextSN;
@@ -181,6 +228,7 @@ app.post('/product/addgoods', async (req, res) => {
 	
 		await conn.query(updQuery, [class_id, product_id]);
 
+		await conn.commit();
 		let returnJson = {
 			SERIAL_NOS : arrSerialNos
 		}
@@ -260,9 +308,12 @@ console.log(`product_id = ${product_id}`);
 	}
 console.log(id_where);
 console.log(nm_where);	
-	let query = 'select mst.CLASS_ID , mst.PRODUCT_ID, mst.PRODUCT_NM, mst.PRICE, mst.WEIGHT, mst.SIZE_H, mst.SIZE_V, mst.SIZE_Z, ifnull(inv.COUNT , 0) as COUNT '
+	let query = 'select mst.CLASS_ID , mst.PRODUCT_ID, mst.PRODUCT_NM, mst.PRICE, mst.WEIGHT, mst.SIZE_H, mst.SIZE_V, mst.SIZE_Z' 
+	          + '     , ifnull(inv.COUNT , 0) as COUNT '
+			  + '     , cf.STORE_NM as IMAGE'
               + ' from esupply.product_master mst '
  			  + ' left join esupply.good_inventory inv on mst.CLASS_ID = inv.CLASS_ID and mst.PRODUCT_ID = inv.PRODUCT_ID'
+			  + ' left join esupply.comm_files cf on mst.IMAGE = cf.FILE_ID and cf.TABLE_NM = \'product_master\' '
 			  ;
 	let conn = null;
 	try{

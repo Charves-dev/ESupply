@@ -68,3 +68,8 @@ CREATE TABLE `COMM_FILES` (
  `STORE_NM` varchar(100) NOT NULL COMMENT '저장된_이름',
  PRIMARY KEY (`FILE_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='공통_파일';
+
+
+-- 2024.07.31 : esupply product_master 테이블 수정
+-- 업로드된 파일 정보는 comm_files테이블에 있고, product_master.IMAGE칼럼은 comm_files테이블의 FILE_ID를 가진다.
+alter table product_master modify column IMAGE int(10) COMMENT '이미지파일';    
