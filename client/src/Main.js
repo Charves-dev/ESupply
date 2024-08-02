@@ -141,7 +141,7 @@ console.log(res.data);
       }
       
       productList.push(
-        <li className='mt30 mb44' key={product.PRODUCT_ID}>
+        <li className='mt32 mb32' key={product.PRODUCT_ID}>
             <figure className="thumb-photo" style={{ backgroundImage: `url(/assets/Img/${product.IMAGE})` }}>
             {/* <figure className="thumb-photo" style={{ backgroundImage: `url(${product.image}})` }}> */}
             </figure>            
@@ -167,7 +167,7 @@ console.log(res.data);
                   </div>
                 </a>
             </div>
-            <div className='ml20 flex f_d_column a_i_center j_c_center'>
+            <div className='ml20 flex f_d_column a_i_center j_c_between'>
                 <p className='mb10 pt5 pb5 fs16 w100 t_a_center border-top-bottom'>수량</p>
                 <Counter 
                   count={orderCnt[i]}
@@ -251,23 +251,22 @@ console.log(res.data);
   return (
     <div className='MainWrap'>
       <header className='w100'>
-        <div className='menuBox w100 flex f_d_column a_i_center'>
-          <ul>
-            <li className='mr10' onClick={goAdminView}>관리자</li>            
-            <li className='mr10' onClick={goDeliveryView}>배송조회</li>
-          </ul>
-          <div>ID: {username}</div>
-          <button className="logOut" onClick={handleLogout}><b>로그아웃</b></button>
-          <button className="logOut" onClick={addProductTest}><b>상품등록테스트</b></button>
+        <div className='menuBox w100 flex a_i_center j_c_between'>
+          <div className='logo'>Esuply</div>
+          <ul className='flex'>
+            <li className='mr35' onClick={goAdminView}>관리자</li>            
+            <li onClick={goDeliveryView}>배송조회</li>
+          </ul>          
+          <button className="logOut" onClick={handleLogout}><b>로그아웃</b></button>          
         </div>
       </header>      
       
       <div className='MainContent'>
         {/* 검색 */}
         <section className='w100'> 
-          <div className='flex'>
+          <div className='flex mt32'>
             <input type='text' className='search' onChange={(e) => setProductNm(e.target.value)}/>
-            <div onClick={searchResProducts} className='searchBtn bgSlate100 fw700 fs18 flex a_i_center j_c_center'>검색</div>
+            <div onClick={searchResProducts} className='searchBtn bgSlate100 fs16 flex a_i_center j_c_center'>검색</div>
           </div>  
         </section>              
       
@@ -275,7 +274,7 @@ console.log(res.data);
         {productRender()}
 
         <div className='flex'>
-          <button className="orderBtn" onClick={handleOrder}><b>주문하기</b></button>
+          <button className="orderBtn cursor" onClick={handleOrder}><b>주문하기</b></button>
         </div>
       </div>
     </div>
