@@ -18,6 +18,18 @@ app.get('/', (req, res) => {
 });
 
 
+app.post('/login', (req, res) => {
+    let rtn = {
+        result : 'success',
+        company_id : 'imsi_id',
+        company_nm : '(주)선아전자',
+        user_nm : '최선아',
+        msg : ''
+    };
+    res.send(rtn);
+});
+
+
 app.listen(port, () => {
 	console.log(`서버가 실행됩니다. http://localhost:${port}`);
 });

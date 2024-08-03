@@ -1,12 +1,20 @@
 // src/components/Main.js
 import React from 'react';
 
-const Main = () => {
+const Main = ({userData}) => {
   return (
     <div>
       <h2>(주)차베스전기</h2>
-      <p>요기가 메인페이지</p>
+      <p>Welcome, {userData.user_nm}!</p>
+      <p>Company_id : {userData.company_id}</p>
+      <p>Company_nm : {userData.company_nm}</p>
+      <table>
+        <tr>
+          <td>이제 차베스전기는 DB연동만 하면 환경은 거의 다 끝나는구만....</td>
+        </tr>
+      </table>
     </div>
+    
   );
 };
 

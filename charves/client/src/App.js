@@ -6,14 +6,16 @@ import Main from './components/Main';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
-  const handleLogin = () => {
+  const [userData, setUserData] = useState(null);
+
+  const handleLogin = (data) => {
+    setUserData(data);
     setIsLoggedIn(true);
   };
 
   return (
     <div>
-      {isLoggedIn ? <Main /> : <Login onLogin={handleLogin} />}
+      {isLoggedIn ? <Main userData={userData}/> : <Login onLogin={handleLogin} />}
     </div>  
   );
 }

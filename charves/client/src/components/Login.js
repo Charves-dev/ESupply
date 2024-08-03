@@ -1,18 +1,33 @@
 // src/components/Login.js
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // 여기에 실제 로그인 로직을 추가할 수 있습니다.
-    if (username === 'charves' && password === '1234') {
-      onLogin();
-    } else {
-      alert('Invalid credentials');
+    try{
+        const response = await axios.post('http://localhost:7943/login', {username, password});
+        console.log(response);
+        //alert(response);
+
+        if (response.data.result === 'success') {
+            onLogin(response.data);
+        } else {
+            alert('Login failed: ' + response.data.msg);
+        }
+    }catch(error){
+        console.error('Login error', error);
+        alert('An error occurred during login.');
     }
+    // 여기에 실제 로그인 로직을 추가할 수 있습니다.
+    // if (username === 'charves' && password === '1234') {
+    //   onLogin();
+    // } else {
+    //   alert('Invalid credentials');
+    // }
   };
 
   return (
