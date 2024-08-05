@@ -5,7 +5,21 @@ import axios from 'axios';
 import ProductForm from './ProductForm';
 
 function Admin() {
+  
+  const [currentView, setCurrentView] = useState('default');
+  const [orderCnt, setOrderCnt]   = useState([]);
+  const [username, setUsername]   = useState(null);
+  const [productNm, setProductNm] = useState('');
+  const [productObj, setProductObj] = useState({ count: 0, pList: [] });  
+  const [isLiHovered, setIsLiHovered] = useState(false);
+  const [isMenuHovered, setIsMenuHovered] = useState(false);
+  const [isGoodsLiHovered, setIsGoodsLiHovered] = useState(false);
+  const [isGoodsMenuHovered, setIsGoodsMenuHovered] = useState(false);
+  const navigate = useNavigate();
+
+  // **********************************************************************************************
   // 재고 초기화
+  // **********************************************************************************************
   const initializeOrderCnt = (productList) => {
     const initOrderCnt = [];
     for (let i = 0; i < productList.length; i++) {
@@ -13,49 +27,12 @@ function Admin() {
     }
     return initOrderCnt;
   };
+  // **********************************************************************************************
+
   
-  const [currentView, setCurrentView] = useState('default');
-  const [orderCnt, setOrderCnt]   = useState([]);
-  const [username, setUsername]   = useState(null);
-  const [productNm, setProductNm] = useState('');
-  const [productObj, setProductObj] = useState({ count: 0, pList: [] });  
-  const navigate = useNavigate();
-
-
-  // let hasAlerted = false;
-  // let prenIndex = -1;
-  // // 상품 주문 개수 증가
-  // const handleIncrement = useCallback((index) => {
-  //   setOrderCnt(prevOrderCnt => {
-  //     const newCounts = [...prevOrderCnt];
-
-  //     if(index !== prenIndex){
-  //       prenIndex = index;
-  //       // hasAlerted = false;
-  //     }
-
-  //     if ( newCounts[index] <= productObj.pList[index].COUNT-1 ) {
-  //       newCounts[index] += 1;      
-  //       // hasAlerted = false;
-  //     }
-      
-  //     return newCounts;
-  //   });
-  // }, [productObj]);
-
-
-  // // 상품 주문 개수 감소
-  // const handleDecrement = (index) => {
-  //     setOrderCnt(prevOrderCnt => {
-  //       const newCounts = [...prevOrderCnt];
-  //       if (newCounts[index] > 0) {
-  //         newCounts[index] -= 1;
-  //       }
-  //       return newCounts;
-  //     });
-  // };
-
+  // **********************************************************************************************
   // 전체 상품 목록 가져오기 or 검색시 대상 상품 목록 가져오기
+  // **********************************************************************************************
   const searchResProducts = async () => {
 // console.log('검색 상품 가져오기 요청');
 // console.log('search_key_word: ' + search_key_word);
@@ -76,7 +53,8 @@ function Admin() {
       console.log('상품 목록 가져오기 애러: ' + e);
     }
   };
-
+  // **********************************************************************************************
+  
 
   useEffect(() => {
     /* 상품목록 불러오기 */
@@ -91,6 +69,10 @@ function Admin() {
 
   const goMain = () => {
     navigate('/main');
+  };
+
+  const goAdmin = () => {
+    navigate('/admin');
   };
 
   const goPartListView = () =>{
@@ -123,19 +105,19 @@ function Admin() {
                     {price}원
                   </div>
                   <div className='product_detail'>
-                    높이: {product.SIZE_H} mm
+                    <span className='label'>높이</span> {product.SIZE_H} mm
                   </div>
                   <div className='product_detail'>
-                    너비: {product.SIZE_V} mm
+                    <span className='label'>너비</span> {product.SIZE_V} mm
                   </div>
                   <div className='product_detail'>
-                    길이: {product.SIZE_Z} mm
+                    <span className='label'>길이</span> {product.SIZE_Z} mm
                   </div>
                   <div className='product_detail'>
-                    무게: {product.WEIGHT} g
+                    <span className='label'>무게</span> {product.WEIGHT} g
                   </div>
                 </a>
-                <button onClick={goPartListView} className='absolute partListBtn cursor'>부품목록</button>
+                <button onClick={goPartListView} className='absolute partListBtn fs14 bgSlate100 cursor'>부품목록</button>
             </div>
             <div className='countBox ml20 flex f_d_column a_i_center'>
                 <p className='mb40 pt5 pb5 fs16 w100 t_a_center border-top-bottom'>수량</p>
@@ -158,16 +140,20 @@ function Admin() {
   }
   //***********************************************************************************************
 
+
+  // 상품등록 폼 반환
   const goodsCRUD = () => {
     let goodsForm = <div className='mb10'>상품등록.. 작업예정</div>
     return goodsForm
   }
 
+  // 제품등록 폼 반환
   const productCRUD = () => {
     let prodcutForm = <div><ProductForm /></div>
     return prodcutForm
   }
 
+  // currentView 값에 따라 현재 보여줄 뷰 렌더링
   const renderContent = () => {
     switch (currentView) {
       case 'productList':
@@ -186,35 +172,138 @@ function Admin() {
     }
   };
 
+  // **********************************************************************************************
+  // 검색 엔터 이벤트 및 JSX
+  // **********************************************************************************************
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      searchResProducts();
+    }
+  };
+
   const searchContent = () => {
     return (
       <section className='w100'> 
-        <div className='flex'>
-          <input 
-            type='text' 
-            className='search' 
-            onChange={(e) => setProductNm(e.target.value)}
-          />
-          <div 
-            onClick={searchResProducts} 
-            className='searchBtn bgSlate100 fw700 fs18 flex a_i_center j_c_center'
-          >
-            검색
-          </div>
+        <div className='flex mt32'>
+          <input type='text' className='search' onChange={(e) => setProductNm(e.target.value)} onKeyDown={handleKeyPress}/>
+          <div onClick={searchResProducts} className='searchBtn bgSlate100 fs16 flex a_i_center j_c_center'>검색</div>
         </div>  
-      </section>
+      </section> 
     );
   };
+  // **********************************************************************************************
+
+  
+  // **********************************************************************************************
+  // 헤더 - 메뉴 초기화 (드롭다운 포함)
+  // **********************************************************************************************
+  const menuItems = [
+    { label: '상품재고목록',        view: 'productList' },
+    { label: '부품재고목록',        view: 'partList' },
+    { label: '상품관리',            view: 'g_drop_down' },
+    { label: '제품관리',            view: 'p_drop_down' },
+  ];
+  // **********************************************************************************************
+
+
+  // **********************************************************************************************
+  // 헤더 - 드롭다운 메뉴 관련 이벤트
+  // **********************************************************************************************
+  // 드롭다운 메뉴 클릭시 현재 보여줄 뷰를 설정하고 관련 스테이트를 초기화한다
+  const dropDownMenuClick = (view) => {
+    setCurrentView(view);
+    // 드롭다운 메뉴를 숨기기 위해 상태 초기화
+    setIsLiHovered(false);
+    setIsMenuHovered(false);
+    setIsGoodsLiHovered(false);
+    setIsGoodsMenuHovered(false);
+  };
+
+
+  // 메뉴를 감싸는 박스를 호버하면 호버된 메뉴값에 따라 state에 설정하고
+  // 드롭다운 visible 조건문에 추가한다 
+  const menuBoxMouseEnter = (view) => {
+    if (view === 'g_drop_down') { // 상품관리
+      setIsGoodsMenuHovered(true);
+    }
+
+    if (view === 'p_drop_down') { // 제품관리
+      setIsMenuHovered(true);
+    }
+  };
+
+
+  // 메뉴를 호버하면 해당하는 LiHovered State에 true로 설정
+  // 메뉴 호버시 감싸는 박스 영역 State도 무조건 true로 설정
+  // 이후 드롭다운 visible 조건문에 추가함
+  const menuMouseEnter = (view) => {
+    if (view === 'p_drop_down') {
+      setIsLiHovered(true);         // 메뉴 텍스트
+      setIsMenuHovered(true);       // 메뉴 박스
+    }
+    if (view === 'g_drop_down') {
+      setIsGoodsLiHovered(true)     // 메뉴 텍스트
+      setIsGoodsMenuHovered(true);  // 메뉴 박스
+    }
+  }
+
+
+  // 메뉴박스를 벗어날시 스테이트 초기화
+  const menuMouseLeave = (view) =>{
+    if(view === 'g_drop_down'){ // 상품관리
+      setIsGoodsLiHovered(false)
+      setIsGoodsMenuHovered(false)
+    }
+
+    if(view === 'p_drop_down'){ // 제품관리
+      setIsLiHovered(false)
+      setIsMenuHovered(false)
+    }
+  }
+  // **********************************************************************************************
 
   return (
     <div className='adminWrap'>
-      <div onClick={() => setCurrentView('productList')}>상품재고목록</div>  
-      <div style={{color: '#b0b0b0'}}>부품재고목록 및 주문</div>  
-      <div onClick={() => setCurrentView('goodsCRUD')} className='cursor'>상품등록</div>  
-      <div onClick={() => setCurrentView('productCRUD')} className='cursor'>제품등록</div>  
-      <button onClick={goMain} className='loginBtn'>메인으로 돌아가기</button>    
-      <div className='adminContent'>       
-        {currentView === 'default' ? productRender() : renderContent()}                  
+      <header className='w100'>
+        <div className='menuBox w100 flex a_i_center j_c_between'>
+          <div className='logo cursor' onClick={goAdmin}>Esuply_Admin</div>
+          <ul className='flex h100'>
+            {menuItems.map(item => (
+              <div
+                key={item.view}
+                onMouseEnter={() => menuBoxMouseEnter(item.view)}
+                onMouseLeave={() => menuMouseLeave(item.view)}
+                className='h100 relative mr3 flex a_i_center'
+              >
+                <li
+                  key={item.view}
+                  onMouseEnter={() => menuMouseEnter(item.view)}
+                  onClick={() => setCurrentView(item.view)}
+                  className={`relative ${currentView === item.view ? 'active' : ''}`}
+                >
+                  {item.label}
+                </li>
+                {/* 상품관리 드롭다운 */}
+                <div className={`dd-menu ${item.view === 'g_drop_down' && isGoodsMenuHovered && isGoodsLiHovered ? 'visible' : ''}`}>
+                  <div onClick={() => dropDownMenuClick('goodsCRUD')} className='white h42 cursor'>상품등록</div>
+                  <div onClick={() => dropDownMenuClick('')} className='white h42 cursor'>상품목록</div>
+                </div>
+                
+                {/* 제품관리 드롭다운 */}
+                <div className={`dd-menu ${item.view === 'p_drop_down' && isMenuHovered && isLiHovered ? 'visible' : ''}`}>
+                  <div onClick={() => dropDownMenuClick('productCRUD')} className='white h42 cursor'>제품등록</div>
+                  <div onClick={() => dropDownMenuClick('')} className='white h42 cursor'>제품목록</div>
+                </div>
+              </div>
+            ))}
+          </ul>          
+          <button className="logOut"><b>로그아웃</b></button>        
+          <button className="goBack cursor" onClick={goMain}>메인으로가기</button>  
+        </div>
+      </header>
+   
+      <div className='adminContent content'>       
+        {currentView === 'default' ? setCurrentView('productList') : renderContent()}                  
       </div>
     </div>
   );

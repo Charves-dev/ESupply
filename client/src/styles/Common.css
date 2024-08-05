@@ -79,6 +79,7 @@ ul{
 
 .w100{width: 100%;}
 .h100{height: 100%;}
+.h42{height: 42px;}
 
 .white{ color: #fff;}
 .lime{color: hsl(61, 70%, 52%);}
@@ -121,6 +122,7 @@ ul{
 .mb60{margin-bottom: 60px;}
 
 .mr0{margin-right: 0px !important;}
+.mr3{margin-right: 3px;}
 .mr5{margin-right: 5px;}
 .mr10{margin-right: 10px;}
 .mr20{margin-right: 20px;}
@@ -197,8 +199,16 @@ ul{
   cursor: pointer;
 }
 
+.content{
+  width: 61.3%;
+  max-width: 800px;
+  margin-top: 67px;
+  margin-bottom: 231px;
+}
+
 /* header s*/
 .logo{
+  position: absolute;
   font-family: 'Inter';
   font-weight: bold;
   font-size: 20px;
@@ -213,15 +223,46 @@ ul{
   padding-left: 28px;
   padding-right: 38px;
   background-color: #112A3E;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.25)
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+}
 
+.menuBox ul{
+  margin: 0 auto
 }
 
 .menuBox li{
   color: #fff;
 }
 
+.menuBox ul li.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; /* 텍스트 하단 바로 아래에 표시 */
+  left: 50%;
+  right: 0;
+  width: 80%;
+  min-width: 101px;
+  height: 1px;
+  transform: translate(-50%, 0px);
+  background-color: #fff; /* 흰색 줄 */
+}
+
 .logOut{
+  position: absolute;
+  right: 38px;
+  background-color: transparent;
+  border: none;
+  color: #fff;
+}
+
+.adminWrap .logOut{
+  right: 10.2em;
+}
+
+.goBack{
+  position: absolute;
+  right: 38px;
   background-color: transparent;
   border: none;
   color: #fff;
@@ -236,15 +277,9 @@ ul{
   align-items: center;
 }
 
-.MainWrap li{
+header li{
   list-style: none;
   cursor: pointer;
-}
-
-.MainContent{
-  width: 60.1%;
-  margin-top: 67px;
-  margin-bottom: 231px;
 }
 
 /* thumb-list 1 */
@@ -260,8 +295,8 @@ ul{
   height: 138px;
   margin-right: 1.5rem;
   margin-left: 0;
-  border: 2px solid rgba(0,0,0,0.3); 
   border-radius: 4px;
+  background-color: #b0b0b0;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -290,6 +325,7 @@ ul{
 
 /* thumb-list 3 */
 .thumb-list.row-line2 .desc a {
+padding-left: 5.3px;
 text-decoration: none;
 color: #333;
 display:-webkit-box;
@@ -319,6 +355,10 @@ justify-content: center;
   width: 120px; 
   height: 60px;
   font-weight: 700;
+}
+
+.product_detail .label{
+  margin-right: 33px;
 }
 
 .countUp, .countDown, .global-button{
@@ -460,10 +500,17 @@ justify-content: center;
 /* 관리자 화면 s */
 .adminWrap{
   padding-bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .partListBtn{
+  width: 88px;
+  height: 23px;
   right: 10px;
-  bottom: 10px;
+  bottom: 12.4px;
+  border: 1px solid #219fd5;
+  border-radius: 6px;
 }
 .adminWrap .thumb-list.row-line2 li{
   align-items: stretch;
@@ -471,13 +518,40 @@ justify-content: center;
 .adminWrap .countBox{
   border-bottom: 1px solid #000;
 }
-.adminWrap .adminContent{
-  width: 50%;
-  margin: 0 auto;
-}
 .adminWrap .partListContent{
   width: 50%;
   margin: 0 auto;
+}
+.adminWrap .menuBox li{
+  padding-inline:20px;
+  color: #fff;
+  text-align: center;
+}
+.adminWrap .dd-menu{
+  opacity: 0; /* 기본적으로 투명하게 설정 */
+  transform: translateY(-10px); /* 약간 위로 이동된 상태 */
+  transition: ease .3s; /* 전환 효과 */
+  position: absolute;
+  top: 67px;
+  width: 100px;
+  height: 84px;
+  text-align: center;
+  background-color: #474442;
+  pointer-events: none; /* 기본적으로 클릭 불가능 */
+}
+.adminWrap .dd-menu.visible {
+  opacity: 1; /* 불투명하게 설정 */
+  transform: translateY(0);
+  pointer-events: auto; /* 보일 때 클릭 가능 */
+}
+.adminWrap .dd-menu div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.adminWrap .dd-menu div:hover{
+  background-color: #626a6d;
+  transition: ease .7s;
 }
 /* 관리자 화면 e */
 

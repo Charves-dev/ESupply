@@ -154,16 +154,16 @@ console.log(res.data);
                     {price}원
                   </div>
                   <div className='product_detail'>
-                    높이: {product.SIZE_H} mm
+                    <span className='label'>높이</span> {product.SIZE_H} mm
                   </div>
                   <div className='product_detail'>
-                    너비: {product.SIZE_V} mm
+                    <span className='label'>너비</span> {product.SIZE_V} mm
                   </div>
                   <div className='product_detail'>
-                    길이: {product.SIZE_Z} mm
+                    <span className='label'>길이</span> {product.SIZE_Z} mm
                   </div>
                   <div className='product_detail'>
-                    무게: {product.WEIGHT} g
+                    <span className='label'>무게</span> {product.WEIGHT} g
                   </div>
                 </a>
             </div>
@@ -228,31 +228,41 @@ console.log(res.data);
   };
 
 
-  const addProductTest = async () => {
-// console.log('상품등록 요청');
-    try{
-      const res = await axios.post('http://localhost:1092/product/add',{
-        "class_id" : "DIO_121",
-        "product_id" : "DIO_121_DLCGBB999341",
-        "product_nm" : "광다이오드_121",
-        "price" : "900",
-        "weight" : "80",
-        "size_h" : "52",
-        "size_v" : "12",
-        "size_z" : "12"
-      });
+//   const addProductTest = async () => {
+// // console.log('상품등록 요청');
+//     try{
+//       const res = await axios.post('http://localhost:1092/product/add',{
+//         "class_id" : "DIO_121",
+//         "product_id" : "DIO_121_DLCGBB999341",
+//         "product_nm" : "광다이오드_121",
+//         "price" : "900",
+//         "weight" : "80",
+//         "size_h" : "52",
+//         "size_v" : "12",
+//         "size_z" : "12"
+//       });
 
-// console.log(res);
-    }catch(e){
-      console.log('상품등록 요청 에러: ' + e);
+// // console.log(res);
+//     }catch(e){
+//       console.log('상품등록 요청 에러: ' + e);
+//     }
+//   }
+
+  const goMain = () => {
+    navigate('/main');
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      searchResProducts();
     }
-  }
+  };
 
   return (
     <div className='MainWrap'>
       <header className='w100'>
         <div className='menuBox w100 flex a_i_center j_c_between'>
-          <div className='logo'>Esuply</div>
+          <div className='logo cursor' onClick={goMain}>Esuply</div>
           <ul className='flex'>
             <li className='mr35' onClick={goAdminView}>관리자</li>            
             <li onClick={goDeliveryView}>배송조회</li>
@@ -261,11 +271,11 @@ console.log(res.data);
         </div>
       </header>      
       
-      <div className='MainContent'>
+      <div className='MainContent content'>
         {/* 검색 */}
         <section className='w100'> 
           <div className='flex mt32'>
-            <input type='text' className='search' onChange={(e) => setProductNm(e.target.value)}/>
+            <input type='text' className='search' onChange={(e) => setProductNm(e.target.value)} onKeyDown={handleKeyPress}/>
             <div onClick={searchResProducts} className='searchBtn bgSlate100 fs16 flex a_i_center j_c_center'>검색</div>
           </div>  
         </section>              
