@@ -5,32 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function Main() {  
-  let productObj_hard = {    
-        count : 3, 
-        pList : [ 
-          { product_nm  : "라떼판다-4G,64GB", 
-            product_id  : "cap_2349809" ,
-            image       : "/assets/Img/img1.png",
-            product_desc: "인텔 Cherry trail 1.8GHz 쿼드코어, windows10 기본 탑재, 아두이노 호환, 안드로이드, 우분투 사용 가능, latte panda",
-            price       : "20000",
-            count       : "3"
-          }, 
-          { product_nm  : "라떼판다 알파 864s DFR0547", 
-            product_id  : "cap_2349810" ,
-            image       : "/assets/Img/img2.png",
-            product_desc: "kc인증완료, 인텔 8세대 CPU로 업그레이드된 new버전 라떼판다 알파 입니다.",
-            price       : "40000",
-            count       : "1"
-          },
-          { product_nm  : "HELP! 전자공학으로 아두이노 실습 문제 해결하기 교재 + 키트", 
-            product_id  : "cap_2349811" ,
-            image       : "/assets/Img/img3.png",
-            product_desc: "전자공학으로 아두이노 실습 문제 해결하기 키트와 함께 볼 수 있는 14개의 예제!",
-            price       : "50000",
-            count       : "5"
-          },  
-        ]    
-  }
+  const [orderCnt, setOrderCnt]   = useState([]);
+  const [username, setUsername]   = useState(null);
+  const [productNm, setProductNm] = useState('');
+  const [productObj, setProductObj] = useState({ count: 0, pList: [] });  
+  const navigate = useNavigate();
 
   // 기본 주문 개수 초기화, 재고가 0인 경우 0으로 설정
   const initializeOrderCnt = (productList) => {
@@ -42,11 +21,39 @@ function Main() {
   };
   
 
-  const [orderCnt, setOrderCnt]   = useState([]);
-  const [username, setUsername]   = useState(null);
-  const [productNm, setProductNm] = useState('');
-  const [productObj, setProductObj] = useState({ count: 0, pList: [] });  
-  const navigate = useNavigate();
+  // 전체 상품 목록 가져오기 or 검색시 대상 상품 목록 가져오기
+  const searchResProducts = async () => {
+    // console.log('검색 상품 가져오기 요청');
+    // console.log('search_key_word: ' + search_key_word);
+        const search_key_word = productNm;
+        try{
+          const res = await axios.post('http://localhost:1092/product/goodList',{
+            product_nm : search_key_word,            // 상품명
+            product_id : "",    // 상품 ID
+          });
+    
+          // 상품 리스트 설정
+          setProductObj({ count: res.data.length, pList: res.data }); 
+          
+          // 주문 개수 1로 초기화
+          setOrderCnt(initializeOrderCnt(res.data));        
+    console.log(res.data);
+        }catch(e){
+          console.log('상품 목록 가져오기 애러: ' + e);
+        }
+      };
+    
+    
+  useEffect(() => {
+    /* 상품목록 불러오기 */
+    searchResProducts();
+
+    // 세션에서 사용자 아이디를 가져와서 username에 설정
+    const savedUsername = sessionStorage.getItem('username');
+    if (savedUsername) {
+      setUsername(savedUsername);
+    };
+  }, []);
 
 
   let hasAlerted = false;
@@ -88,39 +95,6 @@ function Main() {
       });
   };
 
-  // 전체 상품 목록 가져오기 or 검색시 대상 상품 목록 가져오기
-  const searchResProducts = async () => {
-// console.log('검색 상품 가져오기 요청');
-// console.log('search_key_word: ' + search_key_word);
-    const search_key_word = productNm;
-    try{
-      const res = await axios.post('http://localhost:1092/product/goodList',{
-        product_nm : search_key_word,            // 상품명
-        product_id : "",    // 상품 ID
-      });
-
-      // 상품 리스트 설정
-      setProductObj({ count: res.data.length, pList: res.data }); 
-      
-      // 주문 개수 1로 초기화
-      setOrderCnt(initializeOrderCnt(res.data));        
-console.log(res.data);
-    }catch(e){
-      console.log('상품 목록 가져오기 애러: ' + e);
-    }
-  };
-
-
-  useEffect(() => {
-    /* 상품목록 불러오기 */
-    searchResProducts();
-
-    // 세션에서 사용자 아이디를 가져와서 username에 설정
-    const savedUsername = sessionStorage.getItem('username');
-    if (savedUsername) {
-      setUsername(savedUsername);
-    };
-  }, []);
 
 
   //***********************************************************************************************

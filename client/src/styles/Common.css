@@ -67,6 +67,107 @@ input{
   padding-left: 10px;
 }
 
+.selectBox{
+  position: relative;
+  width: 100%;
+  height: 34px;
+  /* border: 1px solid hsl(203, 41%, 72%); */
+  border: 1px solid #219fd5;
+  border-radius: 7px;
+  padding-left: 10px;
+}
+
+select:required:invalid {
+  color: gray;
+}
+option[value=""][disabled] {
+  display: none;
+}
+option {
+  color: black;
+}
+
+.selectBox .select {
+  -webkit-appearance: none; /* Safari, Chrome */
+  -moz-appearance: none; /* Firefox */
+  appearance: none; /* 기본 드롭다운 화살표 제거 */
+  background: none; /* 배경 제거 */
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: 0 none;
+  outline: 0 none;
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+}
+.selectBox .select option {
+  border: 1px solid #219fd5;;
+  padding: 3px 0;
+  font-size: 16px;
+}
+.selectBox .icoArrow {
+  position: absolute; 
+  top: 0; 
+  right: 0; 
+  z-index: 1; 
+  width: 35px; 
+  height: 100%;
+  border-left: 1px solid #219fd5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.selectBox .icoArrow img {
+  width: 50%;
+  /* transition: .3s; */
+}
+
+.selectBox .placeHolder{
+  color: #b0b0b0;
+}
+
+.selectBox .dropdown-list{
+  position: absolute;
+  left: -1px;
+  width: calc(100% + 2px);
+  max-height: 200px;
+  overflow: auto;
+  list-style: none;
+  background-color: #fff;
+  border: 1px solid #219fd5;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  z-index: 9;
+}
+
+.selectBox .dropdown-list li{
+  padding-inline: 6px;
+  padding-block: 6px;
+  border-bottom: 1px solid #219fd5;
+}
+
+.selectBox .dropdown-list li:hover{
+  background-color: #dbe3f1;
+}
+
+.selectBox .dropdown-list li:first-child{
+  padding-top: 8px;
+}
+
+.selectBox .dropdown-list li:last-child{
+  padding-bottom: 8px;
+  border: none;
+}
+
+.selectBox .selectVal{
+  width: calc(100% - 45px);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 ul{
   margin: 0;
   padding: 0;
@@ -78,7 +179,10 @@ ul{
 }
 
 .w100{width: 100%;}
+.w168{width: 168px;}
 .h100{height: 100%;}
+.h190{height: 190px;}
+.h40{height: 40px;}
 .h42{height: 42px;}
 
 .white{ color: #fff;}
@@ -107,6 +211,7 @@ ul{
 .mt30{margin-top: 30px;}
 .mt32{margin-top: 32px;}
 .mt40{margin-top: 40px;}
+.mt46{margin-top: 46px;}
 .mt50{margin-top: 50px;}
 .mt60{margin-top: 60px;}
 
@@ -114,6 +219,8 @@ ul{
 .mb5{margin-bottom: 5px;}
 .mb8{margin-bottom: 8px;}
 .mb10{margin-bottom: 10px;}
+.mb15{margin-bottom: 15px;}
+.mb19{margin-bottom: 19px;}
 .mb26{margin-bottom: 26px;}
 .mb30{margin-bottom: 30px;}
 .mb32{margin-bottom: 32px;}
@@ -125,7 +232,9 @@ ul{
 .mr3{margin-right: 3px;}
 .mr5{margin-right: 5px;}
 .mr10{margin-right: 10px;}
+.mr11{margin-right: 11px;}
 .mr20{margin-right: 20px;}
+.mr25{margin-right: 25px;}
 .mr30{margin-right: 30px;}
 .mr35{margin-right: 35px;}
 .mr40{margin-right: 40px;}
@@ -552,6 +661,63 @@ justify-content: center;
 .adminWrap .dd-menu div:hover{
   background-color: #626a6d;
   transition: ease .7s;
+}
+
+/* 제품 등록/수정 */
+.formWrap .formTit{
+  margin-top: 44px;
+  margin-bottom: 47px;
+  font-weight: bold;
+  font-size: 30px;
+}
+.formWrap .formLeft{
+  margin-right: 74px;
+}
+.formWrap .selectBox option:first-of-type {
+  color: #ddd;
+}
+.formWrap .selectBox option:disabled{
+  /* display: none; */
+}
+.formWrap input, .formLeft .selectBox{
+  width: 277px;
+  margin-bottom: 24px;
+}
+.formWrap .inputTit{
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: bold;
+}
+.formWrap button{
+  padding-block: 7px;
+  border-radius: 7px;
+  border: 1px solid #219FD5;
+  /* background-color: #fff;   */
+}
+.formWrap .file-sel-btn{
+  width: 100px;
+  background-color: #fff;
+}
+.formWrap .noneImgBox{
+  height: 334px;
+  border: 1px solid #ddd;
+}
+.formWrap .noneImgThumb{
+  width: 141px;
+  height: 138px;
+  object-fit: cover;
+  background-position: center;
+}
+.formWrap .cancle{
+  background-color: #fff;
+  border: 1px solid #ff2a2a;
+  color: #ff2a2a;
+}
+.formWrap .delete{
+  height: 40px;
+  background-color: #ff2a2a;
+  color: #fff;
+  border: none;
 }
 /* 관리자 화면 e */
 

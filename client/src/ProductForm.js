@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import SelectBox from './SelectBox';
 
 const ProductForm = () => {
   const [image, setImage] = useState(null);
@@ -12,9 +13,72 @@ const ProductForm = () => {
   const [sizeV, setSizeV] = useState('');
   const [sizeZ, setSizeZ] = useState('');
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [selectedFileName, setSelectedFileName] = useState('');
+  const [openIndex, setOpenIndex] = useState(null); // 열려 있는 셀렉트 박스의 인덱스를 저장
+  const [commCode, setCommCode] = useState([]);
+  const [commProduct, setCommProduct] = useState([]);
+
+  const commCodeList = async () => {
+    try {
+      const res = await axios.get('http://localhost:1092/comm/codelist', {
+        params: {
+          group_id: 'CLASS',
+        },
+      });
+
+      const resCodes = res.data.map((item) => ({
+        value: item.CODE_ID,
+        label: `${item.CODE_ID} (${item.CODE_NM})`,
+      }));
+
+      setCommCode(resCodes);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  // const commProductList = async () =>{
+  //   try {
+  //     const res = await axios.get('http://localhost:1092/comm/productlist',{
+  //       params: {
+  //         class_id: classId,
+  //       },
+  //     })
+      
+  //     if(res.data.length !== 0){
+  //       const resProducts = res.data.map((item) => ({
+  //         value: item.PRODUCT_ID,
+  //         label: `${item.PRODUCT_ID} (${item.PRODUCT_NM})`,
+  //       }));
+        
+  //       console.log('resProducts');
+  //       console.log(resProducts);
+        
+        
+  //       setCommProduct(resProducts);
+  //     }else{
+  //       //제품ID가 없을경우 빈값으로 설정
+  //       setCommProduct('');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching data:', error);
+  //   }    
+  // }
+  
+
+  useEffect(() => {
+    commCodeList();  
+  }, []);
+
+  // useEffect(() => {
+  //   if (classId !== '') {
+  //     commProductList();
+  //   }
+  // }, [classId])
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    setSelectedFileName(file.name);
     setImage(file);
     setPreviewUrl(URL.createObjectURL(file));
     console.log(file);
@@ -44,27 +108,80 @@ const ProductForm = () => {
     }
   };
 
+
+  const deleteProduct = async (e) => {
+    alert('삭제 API 개발중')
+  }
+
   return (
-    <div>
-      <h2>제품 등록</h2>
+    <div className='formWrap'>
+      <div className='formTit'>제품 등록</div>
       <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <input type="text" name="class_id" value={classId} onChange={(e) => setClassId(e.target.value)} placeholder="Class ID" />
-        <input type="text" name="product_id" value={productId} onChange={(e) => setProductId(e.target.value)} placeholder="Product ID" />
-        <input type="text" name="product_nm" value={productName} onChange={(e) => setProductName(e.target.value)} placeholder="Product Name" />
-        <input type="text" name="price" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Price" />
-        <input type="text" name="weight" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="Weight" />
-        <input type="text" name="size_h" value={sizeH} onChange={(e) => setSizeH(e.target.value)} placeholder="Height" />
-        <input type="text" name="size_v" value={sizeV} onChange={(e) => setSizeV(e.target.value)} placeholder="Vertical Size" />
-        <input type="text" name="size_z" value={sizeZ} onChange={(e) => setSizeZ(e.target.value)} placeholder="Depth" />
-        <input type="file" name="image" onChange={handleImageChange} />
-        <button type="submit">Upload</button>
-      </form>
-      {previewUrl && (
-        <div>
-          <h2>이미지 미리 보기</h2>
-          <img style={{width: 'auto', height: 500}} src={previewUrl} alt="Uploaded" />
+        <div className='flex'>
+          <section>
+            <div className='formLeft'>
+              <SelectBox title={'모델ID'} options={commCode} val={classId} setVal={setClassId} index={0} openIndex={openIndex} setOpenIndex={setOpenIndex}/>      
+              {/* <SelectBox title={'제품ID'} options={commProduct} val={productId} setVal={setProductId} index={1} openIndex={openIndex} setOpenIndex={setOpenIndex}/>                       */}
+              <div className='inputTit'>제품ID</div>
+              <input type="text" name="product_id" value={productId} onChange={(e) => setProductId(e.target.value)} placeholder="제품ID" />              
+              <div className='inputTit'>제품명</div>
+              <input type="text" name="product_nm" value={productName} onChange={(e) => setProductName(e.target.value)} placeholder="제품명" />
+              <div className='inputTit'>기본가격</div>
+              <input type="text" name="price" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="기본가격" />
+              <div className='inputTit'>무게</div>
+              <input type="text" name="weight" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="무게" />
+              <div className='inputTit'>너비</div>
+              <input type="text" name="size_v" value={sizeV} onChange={(e) => setSizeV(e.target.value)} placeholder="가로크기" />
+              <div className='inputTit'>길이</div>
+              <input type="text" name="size_z" value={sizeZ} onChange={(e) => setSizeZ(e.target.value)} placeholder="세로크기" />
+              <div className='inputTit'>높이</div>
+              <input type="text" name="size_h" value={sizeH} onChange={(e) => setSizeH(e.target.value)} placeholder="높이" />
+            </div>
+          </section>
+          <section>
+            <div className='formRight'>
+              <div className='inputTit'>사진 등록</div>
+              {/* 실제 파일 입력 필드 (숨겨진 상태) */}
+              <input
+                type="file"
+                name="image"
+                onChange={handleImageChange}
+                style={{ display: 'none' }}
+                id="fileInput"
+              />
+
+              <div className='flex mb15'>
+                {/* 커스텀 파일 선택 버튼 */}
+                <button className='file-sel-btn mr11 cursor' onClick={() => document.getElementById('fileInput').click()}>
+                  파일 선택
+                </button>
+
+                {/* 선택된 파일명 표시 */}            
+                <input className="file-name mb0" value={`${selectedFileName}`} placeholder='파일명' readOnly/>
+              </div>
+
+              {/* 이미지 미리 보기 */}
+              {previewUrl ? (
+                <div>                
+                  <img style={{width: '100%', height: 'auto', objectFit: 'contain' }} src={previewUrl} alt="Uploaded" />
+                  <div className='mt15 mb8 fs14' style={{color: '#a9a9a9'}}>썸네일</div>
+                  <img style={{width: '141px', height: '138px', objectFit: 'cover', backgroundPosition: 'center'}} src={previewUrl} alt="Uploaded" />
+                </div>
+              ) : (
+                <div>
+                  <div className='noneImgBox w100 flex a_i_center j_c_center bgSlate100 mb40'> 이미지를 업로드 해주세요 </div>
+                  <div className='noneImgThumb flex a_i_center j_c_center bgSlate100'>썸네일</div>
+                </div>
+              )}
+              <div className='w100 flex mb19'>
+                <button type="submit" className='w100 h40 mt46 mr25 bgSlate100 fs16 cursor'>저장</button>
+                <button type="button" className='w100 h40 mt46 cursor fs16 cancle'>취소</button>
+              </div>
+              <button type="button" onClick={deleteProduct} className='w100 delete fs16 cursor'>제품삭제</button>
+            </div>
+          </section>
         </div>
-      )}
+      </form>
     </div>
   );
 };

@@ -203,6 +203,18 @@ function Admin() {
     { label: '상품관리',            view: 'g_drop_down' },
     { label: '제품관리',            view: 'p_drop_down' },
   ];
+
+  // 각 상단 메뉴를 여러개의 dropDown메뉴에 매핑하는 객체
+  // - 'g_drop_down': 상품관리 드롭다운과 관련된 뷰들을 매핑
+  //   - 'goodsCRUD': 상품 등록 뷰
+  //   - 'goodsTable': 상품 목록 뷰
+  // - 'p_drop_down': 제품관리 드롭다운과 관련된 뷰들을 매핑
+  //   - 'productCRUD': 제품 등록 뷰
+  //   - 'productTable': 제품 목록 뷰
+  const viewMap = {
+    'g_drop_down': ['goodsCRUD', 'goodsTable'],
+    'p_drop_down': ['productCRUD', 'productTable'],
+  };
   // **********************************************************************************************
 
 
@@ -211,6 +223,7 @@ function Admin() {
   // **********************************************************************************************
   // 드롭다운 메뉴 클릭시 현재 보여줄 뷰를 설정하고 관련 스테이트를 초기화한다
   const dropDownMenuClick = (view) => {
+    // console.log(`Setting current view to: ${view}`);
     setCurrentView(view);
     // 드롭다운 메뉴를 숨기기 위해 상태 초기화
     setIsLiHovered(false);
@@ -260,6 +273,13 @@ function Admin() {
       setIsMenuHovered(false)
     }
   }
+
+
+  const isActiveMenuItem = (view, currentView) => {
+    // 배열 내에 currentView가 포함되어 있는지 확인
+    return viewMap[view]?.includes(currentView);
+  };
+
   // **********************************************************************************************
 
   return (
@@ -279,20 +299,20 @@ function Admin() {
                   key={item.view}
                   onMouseEnter={() => menuMouseEnter(item.view)}
                   onClick={() => setCurrentView(item.view)}
-                  className={`relative ${currentView === item.view ? 'active' : ''}`}
+                  className={`relative ${isActiveMenuItem(item.view, currentView) || currentView === item.view? 'active' : ''}`}
                 >
                   {item.label}
                 </li>
                 {/* 상품관리 드롭다운 */}
                 <div className={`dd-menu ${item.view === 'g_drop_down' && isGoodsMenuHovered && isGoodsLiHovered ? 'visible' : ''}`}>
                   <div onClick={() => dropDownMenuClick('goodsCRUD')} className='white h42 cursor'>상품등록</div>
-                  <div onClick={() => dropDownMenuClick('')} className='white h42 cursor'>상품목록</div>
+                  <div onClick={() => dropDownMenuClick('goodsTable')} className='white h42 cursor'>상품목록</div>
                 </div>
                 
                 {/* 제품관리 드롭다운 */}
                 <div className={`dd-menu ${item.view === 'p_drop_down' && isMenuHovered && isLiHovered ? 'visible' : ''}`}>
                   <div onClick={() => dropDownMenuClick('productCRUD')} className='white h42 cursor'>제품등록</div>
-                  <div onClick={() => dropDownMenuClick('')} className='white h42 cursor'>제품목록</div>
+                  <div onClick={() => dropDownMenuClick('productTable')} className='white h42 cursor'>제품목록</div>
                 </div>
               </div>
             ))}
