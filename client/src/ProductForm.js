@@ -116,7 +116,7 @@ const ProductForm = () => {
   return (
     <div className='formWrap'>
       <div className='formTit'>제품 등록</div>
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
+      <form encType="multipart/form-data">
         <div className='flex'>
           <section>
             <div className='formLeft'>
@@ -131,11 +131,11 @@ const ProductForm = () => {
               <div className='inputTit'>무게</div>
               <input type="text" name="weight" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="무게" />
               <div className='inputTit'>너비</div>
-              <input type="text" name="size_v" value={sizeV} onChange={(e) => setSizeV(e.target.value)} placeholder="가로크기" />
+              <input type="text" name="size_h" value={sizeV} onChange={(e) => setSizeV(e.target.value)} placeholder="가로크기" />
               <div className='inputTit'>길이</div>
-              <input type="text" name="size_z" value={sizeZ} onChange={(e) => setSizeZ(e.target.value)} placeholder="세로크기" />
+              <input type="text" name="size_v" value={sizeZ} onChange={(e) => setSizeZ(e.target.value)} placeholder="세로크기" />
               <div className='inputTit'>높이</div>
-              <input type="text" name="size_h" value={sizeH} onChange={(e) => setSizeH(e.target.value)} placeholder="높이" />
+              <input type="text" name="size_z" value={sizeH} onChange={(e) => setSizeH(e.target.value)} placeholder="높이" />
             </div>
           </section>
           <section>
@@ -152,7 +152,7 @@ const ProductForm = () => {
 
               <div className='flex mb15'>
                 {/* 커스텀 파일 선택 버튼 */}
-                <button className='file-sel-btn mr11 cursor' onClick={() => document.getElementById('fileInput').click()}>
+                <button type='button' className='file-sel-btn mr11 cursor' onClick={() => document.getElementById('fileInput').click()}>
                   파일 선택
                 </button>
 
@@ -174,7 +174,7 @@ const ProductForm = () => {
                 </div>
               )}
               <div className='w100 flex mb19'>
-                <button type="submit" className='w100 h40 mt46 mr25 bgSlate100 fs16 cursor'>저장</button>
+                <button type="button" onClick={handleSubmit} className='w100 h40 mt46 mr25 bgSlate100 fs16 cursor'>저장</button>
                 <button type="button" className='w100 h40 mt46 cursor fs16 cancle'>취소</button>
               </div>
               <button type="button" onClick={deleteProduct} className='w100 delete fs16 cursor'>제품삭제</button>

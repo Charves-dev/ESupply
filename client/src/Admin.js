@@ -93,7 +93,7 @@ function Admin() {
       
       productList.push(
         <li className='mt30 mb44' key={product.PRODUCT_ID}>
-            <figure className="thumb-photo" style={{ backgroundImage: `url(/assets/Img/img1.png)` }}>
+            <figure className="thumb-photo" style={{ backgroundImage: `url(/assets/Img/${product.IMAGE})` }}>
             {/* <figure className="thumb-photo" style={{ backgroundImage: `url(${product.image}})` }}> */}
             </figure>            
             <div className='desc relative'>
