@@ -105,13 +105,13 @@ function Admin() {
                     {price}원
                   </div>
                   <div className='product_detail'>
-                    <span className='label'>높이</span> {product.SIZE_H} mm
+                    <span className='label'>높이</span> {product.SIZE_Z} mm
                   </div>
                   <div className='product_detail'>
-                    <span className='label'>너비</span> {product.SIZE_V} mm
+                    <span className='label'>너비</span> {product.SIZE_H} mm
                   </div>
                   <div className='product_detail'>
-                    <span className='label'>길이</span> {product.SIZE_Z} mm
+                    <span className='label'>길이</span> {product.SIZE_V} mm
                   </div>
                   <div className='product_detail'>
                     <span className='label'>무게</span> {product.WEIGHT} g

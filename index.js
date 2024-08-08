@@ -106,6 +106,56 @@ app.get('/product/sequencecheck', async (req, res) => {
 	}	
 });
 
+
+
+//*************************************************************************************************
+// 제품삭제 (2024.08.08 최선아 개발)
+//*************************************************************************************************
+app.post('/product/delete', async (req, res) => {
+	const { class_id, product_id } = req.body;
+	console.log("****************************************************");
+	console.log("req.body");
+	console.log(req.body);
+	console.log("****************************************************");
+
+	let conn = null;
+
+	try {
+		conn = await pool.getConnection();
+
+		const checkQuery = 'SELECT COUNT(*) as cnt from esupply.product_master where class_id = ? and product_id = ? ';
+		const checkResult = await conn.query(checkQuery, [class_id, product_id]);		
+		
+		if(checkResult[0].cnt > 0){
+			const query = 'DELETE FROM esupply.product_master where class_id = ? and product_id = ? '							
+			const result = await conn.query(query, [class_id, product_id]);
+			const rst = await conn.commit();
+
+			let rtnMsg = {
+				result : 'Success',
+				message : '성공',
+				count  : result.affectedRows
+			};
+			res.send(rtnMsg);
+		}else{
+			await conn.rollback();
+			let rtnMsg = {
+				result :  'Failed',
+				message : `해당 항목은 존재하지 않습니다.( ${class_id} , ${product_id} )`,
+				count  : 0
+			};
+			res.send(rtnMsg);
+		}	
+	} catch(err){
+		res.status(500).send(err.toString());
+	}finally{
+		if(conn) conn.release();
+	}
+})
+//*************************************************************************************************
+
+
+
 //*************************************************************************************************
 // 제품등록
 //*************************************************************************************************

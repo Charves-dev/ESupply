@@ -86,6 +86,9 @@ const ProductForm = () => {
     console.log(file);
   };
 
+  //*************************************************************************************************
+  // 제품 등록 
+  //*************************************************************************************************
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -136,7 +139,7 @@ const ProductForm = () => {
       }
 
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error('Error product add:', error);
       setAlert({
         visible: true,
         type: 'faile',
@@ -145,11 +148,47 @@ const ProductForm = () => {
       });      
     }
   };
+  //*************************************************************************************************
 
 
+  //*************************************************************************************************
+  // 제품 삭제
+  //*************************************************************************************************
   const deleteProduct = async (e) => {
-    alert('삭제 API 개발중')
+    try {
+      const response = await axios.post('http://localhost:1092/product/delete', {
+          class_id: classId,
+          product_id: productId
+      });     
+      
+      if (response.data.result == "Success") {
+        setAlert({
+          visible: true,
+          type: 'ok',
+          text: '삭제가 완료되었습니다.',
+          reload: true
+        });        
+      }else{
+        setAlert({
+          visible: true,
+          type: 'faile',
+          text: '삭제 실패: ' + response.data.message,
+          reload: false
+        }); 
+      }      
+    } catch (error) {
+      console.error('Error product delete:', error);
+      setAlert({
+        visible: true,
+        type: 'faile',
+        text: 'message: ' + error,
+        reload: false
+      }); 
+    }
   }
+  //*************************************************************************************************
+
+
 
   const setCloseAlert = () => {
     setAlert({ ...alert, visible: false });
