@@ -92,7 +92,7 @@ function Admin() {
       let   price   = parseFloat(product.PRICE).toLocaleString('ko-KR');
       
       productList.push(
-        <li className='mt30 mb44' key={product.PRODUCT_ID}>
+        <li className='mt30 mb44' key={product.CLASS_ID +'_'+product.PRODUCT_ID}>
             <figure className="thumb-photo" style={{ backgroundImage: `url(/assets/Img/${product.IMAGE})` }}>
             {/* <figure className="thumb-photo" style={{ backgroundImage: `url(${product.image}})` }}> */}
             </figure>            

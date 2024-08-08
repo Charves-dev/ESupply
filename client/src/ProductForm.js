@@ -17,7 +17,7 @@ const ProductForm = () => {
   const [selectedFileName, setSelectedFileName] = useState('');
   const [openIndex, setOpenIndex] = useState(null); // 열려 있는 셀렉트 박스의 인덱스를 저장
   const [commCode, setCommCode] = useState([]);
-  const [alert, setAlert] = useState({ visible: false, type: '', text: '' });
+  const [alert, setAlert] = useState({ visible: false, type: '', text: '', reload: false });
   // const [commProduct, setCommProduct] = useState([]);
 
   const commCodeList = async () => {
@@ -95,7 +95,8 @@ const ProductForm = () => {
       setAlert({
         visible: true,
         type: 'faile',
-        text: '모든 항목을 빠짐없이 작성해 주세요.'
+        text: '모든 항목을 빠짐없이 넣어주세요.',
+        reload: false
       });
       return;   
     }
@@ -116,16 +117,22 @@ const ProductForm = () => {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
-      });
-
-      console.log(response);
+      });      
       
-      if (response) {
+      if (response.data.result == "Success") {
         setAlert({
           visible: true,
           type: 'ok',
-          text: '저장이 완료되었습니다.'
+          text: '저장이 완료되었습니다.',
+          reload: true
         });        
+      }else{
+        setAlert({
+          visible: true,
+          type: 'faile',
+          text: '저장 실패: ' + response.data.message,
+          reload: true
+        }); 
       }
 
     } catch (error) {
@@ -133,7 +140,8 @@ const ProductForm = () => {
       setAlert({
         visible: true,
         type: 'faile',
-        text: 'message: ' + error
+        text: 'message: ' + error,
+        reload: false
       });      
     }
   };
@@ -225,7 +233,8 @@ const ProductForm = () => {
         <CommonAlert
           type={alert.type}
           text={alert.text}
-          onClose={setCloseAlert}
+          reload={alert.reload}
+          onClose={setCloseAlert}          
         />
       )}
     </form>    

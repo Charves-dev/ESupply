@@ -332,7 +332,9 @@ ul{
   top: 30%;
   left: 50%;
   width: 327px;
-  height: 184px;
+  height: auto;
+  min-height: 184px;
+  padding-bottom: 27px;
   background: #fff;  
   border: 2px solid #219fd5;
   border-radius: 12px;
@@ -346,6 +348,7 @@ ul{
 }
 
 .custom-alert .alert-tit{
+  text-align: center;
   margin-bottom: 34px;
   margin-top: 65px;
 }

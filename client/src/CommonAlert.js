@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 
-const CommonAlert = ({text, type, onClose }) => {
+const CommonAlert = ({text, type, onClose, reload }) => {
 
   useEffect(() => {
     setAlertType();
@@ -11,9 +11,8 @@ const CommonAlert = ({text, type, onClose }) => {
     onClose ();
     document.getElementById('customAlert').style.display = 'none';
     document.getElementById('customAlertBg').style.display = 'none';    
-    const ok_type =document.getElementById('customAlert').classList.contains('ok-alert');
-    if(ok_type){
-      // ok-alert 타입인 경우에만 페이지 새로고침
+    if(reload){
+      //페이지 새로고침
       window.location.reload();
     }
   }
