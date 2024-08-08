@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SelectBox from './SelectBox';
+import CommonAlert from './CommonAlert';
 
 const ProductForm = () => {
   const [image, setImage] = useState(null);
@@ -16,7 +17,8 @@ const ProductForm = () => {
   const [selectedFileName, setSelectedFileName] = useState('');
   const [openIndex, setOpenIndex] = useState(null); // 열려 있는 셀렉트 박스의 인덱스를 저장
   const [commCode, setCommCode] = useState([]);
-  const [commProduct, setCommProduct] = useState([]);
+  const [alert, setAlert] = useState({ visible: false, type: '', text: '' });
+  // const [commProduct, setCommProduct] = useState([]);
 
   const commCodeList = async () => {
     try {
@@ -86,6 +88,18 @@ const ProductForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+
+    // 유효성 검사
+    if (!image || !classId || !productId || !productName || !price || !weight || !sizeH || !sizeV || !sizeZ){      
+      setAlert({
+        visible: true,
+        type: 'faile',
+        text: '모든 항목을 빠짐없이 작성해 주세요.'
+      });
+      return;   
+    }
+
     const formData = new FormData();
     formData.append('image', image);
     formData.append('class_id', classId);
@@ -103,8 +117,24 @@ const ProductForm = () => {
           'Content-Type': 'multipart/form-data'
         }
       });
+
+      console.log(response);
+      
+      if (response) {
+        setAlert({
+          visible: true,
+          type: 'ok',
+          text: '저장이 완료되었습니다.'
+        });        
+      }
+
     } catch (error) {
       console.error('Error uploading image:', error);
+      setAlert({
+        visible: true,
+        type: 'faile',
+        text: 'message: ' + error
+      });      
     }
   };
 
@@ -113,13 +143,21 @@ const ProductForm = () => {
     alert('삭제 API 개발중')
   }
 
-  return (
-    <div className='formWrap'>
-      <div className='formTit'>제품 등록</div>
-      <form encType="multipart/form-data">
-        <div className='flex'>
-          <section>
-            <div className='formLeft'>
+  const setCloseAlert = () => {
+    setAlert({ ...alert, visible: false });
+  };
+
+  const reloadPage = () =>{
+    window.location.reload()
+  }
+
+  return (        
+    <form encType="multipart/form-data" onSubmit={handleSubmit}>
+      <div className='formWrap flex f_d_column a_i_center j_c_center'>
+        <div className='formTit w100'>제품 등록</div>             
+        <div className='flex w100'>                    
+          <section className='w100'>
+            <div className='formLeft'>                
               <SelectBox title={'모델ID'} options={commCode} val={classId} setVal={setClassId} index={0} openIndex={openIndex} setOpenIndex={setOpenIndex}/>      
               {/* <SelectBox title={'제품ID'} options={commProduct} val={productId} setVal={setProductId} index={1} openIndex={openIndex} setOpenIndex={setOpenIndex}/>                       */}
               <div className='inputTit'>제품ID</div>
@@ -138,7 +176,7 @@ const ProductForm = () => {
               <input type="text" name="size_z" value={sizeH} onChange={(e) => setSizeH(e.target.value)} placeholder="높이" />
             </div>
           </section>
-          <section>
+          <section className='w100'>
             <div className='formRight'>
               <div className='inputTit'>사진 등록</div>
               {/* 실제 파일 입력 필드 (숨겨진 상태) */}
@@ -174,15 +212,23 @@ const ProductForm = () => {
                 </div>
               )}
               <div className='w100 flex mb19'>
-                <button type="button" onClick={handleSubmit} className='w100 h40 mt46 mr25 bgSlate100 fs16 cursor'>저장</button>
-                <button type="button" className='w100 h40 mt46 cursor fs16 cancle'>취소</button>
+                <button type="submit" className='w100 h40 mt46 mr25 bgSlate100 fs14 cursor'>저장</button>
+                <button type="button" className='w100 h40 mt46 cursor fs14 cancle' onClick={reloadPage}>취소</button>
               </div>
               <button type="button" onClick={deleteProduct} className='w100 delete fs16 cursor'>제품삭제</button>
             </div>
           </section>
-        </div>
-      </form>
-    </div>
+        </div> 
+      </div>     
+      <div className='alertBg w100 h100' id='customAlertBg'></div>
+      {alert.visible && (
+        <CommonAlert
+          type={alert.type}
+          text={alert.text}
+          onClose={setCloseAlert}
+        />
+      )}
+    </form>    
   );
 };
 

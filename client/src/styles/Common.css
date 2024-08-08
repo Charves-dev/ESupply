@@ -203,6 +203,7 @@ ul{
 
 .relative{position: relative;}
 .absolute{position: absolute;}
+.fixed{position: fixed;}
 
 .mt10{margin-top: 10px;}
 .mt15{margin-top: 15px;}
@@ -315,6 +316,92 @@ ul{
   margin-bottom: 231px;
 }
 
+.alertBg{
+  display: none;
+  position: fixed;
+  background: #000000a3;
+  top: 0;
+  left: 0;
+  opacity: 90%;
+  z-index: 10;    
+}
+
+.custom-alert{
+  display: none;
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  width: 327px;
+  height: 184px;
+  background: #fff;  
+  border: 2px solid #219fd5;
+  border-radius: 12px;
+  z-index: 10;  
+  transform: translate(-50%, 0px);
+}
+
+.custom-alert.faile-alert{
+  border: 2px solid hsl(4deg 61.76% 68.29%);;
+  color: #ff2a2a;
+}
+
+.custom-alert .alert-tit{
+  margin-bottom: 34px;
+  margin-top: 65px;
+}
+
+.custom-alert.faile-alert .alert-btn{
+  border: 1px solid #ff2a2a;
+  width: 168px;
+  height: 39px;  
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.custom-alert.ok-alert .alert-btn{
+  border: 1px solid #219fd5;
+  width: 168px;
+  height: 39px;  
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.custom-alert.ok-alert .alert-btn:hover {
+  background: hsl(202, 86%, 94%);
+  border: 1px solid #219fd5;
+}
+
+.custom-alert.faile-alert .alert-btn:hover {
+  background: #fff0f0;
+  border: 1px solid #ffb19c;
+}
+
+.custom-alert .deco-pin-r{
+  width: 15px;
+  height: 15px;
+  background: #d9d9d9;
+  border-radius: 50%;
+  position: absolute;
+  right: 16px;
+  top: 14px;
+}
+
+.custom-alert .deco-pin-l{
+  width: 15px;
+  height: 15px;
+  background: #d9d9d9;
+  border-radius: 50%;
+  position: absolute;
+  left: 16px;
+  top: 14px;
+}
+
 /* header s*/
 .logo{
   position: absolute;
@@ -410,6 +497,7 @@ header li{
   background-repeat: no-repeat;
   background-size: cover;
   flex-shrink: 0;
+  border: 1px solid #d0d0d0;
 }
 
 .thumb-list li:nth-child(2) .thumb-photo{
@@ -676,11 +764,9 @@ justify-content: center;
 .formWrap .selectBox option:first-of-type {
   color: #ddd;
 }
-.formWrap .selectBox option:disabled{
-  /* display: none; */
-}
 .formWrap input, .formLeft .selectBox{
-  width: 277px;
+  width: 100%;
+  min-width: 277px;
   margin-bottom: 24px;
 }
 .formWrap .inputTit{
@@ -707,6 +793,7 @@ justify-content: center;
   height: 138px;
   object-fit: cover;
   background-position: center;
+  border: 1px solid #ddd;
 }
 .formWrap .cancle{
   background-color: #fff;
