@@ -1,6 +1,7 @@
 // src/components/Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
+import './Login.css';  // CSS 파일을 import
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
@@ -11,7 +12,6 @@ const Login = ({ onLogin }) => {
     try{
         const response = await axios.post('http://localhost:7943/login', {username, password});
         console.log(response);
-        //alert(response);
 
         if (response.data.result === 'success') {
             onLogin(response.data);
@@ -22,20 +22,14 @@ const Login = ({ onLogin }) => {
         console.error('Login error', error);
         alert('An error occurred during login.');
     }
-    // 여기에 실제 로그인 로직을 추가할 수 있습니다.
-    // if (username === 'charves' && password === '1234') {
-    //   onLogin();
-    // } else {
-    //   alert('Invalid credentials');
-    // }
   };
 
   return (
-    <div>
+    <div className="login-container">
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Username:</label>
+          <label>니 이름이뭐니?:</label>
           <input
             type="text"
             value={username}
@@ -43,7 +37,7 @@ const Login = ({ onLogin }) => {
           />
         </div>
         <div>
-          <label>Password:</label>
+          <label>비번은? :</label>
           <input
             type="password"
             value={password}
