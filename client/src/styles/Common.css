@@ -163,6 +163,7 @@ option {
 
 .selectBox .selectVal{
   width: calc(100% - 45px);
+  max-width: 277px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -179,6 +180,7 @@ ul{
 }
 
 .w100{width: 100%;}
+.w160{width: 160px;}
 .w168{width: 168px;}
 .h100{height: 100%;}
 .h190{height: 190px;}
@@ -215,6 +217,7 @@ ul{
 .mt46{margin-top: 46px;}
 .mt50{margin-top: 50px;}
 .mt60{margin-top: 60px;}
+.mt116{margin-top: 116px;}
 
 .mb0{margin-bottom: 0px !important;}
 .mb5{margin-bottom: 5px;}
@@ -809,7 +812,15 @@ justify-content: center;
   color: #fff;
   border: none;
 }
+
+/* input number 기본 화살표 숨기기 */
+.formWrap input[type=number]::-webkit-inner-spin-button,
+.formWrap input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 /* 관리자 화면 e */
+
 
 /* 반응형 */
 

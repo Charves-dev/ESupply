@@ -18,7 +18,6 @@ const ProductForm = () => {
   const [openIndex, setOpenIndex] = useState(null); // 열려 있는 셀렉트 박스의 인덱스를 저장
   const [commCode, setCommCode] = useState([]);
   const [alert, setAlert] = useState({ visible: false, type: '', text: '', reload: false });
-  // const [commProduct, setCommProduct] = useState([]);
 
   const commCodeList = async () => {
     try {
@@ -39,44 +38,11 @@ const ProductForm = () => {
     }
   };
 
-  // const commProductList = async () =>{
-  //   try {
-  //     const res = await axios.get('http://localhost:1092/comm/productlist',{
-  //       params: {
-  //         class_id: classId,
-  //       },
-  //     })
-      
-  //     if(res.data.length !== 0){
-  //       const resProducts = res.data.map((item) => ({
-  //         value: item.PRODUCT_ID,
-  //         label: `${item.PRODUCT_ID} (${item.PRODUCT_NM})`,
-  //       }));
-        
-  //       console.log('resProducts');
-  //       console.log(resProducts);
-        
-        
-  //       setCommProduct(resProducts);
-  //     }else{
-  //       //제품ID가 없을경우 빈값으로 설정
-  //       setCommProduct('');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching data:', error);
-  //   }    
-  // }
-  
 
   useEffect(() => {
     commCodeList();  
   }, []);
 
-  // useEffect(() => {
-  //   if (classId !== '') {
-  //     commProductList();
-  //   }
-  // }, [classId])
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
