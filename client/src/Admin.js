@@ -3,6 +3,7 @@ import './styles/Common.css'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ProductForm from './ProductForm';
+import GoodsForm from './GoodsForm';
 
 function Admin() {
   
@@ -95,7 +96,7 @@ function Admin() {
         <li className='mt30 mb44' key={product.CLASS_ID +'_'+product.PRODUCT_ID}>
             <figure className="thumb-photo" style={{ backgroundImage: `url(/assets/Img/${product.IMAGE})` }}>
             {/* <figure className="thumb-photo" style={{ backgroundImage: `url(${product.image}})` }}> */}
-            </figure>            
+            </figure>                        
             <div className='desc relative'>
                 <a href="">
                   <div className='product_nm'>
@@ -143,7 +144,7 @@ function Admin() {
 
   // 상품등록 폼 반환
   const goodsCRUD = () => {
-    let goodsForm = <div className='mb10'>상품등록.. 작업예정</div>
+    let goodsForm = <div><GoodsForm/></div>
     return goodsForm
   }
 
@@ -305,7 +306,7 @@ function Admin() {
                 </li>
                 {/* 상품관리 드롭다운 */}
                 <div className={`dd-menu ${item.view === 'g_drop_down' && isGoodsMenuHovered && isGoodsLiHovered ? 'visible' : ''}`}>
-                  <div onClick={() => dropDownMenuClick('goodsCRUD')} className='white h42 cursor'>상품등록</div>
+                  <div onClick={() => dropDownMenuClick('goodsCRUD')} className='white h42 cursor'>상품입고</div>
                   <div onClick={() => dropDownMenuClick('goodsTable')} className='white h42 cursor'>상품목록</div>
                 </div>
                 

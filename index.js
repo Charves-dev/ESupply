@@ -246,6 +246,14 @@ console.log("****************************************************");
 app.post('/product/addgoods', async (req, res) => {
 	
 	const { class_id, product_id, manufacturing_dttm, lot_no, count } = req.body;
+	console.log("****************************************************");
+	console.log("req.body");
+	console.log(class_id);
+	console.log(product_id);
+	console.log(manufacturing_dttm);
+	console.log(lot_no);
+	console.log(count);
+	console.log("****************************************************");
 	const prod = product_id.replace(class_id, '');
 	const serial_h = class_id.substring(0,3) + prod.substring(0,4) + manufacturing_dttm.substring(0,8);
 	const seqName  = 'seq' + class_id.substring(0,3).toLowerCase();
@@ -320,12 +328,19 @@ console.log(result);
 
 
 //*************************************************************************************************
-// 공통 제품 리스트 가져오기 (콤보박스용)
+// 공통 제품 리스트 가져오기 (콤보박스용) (2024.08.09 최선아 IMAGE 데이터 추가)
 //*************************************************************************************************
 app.get('/comm/productlist', async (req, res) => {
 	const { class_id } = req.query;
 	let conn = null;
-	const prodQuery = 'select PRODUCT_ID, PRODUCT_NM from esupply.product_master where CLASS_ID = ? ';
+	// const prodQuery = 'select PRODUCT_ID, PRODUCT_NM from esupply.product_master where CLASS_ID = ? ';
+	let prodQuery = 'SELECT mst.PRODUCT_ID, mst.PRODUCT_NM' 
+							+ '     , IFNULL(inv.COUNT, 0) AS COUNT '
+							+ '     , cf.STORE_NM AS IMAGE '
+							+ ' FROM esupply.product_master mst '
+							+ ' LEFT JOIN esupply.good_inventory inv ON mst.CLASS_ID = inv.CLASS_ID AND mst.PRODUCT_ID = inv.PRODUCT_ID '
+							+ ' LEFT JOIN esupply.comm_files cf ON mst.IMAGE = cf.FILE_ID AND cf.TABLE_NM = \'product_master\' '
+							+ ' WHERE mst.CLASS_ID = ? ';
 	try{
 		conn = await pool.getConnection();
 		const result = await conn.query(prodQuery, [class_id]);
