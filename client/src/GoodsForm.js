@@ -131,9 +131,10 @@ const GoodsForm = () => {
 
       console.log('response:');      
       console.log(response);
+            
+      const data = response.data      
       
-      
-      if (response.data.result == "Success") {
+      if (data.SERIAL_NOS.length > 0) {
         setAlert({
           visible: true,
           type: 'ok',
@@ -145,7 +146,7 @@ const GoodsForm = () => {
           visible: true,
           type: 'faile',
           text: '저장 실패: ' + response.data.message,
-          reload: true
+          reload: false
         }); 
       }
 

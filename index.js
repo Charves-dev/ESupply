@@ -241,18 +241,16 @@ console.log("****************************************************");
 
 
 //*************************************************************************************************
-// 상품 입고 (재고 등록) - 입고 : 공장에서 상품이 제작되어서 들어옴
+// 상품 입고 (재고 등록) 기능 수정 - 입고: 공장에서 상품이 제작되어 입고됨
+// 수정자: 최선아 (2024.08.09)
+// - 기능 개선: checkQuery, insertQuery 추가하여 재고 등록 시 항목 존재 여부 확인 및 필요 시 신규 등록
 //*************************************************************************************************
 app.post('/product/addgoods', async (req, res) => {
 	
 	const { class_id, product_id, manufacturing_dttm, lot_no, count } = req.body;
 	console.log("****************************************************");
 	console.log("req.body");
-	console.log(class_id);
-	console.log(product_id);
-	console.log(manufacturing_dttm);
-	console.log(lot_no);
-	console.log(count);
+	console.log(req.body);
 	console.log("****************************************************");
 	const prod = product_id.replace(class_id, '');
 	const serial_h = class_id.substring(0,3) + prod.substring(0,4) + manufacturing_dttm.substring(0,8);
@@ -268,7 +266,13 @@ app.post('/product/addgoods', async (req, res) => {
                     + '       , ? )'
 					;
 
-	const updQuery = 'update good_inventory set COUNT = COUNT + 1 where CLASS_ID = ? and PRODUCT_ID  = ?';
+	const checkQuery = 'SELECT COUNT(*) as cnt FROM good_inventory WHERE CLASS_ID = ? AND PRODUCT_ID = ?';
+
+	const insertQuery = 'insert into good_inventory (CLASS_ID, PRODUCT_ID, COUNT) '
+					+ 'VALUES (?, ?, ?)';
+
+	
+	const updQuery = `update good_inventory set COUNT = COUNT + ${count} where CLASS_ID = ? and PRODUCT_ID  = ?`;
 
 	let conn = null;
 	let iCount = 0;
@@ -284,7 +288,22 @@ app.post('/product/addgoods', async (req, res) => {
 			iCount += goodResult.affectedRows;
 		}
 	
-		await conn.query(updQuery, [class_id, product_id]);
+		// good_inventory에 항목이 존재하는지 확인
+		console.log('진입');
+		
+		const checkResult = await conn.query(checkQuery, [class_id, product_id]);
+		
+		if(checkResult[0].cnt > 0){
+			console.log('업데이트');
+			
+			// 항목이 존재하면 업데이트
+			await conn.query(updQuery, [class_id, product_id]);
+		} else {
+			console.log('추가');
+			
+			// 항목이 존재하지 않으면 추가
+			await conn.query(insertQuery, [class_id, product_id, count]);
+		}		
 
 		await conn.commit();
 		let returnJson = {
