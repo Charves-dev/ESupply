@@ -23,25 +23,23 @@ function Main() {
 
   // 전체 상품 목록 가져오기 or 검색시 대상 상품 목록 가져오기
   const searchResProducts = async () => {
-    // console.log('검색 상품 가져오기 요청');
-    // console.log('search_key_word: ' + search_key_word);
-        const search_key_word = productNm;
-        try{
-          const res = await axios.post('http://localhost:1092/product/goodList',{
-            product_nm : search_key_word,            // 상품명
-            product_id : "",    // 상품 ID
-          });
-    
-          // 상품 리스트 설정
-          setProductObj({ count: res.data.length, pList: res.data }); 
-          
-          // 주문 개수 1로 초기화
-          setOrderCnt(initializeOrderCnt(res.data));        
-    console.log(res.data);
-        }catch(e){
-          console.log('상품 목록 가져오기 애러: ' + e);
-        }
-      };
+      const search_key_word = productNm;
+      try{
+        const res = await axios.post('http://localhost:1092/product/goodList',{
+          product_nm : search_key_word,            // 상품명
+          product_id : "",                         // 상품 ID
+        });
+  
+        // 상품 리스트 설정
+        setProductObj({ count: res.data.length, pList: res.data }); 
+        
+        // 주문 개수 1로 초기화
+        setOrderCnt(initializeOrderCnt(res.data));        
+  // console.log(res.data);
+    }catch(e){
+      console.log('상품 목록 가져오기 애러: ' + e);
+    }
+  };
     
     
   useEffect(() => {

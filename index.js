@@ -347,19 +347,13 @@ console.log(result);
 
 
 //*************************************************************************************************
-// 공통 제품 리스트 가져오기 (콤보박스용) (2024.08.09 최선아 IMAGE 데이터 추가)
+// 공통 제품 리스트 가져오기 (콤보박스용)
 //*************************************************************************************************
 app.get('/comm/productlist', async (req, res) => {
 	const { class_id } = req.query;
 	let conn = null;
-	// const prodQuery = 'select PRODUCT_ID, PRODUCT_NM from esupply.product_master where CLASS_ID = ? ';
-	let prodQuery = 'SELECT mst.PRODUCT_ID, mst.PRODUCT_NM' 
-							+ '     , IFNULL(inv.COUNT, 0) AS COUNT '
-							+ '     , cf.STORE_NM AS IMAGE '
-							+ ' FROM esupply.product_master mst '
-							+ ' LEFT JOIN esupply.good_inventory inv ON mst.CLASS_ID = inv.CLASS_ID AND mst.PRODUCT_ID = inv.PRODUCT_ID '
-							+ ' LEFT JOIN esupply.comm_files cf ON mst.IMAGE = cf.FILE_ID AND cf.TABLE_NM = \'product_master\' '
-							+ ' WHERE mst.CLASS_ID = ? ';
+	const prodQuery = 'select PRODUCT_ID, PRODUCT_NM from esupply.product_master where CLASS_ID = ? ';
+
 	try{
 		conn = await pool.getConnection();
 		const result = await conn.query(prodQuery, [class_id]);

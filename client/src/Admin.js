@@ -41,7 +41,7 @@ function Admin() {
     try{
       const res = await axios.post('http://localhost:1092/product/goodList',{
         product_nm : search_key_word,            // 상품명
-        product_id : "",    // 상품 ID
+        product_id : "",                         // 상품 ID
       });
 
       // 상품 리스트 설정

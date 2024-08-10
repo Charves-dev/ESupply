@@ -19,6 +19,10 @@ const GoodsForm = () => {
   const [alert, setAlert] = useState({ visible: false, type: '', text: '', reload: false });  
   const [isLoading, setIsLoading] = useState(true); // 이미지 로딩 상태를 관리하는 상태 변수
 
+
+  //***********************************************************************************************
+  // 공통 코드 리스트
+  //***********************************************************************************************
   const commCodeList = async () => {
     try {
       const res = await axios.get('http://localhost:1092/comm/codelist', {
@@ -37,7 +41,13 @@ const GoodsForm = () => {
       console.error('Error fetching data:', error);
     }
   };
+  //***********************************************************************************************
 
+
+
+  //***********************************************************************************************
+  // 공통 제품 리스트
+  //***********************************************************************************************
   const commProductList = async () =>{
     try {
       const res = await axios.get('http://localhost:1092/comm/productlist',{
@@ -50,8 +60,7 @@ const GoodsForm = () => {
         const resProducts = res.data.map((item) => ({
           value: item.PRODUCT_ID,
           label: `${item.PRODUCT_ID} (${item.PRODUCT_NM})`,
-          name: `${item.PRODUCT_NM}`,
-          image: `${item.IMAGE}`
+          name: `${item.PRODUCT_NM}`,          
         }));
         
         console.log('resProducts');
@@ -66,6 +75,29 @@ const GoodsForm = () => {
       console.error('Error fetching data:', error);
     }    
   }
+  //***********************************************************************************************
+
+
+
+  //***********************************************************************************************
+  // 상품 상세 (이미지 가져오기용) 
+  //***********************************************************************************************
+  const searchResProducts = async () => {
+    const search_key_word = productName;
+    try{
+      const res = await axios.post('http://localhost:1092/product/goodList',{
+        product_nm : search_key_word,            // 상품명
+        product_id : productId,                  // 상품 ID
+      });
+
+      setPreviewUrl(res.data[0].IMAGE);             // 이미지 세팅
+// console.log('IMAGE_Res: ');
+// console.log(res.data[0].IMAGE);
+    }catch(e){
+      console.log('상품 목록 가져오기 애러: ' + e);
+    }
+  };
+  //***********************************************************************************************
 
 
   useEffect(() => {
@@ -84,12 +116,9 @@ const GoodsForm = () => {
     if(commProduct){
       const foundProduct = commProduct.find(option => option.value === productId);
       if (foundProduct) {
-          setProductName(foundProduct.name);
-          console.log('foundProduct.image: ');
-          
-          console.log(foundProduct.image);
-          
-          setPreviewUrl(foundProduct.image);
+          setProductName(foundProduct.name);        
+          searchResProducts();
+          // setPreviewUrl(foundProduct.image);
       }    
     }
   }, [productId])
