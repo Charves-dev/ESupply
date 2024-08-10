@@ -1,16 +1,183 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <query>
+<!-- ==============================================================================================
+  로그인 할 때 사용자 정보 가져오기
+=============================================================================================== -->
 <GET_USER_LOGIN_CHECK>
-    select ua.USER_ID
-	       , ua.USER_PW
-	       , ua.USER_NM
-	       , ua.USER_LEVEL
-	       , ua.COMPANY_ID
-	       , ua.DESCRIPTION 
-         , ci.COMPANY_NM 
-      from user_account ua
-      left join company_info ci on ua.COMPANY_ID = ci.COMPANY_ID 
-     where USER_ID = ?
-       and USER_PW = ?
+  select ua.USER_ID
+       , ua.USER_PW
+       , ua.USER_NM
+       , ua.USER_LEVEL
+       , ua.COMPANY_ID
+       , ua.DESCRIPTION 
+       , ci.COMPANY_NM 
+    from charves.user_account ua
+    left join company_info ci on ua.COMPANY_ID = ci.COMPANY_ID 
+   where USER_ID = ?
+     and USER_PW = ?
 </GET_USER_LOGIN_CHECK>
+<!-- ========================================================================================== -->
+
+
+
+<!-- ==============================================================================================
+  고객사 관리
+=============================================================================================== -->
+<GET_COMPANY_LIST>
+  select COMPANY_ID
+       , COMPANY_NM
+       , MANAGER_NM
+       , MANAGER_TEL
+       , ADDRESS
+       , LATITUDE
+       , LONGITUDE
+    from charves.company_info
+</GET_COMPANY_LIST>
+<GET_COMPANY_LIST_NM>
+  where COMPANY_NM like concat('%', ?, '%')
+</GET_COMPANY_LIST_NM>
+<GET_COMPANY_LIST_MANAGER_NM>
+  where MANAGER_NM like concat('%', ?, '%')
+</GET_COMPANY_LIST_MANAGER_NM>
+<!-- ========================================================================================== -->
+<ADD_COMPANY>
+  insert into charves.company_info (
+    COMPANY_ID, COMPANY_NM, MANAGER_NM, MANAGER_TEL, ADDRESS, LATITUDE, LONGITUDE
+  ) values (
+    ?, ?, ?, ?, ?, ?, ?
+  )
+</ADD_COMPANY>
+<!-- ========================================================================================== -->
+<UPD_COMPANY>
+  update charves.company_info
+     set COMPANY_NM   = ?
+       , MANAGER_NM   = ?
+       , MANAGER_TEL  = ?
+       , ADDRESS      = ?
+       , LATITUDE     = ?
+       , LONGITUDE    = ?
+   where COMPANY_ID   = ?
+</UPD_COMPANY>
+<!-- ========================================================================================== -->
+<DEL_COMPANY>
+  delete from charves.company_info where COMPANY_ID = ?
+</DEL_COMPANY>
+<!-- ========================================================================================== -->
+
+
+
+<!-- ==============================================================================================
+  제품 관리
+=============================================================================================== -->
+<GET_PRODUCT_LIST>
+  select pm.PRODUCT_ID
+		   , pm.PRODUCT_NM
+		   , pm.WEIGHT
+		   , pm.SIZE_H
+		   , pm.SIZE_V
+		   , pm.SIZE_Z
+		   , pm.PRICE
+		   , gd.CNT
+	  from charves.product_master pm
+	  left join (select PRODUCT_ID
+	  				        , count(*) as CNT 
+	  			       from charves.goods 
+	  			      group by PRODUCT_ID
+	  			    ) gd on pm.PRODUCT_ID = gd.PRODUCT_ID
+</GET_PRODUCT_LIST>
+<GET_PRODUCT_LIST_NM>
+  where pm.PRODUCT_NM like concat('%', ?, '%')
+</GET_PRODUCT_LIST_NM>
+<GET_PRODUCT_LIST_ID>
+  where pm.PRODUCT_ID = ?
+</GET_PRODUCT_LIST_ID>
+<!-- ========================================================================================== -->
+<ADD_PRODUCT>
+  insert into charves.product_master (
+    PRODUCT_ID, PRODUCT_NM, WEIGHT, SIZE_H, SIZE_V, SIZE_Z, PRICE
+  ) values ( ?, ?, ?, ?, ?, ?, ? )
+</ADD_PRODUCT>
+<!-- ========================================================================================== -->
+<UPD_PRODUCT>
+  update charves.product_master 
+     set PRODUCT_NM = ?
+       , WEIGHT     = ?
+       , SIZE_H     = ?
+       , SIZE_V     = ?
+       , SIZE_Z     = ?
+       , PRICE      = ?
+   where PRODUCT_ID = ?
+</UPD_PRODUCT>
+<!-- ========================================================================================== -->
+<DEL_PRODUCT>
+  delete from charves.product_master where PRODUCT_ID = ?
+</DEL_PRODUCT>
+<!-- ========================================================================================== -->
+<NEW_GOODS>
+  insert into charves.product_master (
+    PRODUCT_ID, SERIAL_NO, LOT_NO
+  ) values ( ?, ?, ? )
+</NEW_GOODS>
+<!-- ========================================================================================== -->
+
+
+
+<!-- ==============================================================================================
+  주문 관리
+=============================================================================================== -->
+<NEW_ORDER>
+  insert into charves.order_master (
+      ORDER_NO, COMPANY_ID, CUSTOM_ID, TOTAL_PRICE, PURCHASE
+    , BILL_NO, BILL_DTTM, DLV_ADDR
+  ) values (
+      ?, ?, ?, ?, ?, null, null, ? 
+  )
+</NEW_ORDER>
+<NEW_ORDER_GOOD>
+  insert into charves.order_good (
+    ORDER_NO, PRODUCT_ID, COUNT
+  ) values ( ?, ?, ? )
+</NEW_ORDER_GOOD>
+<NEW_GOOD_OUT>
+  insert into charves.order_out_good (
+    PRODUCT_ID, SERIAL_NO, OUT_TYPE, ORDER_NO
+  ) values ( ?, ?, ?, ? )
+</NEW_GOOD_OUT>
+<!-- ========================================================================================== -->
+<GET_ORDER_LIST>
+  select om.ORDER_NO
+       , om.ORDER_DTTM
+       , om.COMPANY_ID
+       , om.CUSTOM_ID
+       , om.TOTAL_PRICE
+       , om.PURCHASE
+       , om.BILL_NO
+       , om.BILL_DTTM
+       , om.DLV_ADDR
+       , om.ARRIVE_YN
+       , oog.CNT
+    from charves.order_master om
+    left join (select ORDER_NO
+                    , PRODUCT_ID
+                    , count(*) as CNT 
+                 from charves.order_out_good 
+                group by ORDER_NO, PRODUCT_ID
+              ) oog on om.ORDER_NO = oog.ORDER_NO 
+</GET_ORDER_LIST>
+<GET_ORDER_LIST_NO>
+  where om.ORDER_NO = ?
+</GET_ORDER_LIST_NO>
+<GET_ORDER_LIST_COMPANY>
+  where om.COMPANY_ID = ?
+</GET_ORDER_LIST_COMPANY>
+<GET_ORDER_LIST_CUSTOM>
+  where om.CUSTOM_ID = ?
+</GET_ORDER_LIST_CUSTOM>
+<GET_ORDER_LIST_BILL>
+  where om.BILL_NO = ?
+</GET_ORDER_LIST_BILL>
+<CANCEL_ORDER>
+  update charves.order_master set ARRIVE_YN = 'C'
+</CANCEL_ORDER>
+<!-- ========================================================================================== -->
 </query>
