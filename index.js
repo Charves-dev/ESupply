@@ -4,6 +4,9 @@ const pool 		= require('./config/db');
 const multer 	= require('multer');
 const path 		= require('path');
 const bodyParser = require('body-parser');
+
+const env       = require('./esupplyEnv');          // 공통 환경 및 글로벌 변수
+
 const app 		= express();
 const port 		= 1092;
 
@@ -122,13 +125,15 @@ app.post('/product/delete', async (req, res) => {
 
 	try {
 		conn = await pool.getConnection();
-
-		const checkQuery = 'SELECT COUNT(*) as cnt from esupply.product_master where class_id = ? and product_id = ? ';
-		const checkResult = await conn.query(checkQuery, [class_id, product_id]);		
 		
+		// const checkQuery = 'SELECT COUNT(*) as cnt from esupply.product_master where class_id = ? and product_id = ? ';
+		// const checkResult = await conn.query(checkQuery, [class_id, product_id]);
+		const checkResult = await conn.query(env.QG.GET_PRODUCT_CNT, [class_id, product_id]);
+
 		if(checkResult[0].cnt > 0){
-			const query = 'DELETE FROM esupply.product_master where class_id = ? and product_id = ? '							
-			const result = await conn.query(query, [class_id, product_id]);
+			// const query = 'DELETE FROM esupply.product_master where class_id = ? and product_id = ? '
+			// const result = await conn.query(query, [class_id, product_id]);
+			const result = await conn.query(env.QG.DEL_PRODUCT, [class_id, product_id]);
 			const rst = await conn.commit();
 
 			let rtnMsg = {

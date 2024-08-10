@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<query>
+<GET_PRODUCT_CNT>
+  SELECT COUNT(*) as cnt 
+    from esupply.product_master 
+   where class_id = ? 
+     and product_id = ?
+</GET_PRODUCT_CNT>
+
+<DEL_PRODUCT>
+  DELETE FROM esupply.product_master 
+   where class_id = ? 
+     and product_id = ? 
+</DEL_PRODUCT>
+</query>
