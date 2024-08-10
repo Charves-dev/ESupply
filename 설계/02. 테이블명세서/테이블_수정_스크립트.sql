@@ -73,3 +73,19 @@ CREATE TABLE `COMM_FILES` (
 -- 2024.07.31 : esupply product_master 테이블 수정
 -- 업로드된 파일 정보는 comm_files테이블에 있고, product_master.IMAGE칼럼은 comm_files테이블의 FILE_ID를 가진다.
 alter table product_master modify column IMAGE int(10) COMMENT '이미지파일';    
+
+-- 2024.08.10 : charves user_account 테이블의 COMPANY_CD를 COMPANY_ID로 변경
+ALTER TABLE charves.user_account CHANGE COMPANY_CD COMPANY_ID varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'charves' NOT NULL COMMENT '업체_아이디';
+
+-- 2024.08.10 : charves user_account 테이블에 테스트용 데이터 만들기
+insert into charves.user_account (USER_ID,USER_PW,USER_NM,USER_LEVEL,COMPANY_ID,DESCRIPTION)
+values ( 'CSN-ah22', '26764550', '최선아', '100', 'esupply', '(주)선아전자_사장님' );
+insert into charves.user_account (USER_ID,USER_PW,USER_NM,USER_LEVEL,COMPANY_ID,DESCRIPTION)
+values ( 'charves', '1369(82)', '손윤석', '1', 'charves', '(주)차베스전기 말단사원' );
+
+-- 2024.08.10 : charves company_info 테이블에 테스트용 데이터 만들기
+insert into charves.company_info (COMPANY_ID,COMPANY_NM,MANAGER_NM,MANAGER_TEL,ADDRESS,LATITUDE,LONGITUDE)
+values ('esupply', '(주)선아전자', '최선아', '010-2676-4550', '경기도 안양시 어딘가겠져? ㅋ', 37.3897, 126.9533556);
+insert into charves.company_info (COMPANY_ID,COMPANY_NM,MANAGER_NM,MANAGER_TEL,ADDRESS,LATITUDE,LONGITUDE)
+values ('charves', '(주)차베스전기', '손윤석', '010-6582-0385', '서울 관악구 난곡로 72길 16 4층 401호', 37.47538611, 126.9538444);
+

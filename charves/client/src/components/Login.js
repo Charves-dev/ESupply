@@ -4,23 +4,26 @@ import axios from 'axios';
 import './Login.css';  // CSS 파일을 import
 
 const Login = ({ onLogin }) => {
-  const [username, setUsername] = useState('');
+  const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try{
-        const response = await axios.post('http://localhost:7943/login', {username, password});
+        const response = await axios.post('http://localhost:7943/login', {userId, password});
         console.log(response);
 
         if (response.data.result === 'success') {
-            onLogin(response.data);
+          // onLogin 이란 함수는 Login 컴포넌트의 속성이된다. 
+          // 해당 onLogin에 대한 실제 구현부는 해당 컴포넌트를 사용하는곳에서 명시한다.(App.js를 잘 보드라고)
+          onLogin(response.data);                 
         } else {
-            alert('Login failed: ' + response.data.msg);
+          alert('Login failed: ' + response.data.msg);
         }
     }catch(error){
-        console.error('Login error', error);
-        alert('An error occurred during login.');
+        // console.log('Login error', error);
+        // alert('An error occurred during login.');
+        console.log(error);
     }
   };
 
@@ -32,8 +35,8 @@ const Login = ({ onLogin }) => {
           <label>니 이름이뭐니?:</label>
           <input
             type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
           />
         </div>
         <div>

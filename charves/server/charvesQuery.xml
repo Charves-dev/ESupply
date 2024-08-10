@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<query>
+<GET_USER_LOGIN_CHECK>
+    select ua.USER_ID
+	       , ua.USER_PW
+	       , ua.USER_NM
+	       , ua.USER_LEVEL
+	       , ua.COMPANY_ID
+	       , ua.DESCRIPTION 
+         , ci.COMPANY_NM 
+      from user_account ua
+      left join company_info ci on ua.COMPANY_ID = ci.COMPANY_ID 
+     where USER_ID = ?
+       and USER_PW = ?
+</GET_USER_LOGIN_CHECK>
+</query>

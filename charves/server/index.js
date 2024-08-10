@@ -4,6 +4,9 @@ const pool 		= require('./config/db');
 const multer 	= require('multer');
 const path 		= require('path');
 const bodyParser = require('body-parser');
+
+const env       = require('./CommonEnv');          // 공통 환경 및 글로벌 변수
+
 const app 		= express();
 const port 		= 7943;
 
@@ -14,27 +17,29 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-	res.sendFile(path.join(__dirname, '/public/index.html'));
-	// let jsonObj = {
-	// 	message : "Success"
-	// };
-	// res.send(jsonObj);
+
+  res.sendFile(path.join(__dirname, '/public/index.html'));
+
 });
 
 
 app.post('/login', async (req, res) => {
-    let conn = null;
+  let conn = null;
+    const { userId, password } = req.body;
     try{
-        //conn = await pool.getConnection();
-        const query = '';
-        let rtn = {
+        conn = await pool.getConnection();
+         let rtn = await conn.query(env.QG.GET_USER_LOGIN_CHECK, [userId, password]);
+console.log(rtn);
+        let rtn1 = {
             result : 'success',
-            company_id : 'imsi_id',
-            company_nm : '(주)선아전자',
-            user_nm : '최선아',
-            msg : ''
+            company_id : rtn[0].COMPANY_NM,
+            company_nm : rtn[0].COMPANY_CD,
+            user_nm : rtn[0].USER_NM,
+            user_id : rtn[0].USER_ID,
+            password : rtn[0].USER_PW,
+            msg : '로그인에 성공하였습니다.'
         };
-        res.send(rtn);
+        res.send(rtn1);
     }catch(err){
         res.status(500).send(err.toString());
     }finally{

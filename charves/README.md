@@ -44,3 +44,11 @@ npm install axios
 
 ### 프로젝트 실행(charves/ 에서 실행)
 npm start
+
+
+### 쿼리를 charvesQuery.xml 에 두고 서버 부팅시 쿼리를 읽어오도록 ...
+```
+cd server
+npm install fs
+npm install xml-digester
+```
