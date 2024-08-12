@@ -32,12 +32,13 @@
        , LATITUDE
        , LONGITUDE
     from charves.company_info
+   where 1 = 1
 </GET_COMPANY_LIST>
 <GET_COMPANY_LIST_NM>
-  where COMPANY_NM like concat('%', ?, '%')
+  and COMPANY_NM like concat('%', ?, '%')
 </GET_COMPANY_LIST_NM>
 <GET_COMPANY_LIST_MANAGER_NM>
-  where MANAGER_NM like concat('%', ?, '%')
+  and MANAGER_NM like concat('%', ?, '%')
 </GET_COMPANY_LIST_MANAGER_NM>
 <!-- ========================================================================================== -->
 <ADD_COMPANY>

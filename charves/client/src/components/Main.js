@@ -1,7 +1,34 @@
 // src/components/Main.js
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
+import CompanyList from './CustomerList';
+import { useEffect } from 'react';
+
 
 const Main = ({userData}) => {
+  const [showCustomerList, setShowCustomerList] = useState(false);
+  const [customerData, setCustomerData] = useState([]);
+
+  // const fetchCustomerData = async () => {
+    // const response = await axios.post('http://localhost:7943/customer/list');
+    // setCustomerData(response);
+    // const response = await fetch('http://localhost:7943/customer/list');
+    // const data = await response.json();
+    // setCustomerData(data);
+  // }
+
+  //useEffect(() => {  fetchCustomerData(); }, []);
+
+  const goCustomerList = async() => {
+    const response = await axios.post('http://localhost:7943/customer/list');
+    setCustomerData(response);
+    setShowCustomerList(true);
+  }
+
+  if(showCustomerList){
+    return <CompanyList customerDatas={customerData}/>
+  }
+
   return (
     <div>
       <h2>(주)차베스전기</h2>
@@ -12,11 +39,12 @@ const Main = ({userData}) => {
       <p>User_id    : {userData.user_id}</p>
       <p>password   : {userData.password}</p>
       
-      <table>
-        <tr>
-          <td>이제 차베스전기는 DB연동만 하면 환경은 거의 다 끝나는구만....</td>
-        </tr>
-      </table>
+      <label>메뉴</label> 
+      <ul>
+        <li onClick={goCustomerList}>
+          고객사관리
+        </li>
+      </ul>
     </div>
     
   );
