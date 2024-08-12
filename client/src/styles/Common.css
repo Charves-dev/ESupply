@@ -217,6 +217,7 @@ ul{
 .mt46{margin-top: 46px;}
 .mt50{margin-top: 50px;}
 .mt60{margin-top: 60px;}
+.mt66{margin-top: 66px;}
 .mt116{margin-top: 116px;}
 
 .mb0{margin-bottom: 0px !important;}
@@ -237,12 +238,15 @@ ul{
 .mr5{margin-right: 5px;}
 .mr10{margin-right: 10px;}
 .mr11{margin-right: 11px;}
+.mr18{margin-right: 18px;}
 .mr20{margin-right: 20px;}
 .mr25{margin-right: 25px;}
 .mr30{margin-right: 30px;}
 .mr35{margin-right: 35px;}
+.mr38{margin-right: 38px;}
 .mr40{margin-right: 40px;}
 
+.ml18{margin-left: 18px;}
 .ml20{margin-left: 20px;}
 
 .pt5{padding-top: 5px;}
@@ -316,7 +320,7 @@ ul{
   width: 61.3%;
   max-width: 800px;
   margin-top: 67px;
-  margin-bottom: 231px;
+  margin-bottom: 114px;
 }
 
 .alertBg{
@@ -406,6 +410,12 @@ ul{
   position: absolute;
   left: 16px;
   top: 14px;
+}
+
+.list-item {
+  width: 100%;
+  display: flex;
+  list-style-type: none;
 }
 
 /* header s*/
@@ -701,8 +711,7 @@ justify-content: center;
 /* 배송 화면 e*/
 
 /* 관리자 화면 s */
-.adminWrap{
-  padding-bottom: 120px;
+.adminWrap{  
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -737,7 +746,7 @@ justify-content: center;
   position: absolute;
   top: 67px;
   width: 100px;
-  height: 84px;
+  height: auto;
   text-align: center;
   background-color: #474442;
   pointer-events: none; /* 기본적으로 클릭 불가능 */

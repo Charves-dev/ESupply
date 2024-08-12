@@ -3,6 +3,7 @@ import './styles/Common.css'
 import Counter from './Counter';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import PageNation from './PageNation';
 
 function Main() {  
   const [orderCnt, setOrderCnt]   = useState([]);
@@ -113,10 +114,8 @@ function Main() {
       }
       
       productList.push(
-        <li className='mt32 mb32' key={product.PRODUCT_ID}>
-            <figure className="thumb-photo" style={{ backgroundImage: `url(/assets/Img/${product.IMAGE})` }}>
-            {/* <figure className="thumb-photo" style={{ backgroundImage: `url(${product.image}})` }}> */}
-            </figure>            
+        <div className='list-item' key={product.PRODUCT_ID}>
+            <figure className="thumb-photo" style={{ backgroundImage: `url(/assets/Img/${product.IMAGE})` }}></figure>            
             <div className='desc'>
                 <a href="">
                   <div className='product_nm'>
@@ -147,10 +146,10 @@ function Main() {
                   onDecrement={() => handleDecrement(i)}
                 />
             </div>
-        </li>
+        </div>
       )
     }
-    return <ul className="thumb-list row-line2">{productList}</ul>;
+    return productList;
   }
   //***********************************************************************************************
 
@@ -199,27 +198,6 @@ function Main() {
     navigate('/admin');
   };
 
-
-//   const addProductTest = async () => {
-// // console.log('상품등록 요청');
-//     try{
-//       const res = await axios.post('http://localhost:1092/product/add',{
-//         "class_id" : "DIO_121",
-//         "product_id" : "DIO_121_DLCGBB999341",
-//         "product_nm" : "광다이오드_121",
-//         "price" : "900",
-//         "weight" : "80",
-//         "size_h" : "52",
-//         "size_v" : "12",
-//         "size_z" : "12"
-//       });
-
-// // console.log(res);
-//     }catch(e){
-//       console.log('상품등록 요청 에러: ' + e);
-//     }
-//   }
-
   const goMain = () => {
     navigate('/main');
   };
@@ -253,7 +231,7 @@ function Main() {
         </section>              
       
         {/* 상품목록 */}
-        {productRender()}
+        <PageNation data = {productRender()} itemsPerPage={5}/>
 
         <div className='flex'>
           <button className="orderBtn cursor" onClick={handleOrder}><b>주문하기</b></button>

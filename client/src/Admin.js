@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ProductForm from './ProductForm';
 import GoodsForm from './GoodsForm';
+import PageNation from './PageNation';
 
 function Admin() {
   
@@ -93,51 +94,41 @@ function Admin() {
       let   price   = parseFloat(product.PRICE).toLocaleString('ko-KR');
       
       productList.push(
-        <li className='mt30 mb44' key={product.CLASS_ID +'_'+product.PRODUCT_ID}>
-            <figure className="thumb-photo" style={{ backgroundImage: `url(/assets/Img/${product.IMAGE})` }}>
-            {/* <figure className="thumb-photo" style={{ backgroundImage: `url(${product.image}})` }}> */}
-            </figure>                        
-            <div className='desc relative'>
-                <a href="">
-                  <div className='product_nm'>
-                    {product.PRODUCT_NM}
-                  </div>
-                  <div className='priceText'>
-                    {price}원
-                  </div>
-                  <div className='product_detail'>
-                    <span className='label'>높이</span> {product.SIZE_Z} mm
-                  </div>
-                  <div className='product_detail'>
-                    <span className='label'>너비</span> {product.SIZE_H} mm
-                  </div>
-                  <div className='product_detail'>
-                    <span className='label'>길이</span> {product.SIZE_V} mm
-                  </div>
-                  <div className='product_detail'>
-                    <span className='label'>무게</span> {product.WEIGHT} g
-                  </div>
-                </a>
-                <button onClick={goPartListView} className='absolute partListBtn fs14 bgSlate100 cursor'>부품목록</button>
-            </div>
-            <div className='countBox ml20 flex f_d_column a_i_center'>
-                <p className='mb40 pt5 pb5 fs16 w100 t_a_center border-top-bottom'>수량</p>
-                <div className='productCount flex f_d_column a_i_center j_c_center'>
-                  <p>{orderCnt[i]}</p>
-                </div>                                
-                {/* <div id='productEdit' className='global-button flex a_i_center j_c_center'>
-                  수정하기
-                </div>   */}
-                {/* <Counter 
-                  count={orderCnt[i]}
-                  onIncrement={() => handleIncrement(i)}
-                  onDecrement={() => handleDecrement(i)}
-                /> */}
-            </div>
-        </li>
+        <div className='list-item' key={product.CLASS_ID +'_'+product.PRODUCT_ID}>
+          <figure className="thumb-photo" style={{ backgroundImage: `url(/assets/Img/${product.IMAGE})` }}></figure>                        
+          <div className='desc relative'>
+              <a href="">
+                <div className='product_nm'>
+                  {product.PRODUCT_NM}
+                </div>
+                <div className='priceText'>
+                  {price}원
+                </div>
+                <div className='product_detail'>
+                  <span className='label'>높이</span> {product.SIZE_Z} mm
+                </div>
+                <div className='product_detail'>
+                  <span className='label'>너비</span> {product.SIZE_H} mm
+                </div>
+                <div className='product_detail'>
+                  <span className='label'>길이</span> {product.SIZE_V} mm
+                </div>
+                <div className='product_detail'>
+                  <span className='label'>무게</span> {product.WEIGHT} g
+                </div>
+              </a>
+              <button onClick={goPartListView} className='absolute partListBtn fs14 bgSlate100 cursor'>부품목록</button>
+          </div>
+          <div className='countBox ml20 flex f_d_column a_i_center'>
+              <p className='mb40 pt5 pb5 fs16 w100 t_a_center border-top-bottom'>수량</p>
+              <div className='productCount flex f_d_column a_i_center j_c_center'>
+                <p>{orderCnt[i]}</p>
+              </div>                                
+          </div>
+        </div>
       )
     }
-    return <ul className="thumb-list row-line2">{productList}</ul>;
+    return productList;
   }
   //***********************************************************************************************
 
@@ -160,8 +151,8 @@ function Admin() {
       case 'productList':
         return (
           <>
-            {searchContent()}
-            {productRender()}
+            {searchContent()}                        
+            <PageNation data = {productRender()} itemsPerPage={5}/> {/* 상품목록 */}            
           </>
         )
       case 'goodsCRUD':
@@ -214,7 +205,7 @@ function Admin() {
   //   - 'productTable': 제품 목록 뷰
   const viewMap = {
     'g_drop_down': ['goodsCRUD', 'goodsTable'],
-    'p_drop_down': ['productCRUD', 'productTable'],
+    'p_drop_down': ['productCRUD'],
   };
   // **********************************************************************************************
 
@@ -304,6 +295,7 @@ function Admin() {
                 >
                   {item.label}
                 </li>
+                
                 {/* 상품관리 드롭다운 */}
                 <div className={`dd-menu ${item.view === 'g_drop_down' && isGoodsMenuHovered && isGoodsLiHovered ? 'visible' : ''}`}>
                   <div onClick={() => dropDownMenuClick('goodsCRUD')} className='white h42 cursor'>상품입고</div>
@@ -312,8 +304,7 @@ function Admin() {
                 
                 {/* 제품관리 드롭다운 */}
                 <div className={`dd-menu ${item.view === 'p_drop_down' && isMenuHovered && isLiHovered ? 'visible' : ''}`}>
-                  <div onClick={() => dropDownMenuClick('productCRUD')} className='white h42 cursor'>제품등록</div>
-                  <div onClick={() => dropDownMenuClick('productTable')} className='white h42 cursor'>제품목록</div>
+                  <div onClick={() => dropDownMenuClick('productCRUD')} className='white h42 cursor'>제품등록</div>                  
                 </div>
               </div>
             ))}

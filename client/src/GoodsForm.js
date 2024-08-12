@@ -274,7 +274,7 @@ const GoodsForm = () => {
         </div>         
         <div className='w100 flex a_i_center j_c_center mb19'>
           <button type="submit" className='w168 h40 mt116 mr25 bgSlate100 fs14 cursor'>저장</button>
-          <button type="button" className='w160 h40 mt116 cursor fs14 cancle' onClick={reloadPage}>취소</button>
+          <button type="button" className='w160 h40 mt116 mr38 cursor fs14 cancle' onClick={reloadPage}>취소</button>
         </div>        
       </div>     
       <div className='alertBg w100 h100' id='customAlertBg'></div>
