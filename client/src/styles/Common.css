@@ -67,6 +67,10 @@ input{
   padding-left: 10px;
 }
 
+input[type='check-box']{
+  border-radius: 3px;
+}
+
 .selectBox{
   position: relative;
   width: 100%;
@@ -180,12 +184,14 @@ ul{
 }
 
 .w100{width: 100%;}
+.w18{width: 18px;}
 .w160{width: 160px;}
 .w168{width: 168px;}
-.h100{height: 100%;}
-.h190{height: 190px;}
+.h17{height: 17px;}
 .h40{height: 40px;}
 .h42{height: 42px;}
+.h100{height: 100%;}
+.h190{height: 190px;}
 
 .white{ color: #fff;}
 .lime{color: hsl(61, 70%, 52%);}
@@ -218,6 +224,7 @@ ul{
 .mt50{margin-top: 50px;}
 .mt60{margin-top: 60px;}
 .mt66{margin-top: 66px;}
+.mt67{margin-top: 67px;}
 .mt116{margin-top: 116px;}
 
 .mb0{margin-bottom: 0px !important;}
@@ -828,6 +835,52 @@ justify-content: center;
   -webkit-appearance: none;
   margin: 0;
 }
+
+/* 상품 목록 테이블 s */
+.grid-container{
+  display: grid;
+  grid-template-columns: 41px repeat(7, auto);
+  border: 1px solid #112a3e;  
+  font-size: 16px;
+}
+.grid-item{
+  text-align: center;
+}
+.grid-item.header{
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #4472c4;
+  border-left: 1px solid #e3f3fd;
+  color: #fff;
+}
+.grid-item.checkBox{  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f7f5fc;
+}
+.grid-item.data{
+  height: 31px;
+  background-color: #dbe3f1;
+  border-top: 1px solid #e3f3fd;
+  border-left: 1px solid #464646;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.grid-item.data.del{
+  color:#ff2a2a;
+  cursor: pointer;
+}
+/* 행마다 두 번째 셀의 border-left 제거 */
+.grid-container > .data:nth-child(8n + 2) {
+  border-left: 0;
+}
+
+/* 상품 목록 테이블 e */
+
 /* 관리자 화면 e */
 
 

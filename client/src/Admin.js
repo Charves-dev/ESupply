@@ -5,6 +5,7 @@ import axios from 'axios';
 import ProductForm from './ProductForm';
 import GoodsForm from './GoodsForm';
 import PageNation from './PageNation';
+import GoodsTable from './GoodsTable';
 
 function Admin() {
   
@@ -50,7 +51,7 @@ function Admin() {
       
       // 상품 재고 개수 설정
       setOrderCnt(initializeOrderCnt(res.data));        
-// console.log(res.data);
+console.log(res.data);
     }catch(e){
       console.log('상품 목록 가져오기 애러: ' + e);
     }
@@ -134,15 +135,18 @@ function Admin() {
 
 
   // 상품등록 폼 반환
-  const goodsCRUD = () => {
-    let goodsForm = <div><GoodsForm/></div>
-    return goodsForm
+  const goodsForm = () => {    
+    return <div><GoodsForm/></div>
+  }
+
+  // 상품목록 테이블 반환
+  const goodsTable = () => {
+    return <GoodsTable/>
   }
 
   // 제품등록 폼 반환
-  const productCRUD = () => {
-    let prodcutForm = <div><ProductForm /></div>
-    return prodcutForm
+  const productForm = () => {    
+    return <div><ProductForm /></div>
   }
 
   // currentView 값에 따라 현재 보여줄 뷰 렌더링
@@ -155,10 +159,12 @@ function Admin() {
             <PageNation data = {productRender()} itemsPerPage={5}/> {/* 상품목록 */}            
           </>
         )
-      case 'goodsCRUD':
-        return goodsCRUD();
-      case 'productCRUD':
-        return productCRUD();
+      case 'goodsForm':
+        return goodsForm();
+      case 'productForm':
+        return productForm();
+      case 'goodsTable':
+        return goodsTable();
       default:
         return null;
     }
@@ -198,14 +204,14 @@ function Admin() {
 
   // 각 상단 메뉴를 여러개의 dropDown메뉴에 매핑하는 객체
   // - 'g_drop_down': 상품관리 드롭다운과 관련된 뷰들을 매핑
-  //   - 'goodsCRUD': 상품 등록 뷰
+  //   - 'goodsForm': 상품 등록 뷰
   //   - 'goodsTable': 상품 목록 뷰
   // - 'p_drop_down': 제품관리 드롭다운과 관련된 뷰들을 매핑
-  //   - 'productCRUD': 제품 등록 뷰
+  //   - 'productForm': 제품 등록 뷰
   //   - 'productTable': 제품 목록 뷰
   const viewMap = {
-    'g_drop_down': ['goodsCRUD', 'goodsTable'],
-    'p_drop_down': ['productCRUD'],
+    'g_drop_down': ['goodsForm', 'goodsTable'],
+    'p_drop_down': ['productForm'],
   };
   // **********************************************************************************************
 
@@ -298,13 +304,13 @@ function Admin() {
                 
                 {/* 상품관리 드롭다운 */}
                 <div className={`dd-menu ${item.view === 'g_drop_down' && isGoodsMenuHovered && isGoodsLiHovered ? 'visible' : ''}`}>
-                  <div onClick={() => dropDownMenuClick('goodsCRUD')} className='white h42 cursor'>상품입고</div>
+                  <div onClick={() => dropDownMenuClick('goodsForm')} className='white h42 cursor'>상품입고</div>
                   <div onClick={() => dropDownMenuClick('goodsTable')} className='white h42 cursor'>상품목록</div>
                 </div>
                 
                 {/* 제품관리 드롭다운 */}
                 <div className={`dd-menu ${item.view === 'p_drop_down' && isMenuHovered && isLiHovered ? 'visible' : ''}`}>
-                  <div onClick={() => dropDownMenuClick('productCRUD')} className='white h42 cursor'>제품등록</div>                  
+                  <div onClick={() => dropDownMenuClick('productForm')} className='white h42 cursor'>제품등록</div>                  
                 </div>
               </div>
             ))}
@@ -314,7 +320,7 @@ function Admin() {
         </div>
       </header>
    
-      <div className='adminContent content'>       
+      <div className={currentView === 'goodsTable' ? 'adminContent mt67 w100' : 'adminContent content'}>       
         {currentView === 'default' ? setCurrentView('productList') : renderContent()}                  
       </div>
     </div>
