@@ -32,8 +32,8 @@ app.post('/login', async (req, res) => {
     if(rtn.length >= 1){
       let rtn1 = {
         result : 'success',
-        company_id : rtn[0].COMPANY_NM,
-        company_nm : rtn[0].COMPANY_CD,
+        company_id : rtn[0].COMPANY_ID,
+        company_nm : rtn[0].COMPANY_NM,
         user_nm : rtn[0].USER_NM,
         user_id : rtn[0].USER_ID,
         password : rtn[0].USER_PW,

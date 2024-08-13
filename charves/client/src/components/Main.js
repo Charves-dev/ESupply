@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import CompanyList from './CustomerList';
-import { useEffect } from 'react';
-
+//import { useEffect } from 'react';
+import './Main.css';  // CSS 파일을 import
 
 const Main = ({userData}) => {
   const [showCustomerList, setShowCustomerList] = useState(false);
@@ -30,23 +30,33 @@ const Main = ({userData}) => {
   }
 
   return (
-    <div>
+    <div className="main-container">
       <h2>(주)차베스전기</h2>
-      <p>Welcome, {userData.user_nm}!</p>
-      <p>Company_id : {userData.company_id}</p>
-      <p>Company_nm : {userData.company_nm}</p>
-      <p>User_nm    : {userData.user_nm}</p>
-      <p>User_id    : {userData.user_id}</p>
-      <p>password   : {userData.password}</p>
-      
-      <label>메뉴</label> 
+      <table>
+        <colgroup>
+          <col width="35%"></col>
+          <col width="*"></col>
+        </colgroup>
+        <thead>
+          <tr>
+            <th colspan="2">Welcome, {userData.user_nm}!</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th>회사아이디</th><td>{userData.company_id}</td></tr>
+          <tr><th>회사명</th><td>{userData.company_nm}</td></tr>
+          <tr><th>사용자명</th><td>{userData.user_nm}</td></tr>
+          <tr><th>사용자아이디</th><td>{userData.user_id}</td></tr>
+        </tbody>
+      </table>
+      <br></br>
+      <label class="centerText">메뉴</label> 
       <ul>
-        <li onClick={goCustomerList}>
+        <li onClick={goCustomerList} class="cursorHand">
           고객사관리
         </li>
       </ul>
     </div>
-    
   );
 };
 

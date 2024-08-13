@@ -1,15 +1,68 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <query>
+
+<!-- ==============================================================================================
+  제품관리
+=============================================================================================== -->
 <GET_PRODUCT_CNT>
   SELECT COUNT(*) as cnt 
     from esupply.product_master 
    where class_id = ? 
      and product_id = ?
 </GET_PRODUCT_CNT>
-
 <DEL_PRODUCT>
   DELETE FROM esupply.product_master 
    where class_id = ? 
      and product_id = ? 
 </DEL_PRODUCT>
+<!-- ========================================================================================== -->
+
+
+
+<!-- ==============================================================================================
+  상품목록 조회(상품관리자용)
+=============================================================================================== -->
+<GET_GOOD_LIST_ADMIN>
+  SELECT pm.CLASS_ID 
+       , pm.PRODUCT_ID 
+       , pm.PRODUCT_NM 
+       , g.MANUFACTURING_DTTM 
+       , g.LOT_NO 
+       , g.SERIAL_NO 
+    FROM esupply.product_master pm
+   INNER JOIN esupply.good g ON pm.CLASS_ID = g.CLASS_ID AND pm.PRODUCT_ID = g.PRODUCT_ID 
+   WHERE 1 = 1
+</GET_GOOD_LIST_ADMIN>
+<GET_GOOD_LIST_NM>
+  AND pm.PRODUCT_NM LIKE CONCAT('%', ?, '%')
+</GET_GOOD_LIST_NM>
+<GET_GOOD_LIST_DTTM>
+  AND g.MANUFACTURING_DTTM LIKE CONCAT(?, '%')
+</GET_GOOD_LIST_DTTM>
+<GET_GOOD_LIST_LOT>
+  AND g.LOT_NO = ?
+</GET_GOOD_LIST_LOT>
+<GET_GOOD_LIST_SERIAL>
+  AND g.SERIAL_NO = ?
+</GET_GOOD_LIST_SERIAL>
+<GET_GOOD_LIST_ORDER>
+  ORDER BY pm.CLASS_ID , pm.PRODUCT_NM , g.MANUFACTURING_DTTM
+</GET_GOOD_LIST_ORDER>
+<!-- ========================================================================================== -->
+<DEL_GOOD>
+  DELETE FROM esupply.good WHERE SERIAL_NO = ?
+</DEL_GOOD>
+<UPD_INVENTORY_UP>
+  UPDATE esupply.good_inventory
+     SET COUNT = COUNT + 1
+   WHERE CLASS_ID = ?
+     AND PRODUCT_ID = ?
+</UPD_INVENTORY_UP>
+<UPD_INVENTORY_DN>
+  UPDATE esupply.good_inventory
+     SET COUNT = COUNT - 1
+   WHERE CLASS_ID = ?
+     AND PRODUCT_ID = ?
+</UPD_INVENTORY_DN>
+<!-- ========================================================================================== -->
 </query>

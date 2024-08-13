@@ -261,14 +261,14 @@ app.post('/product/addgoods', async (req, res) => {
 	const serial_h = class_id.substring(0,3) + prod.substring(0,4) + manufacturing_dttm.substring(0,8);
 	const seqName  = 'seq' + class_id.substring(0,3).toLowerCase();
 
-	const nextQuery = `select nextval(${seqName}) as nextSN from dual`; 
+	const nextQuery = `select lpad(nextval(esupply.${seqName}), 5, '0') as nextSN from dual`; 
 
 	const goodQuery = 'insert into GOOD (CLASS_ID, PRODUCT_ID, SERIAL_NO, MANUFACTURING_DTTM, LOT_NO) '
 					+ 'VALUES ( ? '
 					+ '       , ? '
-					+ '		  , concat(? , ?) '
-                    + '       , DATE_FORMAT(CURRENT_TIMESTAMP(), \'%Y%m%d%H%i%s\') '
-                    + '       , ? )'
+					+ '		    , concat(? , ?) '
+          + '       , DATE_FORMAT(CURRENT_TIMESTAMP(), \'%Y%m%d%H%i%s\') '
+          + '       , ? )'
 					;
 
 	const checkQuery = 'SELECT COUNT(*) as cnt FROM good_inventory WHERE CLASS_ID = ? AND PRODUCT_ID = ?';
@@ -327,7 +327,7 @@ app.post('/product/addgoods', async (req, res) => {
 
 
 //*************************************************************************************************
-// 공통 코드 리스트 가져오기 (콤보박스용)
+// 공통 코드 리스트 가져오기 (콤보박스용) - 나중에 공통영역이 만들어지면 그쪽으로 이동할 예정
 //*************************************************************************************************
 app.get('/comm/codelist', async (req, res) => {
 	const { group_id } = req.query;
@@ -352,7 +352,7 @@ console.log(result);
 
 
 //*************************************************************************************************
-// 공통 제품 리스트 가져오기 (콤보박스용)
+// 공통 제품 리스트 가져오기 (콤보박스용) - 나중에 공통영역이 만들어지면 그쪽으로 이동할 예정
 //*************************************************************************************************
 app.get('/comm/productlist', async (req, res) => {
 	const { class_id } = req.query;
@@ -375,7 +375,7 @@ console.log(result);
 
 
 //*************************************************************************************************
-// 제품 리스트 조회(상품리스트 조회)
+// 제품 리스트 조회(상품리스트 조회) - 나중에 제품또는 상품이란 영역이 만들어지면 그쪽으로 이동할 예정
 //*************************************************************************************************
 app.post('/product/goodList', async (req, res) => {
 	const { product_nm, product_id } = req.body;
@@ -393,11 +393,11 @@ console.log(id_where);
 console.log(nm_where);	
 	let query = 'select mst.CLASS_ID , mst.PRODUCT_ID, mst.PRODUCT_NM, mst.PRICE, mst.WEIGHT, mst.SIZE_H, mst.SIZE_V, mst.SIZE_Z' 
 	          + '     , ifnull(inv.COUNT , 0) as COUNT '
-			  + '     , cf.STORE_NM as IMAGE'
-              + ' from esupply.product_master mst '
- 			  + ' left join esupply.good_inventory inv on mst.CLASS_ID = inv.CLASS_ID and mst.PRODUCT_ID = inv.PRODUCT_ID'
-			  + ' left join esupply.comm_files cf on mst.IMAGE = cf.FILE_ID and cf.TABLE_NM = \'product_master\' '
-			  ;
+			  		+ '     , cf.STORE_NM as IMAGE'
+            + ' from esupply.product_master mst '
+ 			  		+ ' left join esupply.good_inventory inv on mst.CLASS_ID = inv.CLASS_ID and mst.PRODUCT_ID = inv.PRODUCT_ID'
+			  		+ ' left join esupply.comm_files cf on mst.IMAGE = cf.FILE_ID and cf.TABLE_NM = \'product_master\' '
+			  		;
 	let conn = null;
 	try{
 		conn = await pool.getConnection();
@@ -414,6 +414,64 @@ console.log(query);
 	}
 });
 //*************************************************************************************************
+
+
+
+//*************************************************************************************************
+// Admin 전용 상품조회 ( 나중에 Admin 영역이 만들어지면 그쪽으로 이동할 예정 )
+//*************************************************************************************************
+app.post('/product/goodListAdm', async (req, res) => {
+	const { optionNo, search_txt } = req.body;			// (optionNo : 1=제품명, 2=제조일시, 3=제조라인, 4=일련번호 )
+	let conn = null;
+	try{
+		let lstQuery   = env.QG.GET_GOOD_LIST_ADMIN;
+		let orderQuery = env.QG.GET_GOOD_LIST_ORDER;
+		let whereQuery = '';
+		let result = null;
+		conn = await pool.getConnection();
+		if(search_txt){
+			if(optionNo === '1') whereQuery = env.QG.GET_GOOD_LIST_NM;
+			else if(optionNo === '2') whereQuery = env.QG.GET_GOOD_LIST_DTTM;
+			else if(optionNo === '3') whereQuery = env.QG.GET_GOOD_LIST_LOT;
+			else if(optionNo === '4') whereQuery = env.QG.GET_GOOD_LIST_SERIAL;
+			result = await conn.query(lstQuery + whereQuery + orderQuery, [search_txt]);
+		}else{
+			result = await conn.query(lstQuery + orderQuery);
+		}
+		res.json(result);
+	}catch(err){
+		res.status(500).send(err.toString());
+	}finally{
+		if (conn) conn.release();
+	}
+});
+//*************************************************************************************************
+
+
+
+//*************************************************************************************************
+// 상품 삭제
+//*************************************************************************************************
+app.post('/product/gooddel', async (req, res) => {
+	const { class_id, product_id, serial_no } = req.body;
+	let conn = null;
+	try{
+		conn = await pool.getConnection();
+		const result = await conn.query(env.QG.DEL_GOOD, [serial_no]);
+		const invRst = await conn.query(env.QG.UPD_INVENTORY_DN, [class_id, product_id ]);
+		await conn.commit();
+		let rtnMsg = {
+			result : 'Success',
+		};
+		res.send(rtnMsg);
+	}catch(err){
+		res.status(500).send(err.toString());
+	}finally{
+		if (conn) conn.release();
+	}
+});
+//*************************************************************************************************
+
 
 
 //******************************* */

@@ -11,8 +11,6 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
     try{
         const response = await axios.post('http://localhost:7943/login', {userId, password});
-        console.log(response);
-
         if (response.data.result === 'success') {
           // onLogin 이란 함수는 Login 컴포넌트의 속성이된다. 
           // 해당 onLogin에 대한 실제 구현부는 해당 컴포넌트를 사용하는곳에서 명시한다.(App.js를 잘 보드라고)
