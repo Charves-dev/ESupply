@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <query>
+<GET_COMM_CODE>
+  select CODE_ID, CODE_NM from comm_code where GROUP_ID = ?
+</GET_COMM_CODE>
+
+<GET_COMM_PRODUCT_LIST>
+  select PRODUCT_ID, PRODUCT_NM from esupply.product_master where CLASS_ID = ? 
+</GET_COMM_PRODUCT_LIST>
 
 <!-- ==============================================================================================
   제품관리
@@ -15,6 +22,34 @@
    where class_id = ? 
      and product_id = ? 
 </DEL_PRODUCT>
+<GET_CHECK_SEQUENCE>
+  SELECT count(*) as cnt FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = ?
+</GET_CHECK_SEQUENCE>
+<ADD_PRODUCT>
+  INSERT INTO esupply.product_master (class_id, product_id, product_nm, price, weight, size_h, size_v, size_z, image)
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+</ADD_PRODUCT>
+<ADD_GOOD>
+  insert into GOOD (CLASS_ID, PRODUCT_ID, SERIAL_NO, MANUFACTURING_DTTM, LOT_NO)
+  VALUES ( ?, ?, concat(? , ?), DATE_FORMAT(CURRENT_TIMESTAMP(), '%Y%m%d%H%i%s'), ? )
+</ADD_GOOD>
+<GET_INVENTORY>
+  SELECT COUNT(*) as cnt FROM good_inventory WHERE CLASS_ID = ? AND PRODUCT_ID = ?
+</GET_INVENTORY>
+<ADD_INVENTORY>
+  insert into good_inventory (CLASS_ID, PRODUCT_ID, COUNT) VALUES (?, ?, ?)
+</ADD_INVENTORY>
+<UPD_INVENTORY>
+  update good_inventory set COUNT = COUNT + ? where CLASS_ID = ? and PRODUCT_ID  = ?
+</UPD_INVENTORY>
+<GET_GOOD_LIST>
+  select mst.CLASS_ID , mst.PRODUCT_ID, mst.PRODUCT_NM, mst.PRICE, mst.WEIGHT, mst.SIZE_H, mst.SIZE_V, mst.SIZE_Z 
+       , ifnull(inv.COUNT , 0) as COUNT
+       , cf.STORE_NM as IMAGE
+    from esupply.product_master mst
+    left join esupply.good_inventory inv on mst.CLASS_ID = inv.CLASS_ID and mst.PRODUCT_ID = inv.PRODUCT_ID
+    left join esupply.comm_files cf on mst.IMAGE = cf.FILE_ID and cf.TABLE_NM = 'product_master' 
+</GET_GOOD_LIST>
 <!-- ========================================================================================== -->
 
 

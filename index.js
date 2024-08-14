@@ -198,7 +198,8 @@ console.log("****************************************************");
 		// 클레스(모델) 시퀀스 존재 여부 체크 ( 없으면 생성한다 - 상품등록시에 시리얼번호 채번하기 위함 )
 		//*****************************************************************************************
 		let seqName = ('seq' + class_id.substring(0,3)).toLowerCase();
-		const seqQuery = 'SELECT count(*) as cnt FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = ?';
+		// const seqQuery = 'SELECT count(*) as cnt FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = ?';
+		const seqQuery = env.QG.GET_CHECK_SEQUENCE;
 		const seqResult = await conn.query(seqQuery, [seqName]);
 		if(seqResult[0].cnt <= 0){
 			const insSeq = `CREATE SEQUENCE ${seqName} increment by 1 start with 1 NOCACHE MINVALUE 1 MAXVALUE 9999999`;
@@ -210,12 +211,14 @@ console.log("****************************************************");
 		//*****************************************************************************************
 		// 제품 데이터가 이미 존재하는지 체크하고 없으면 Insert한다.
 		//*****************************************************************************************
-		const checkQuery = 'SELECT COUNT(*) as cnt from esupply.product_master where class_id = ? and product_id = ? ';
+		// const checkQuery = 'SELECT COUNT(*) as cnt from esupply.product_master where class_id = ? and product_id = ? ';
+		const checkQuery = env.QG.GET_PRODUCT_CNT;
 		const checkResult = await conn.query(checkQuery, [class_id, product_id]);
 
 		if(checkResult[0].cnt <= 0){
-			const query = 'INSERT INTO esupply.product_master (class_id, product_id, product_nm, price, weight, size_h, size_v, size_z, image) '
-						+ 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+			// const query = 'INSERT INTO esupply.product_master (class_id, product_id, product_nm, price, weight, size_h, size_v, size_z, image) '
+			// 						+ 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+			const query = env.QG.ADD_PRODUCT;
 			const result = await conn.query(query, [class_id, product_id, product_nm, price, weight, size_h, size_v, size_z, file_id]);
 			const rst = await conn.commit();
 
@@ -263,21 +266,22 @@ app.post('/product/addgoods', async (req, res) => {
 
 	const nextQuery = `select lpad(nextval(esupply.${seqName}), 5, '0') as nextSN from dual`; 
 
-	const goodQuery = 'insert into GOOD (CLASS_ID, PRODUCT_ID, SERIAL_NO, MANUFACTURING_DTTM, LOT_NO) '
-					+ 'VALUES ( ? '
-					+ '       , ? '
-					+ '		    , concat(? , ?) '
-          + '       , DATE_FORMAT(CURRENT_TIMESTAMP(), \'%Y%m%d%H%i%s\') '
-          + '       , ? )'
-					;
-
-	const checkQuery = 'SELECT COUNT(*) as cnt FROM good_inventory WHERE CLASS_ID = ? AND PRODUCT_ID = ?';
-
-	const insertQuery = 'insert into good_inventory (CLASS_ID, PRODUCT_ID, COUNT) '
-					+ 'VALUES (?, ?, ?)';
-
+	// const goodQuery = 'insert into GOOD (CLASS_ID, PRODUCT_ID, SERIAL_NO, MANUFACTURING_DTTM, LOT_NO) '
+	// 				+ 'VALUES ( ? '
+	// 				+ '       , ? '
+	// 				+ '		    , concat(? , ?) '
+  //         + '       , DATE_FORMAT(CURRENT_TIMESTAMP(), \'%Y%m%d%H%i%s\') '
+  //         + '       , ? )'
+	// 				;
+	const goodQuery = env.QG.ADD_GOOD;
+	// const checkQuery = 'SELECT COUNT(*) as cnt FROM good_inventory WHERE CLASS_ID = ? AND PRODUCT_ID = ?';
+	const checkQuery = env.QG.GET_INVENTORY;
+	// const insertQuery = 'insert into good_inventory (CLASS_ID, PRODUCT_ID, COUNT) '
+	// 				+ 'VALUES (?, ?, ?)';
+	const insertQuery = env.QG.ADD_INVENTORY;
 	
-	const updQuery = `update good_inventory set COUNT = COUNT + ${count} where CLASS_ID = ? and PRODUCT_ID  = ?`;
+	//const updQuery = `update good_inventory set COUNT = COUNT + ${count} where CLASS_ID = ? and PRODUCT_ID  = ?`;
+	const updQuery = env.QG.UPD_INVENTORY;
 
 	let conn = null;
 	let iCount = 0;
@@ -302,7 +306,7 @@ app.post('/product/addgoods', async (req, res) => {
 			console.log('업데이트');
 			
 			// 항목이 존재하면 업데이트
-			await conn.query(updQuery, [class_id, product_id]);
+			await conn.query(updQuery, [count, class_id, product_id]);
 		} else {
 			console.log('추가');
 			
@@ -331,16 +335,13 @@ app.post('/product/addgoods', async (req, res) => {
 //*************************************************************************************************
 app.get('/comm/codelist', async (req, res) => {
 	const { group_id } = req.query;
-console.log(group_id);
 	let conn = null;
-	const codeQuery = 'select CODE_ID, CODE_NM from comm_code where GROUP_ID = ? ';
-
+	// const codeQuery = 'select CODE_ID, CODE_NM from comm_code where GROUP_ID = ? ';
+	const codeQuery = env.QG.GET_COMM_CODE;
 	try{
 		conn = await pool.getConnection();
 		const result = await conn.query(codeQuery, [group_id]);
-console.log(result);
 		res.send(result);
-
 	}catch(err){
 		res.status(500).send(err.toString());
 	}finally{
@@ -357,8 +358,8 @@ console.log(result);
 app.get('/comm/productlist', async (req, res) => {
 	const { class_id } = req.query;
 	let conn = null;
-	const prodQuery = 'select PRODUCT_ID, PRODUCT_NM from esupply.product_master where CLASS_ID = ? ';
-
+	// const prodQuery = 'select PRODUCT_ID, PRODUCT_NM from esupply.product_master where CLASS_ID = ? ';
+	const prodQuery = env.QG.GET_COMM_PRODUCT_LIST;
 	try{
 		conn = await pool.getConnection();
 		const result = await conn.query(prodQuery, [class_id]);
@@ -379,8 +380,6 @@ console.log(result);
 //*************************************************************************************************
 app.post('/product/goodList', async (req, res) => {
 	const { product_nm, product_id } = req.body;
-console.log(`product_nm = ${product_nm}`);
-console.log(`product_id = ${product_id}`);
 	let nm_where = '';
 	let id_where = '';
 	if(product_id !== '' && product_id !== undefined){
@@ -389,22 +388,20 @@ console.log(`product_id = ${product_id}`);
 	if(product_nm !== '' && product_nm !== undefined){
 		nm_where = ` and mst.PRODUCT_NM like '%${product_nm}%'`;
 	}
-console.log(id_where);
-console.log(nm_where);	
-	let query = 'select mst.CLASS_ID , mst.PRODUCT_ID, mst.PRODUCT_NM, mst.PRICE, mst.WEIGHT, mst.SIZE_H, mst.SIZE_V, mst.SIZE_Z' 
-	          + '     , ifnull(inv.COUNT , 0) as COUNT '
-			  		+ '     , cf.STORE_NM as IMAGE'
-            + ' from esupply.product_master mst '
- 			  		+ ' left join esupply.good_inventory inv on mst.CLASS_ID = inv.CLASS_ID and mst.PRODUCT_ID = inv.PRODUCT_ID'
-			  		+ ' left join esupply.comm_files cf on mst.IMAGE = cf.FILE_ID and cf.TABLE_NM = \'product_master\' '
-			  		;
+	// let query = 'select mst.CLASS_ID , mst.PRODUCT_ID, mst.PRODUCT_NM, mst.PRICE, mst.WEIGHT, mst.SIZE_H, mst.SIZE_V, mst.SIZE_Z' 
+	//           + '     , ifnull(inv.COUNT , 0) as COUNT '
+	// 		  		+ '     , cf.STORE_NM as IMAGE'
+  //           + ' from esupply.product_master mst '
+ 	// 		  		+ ' left join esupply.good_inventory inv on mst.CLASS_ID = inv.CLASS_ID and mst.PRODUCT_ID = inv.PRODUCT_ID'
+	// 		  		+ ' left join esupply.comm_files cf on mst.IMAGE = cf.FILE_ID and cf.TABLE_NM = \'product_master\' '
+	// 		  		;
+	let query = env.QG.GET_GOOD_LIST;
 	let conn = null;
 	try{
 		conn = await pool.getConnection();
 		if(id_where !== '' || nm_where !== ''){
 			query = query + ' where 1 = 1' + id_where + nm_where;
 		}
-console.log(query);
     	let result = await conn.query(query);
     	res.json(result);
 	}catch(err){
