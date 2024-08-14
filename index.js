@@ -1,14 +1,12 @@
-const express 	= require('express');
-const cors 		= require('cors');
-const pool 		= require('./config/db');
-const multer 	= require('multer');
-const path 		= require('path');
-const bodyParser = require('body-parser');
-
-const env       = require('./esupplyEnv');          // 공통 환경 및 글로벌 변수
-
-const app 		= express();
-const port 		= 1092;
+const express 		= require('express');
+const cors 				= require('cors');
+const pool 				= require('./config/db');
+const multer 			= require('multer');
+const path 				= require('path');
+const bodyParser 	= require('body-parser');
+const env       	= require('./esupplyEnv');          // 공통 환경 및 글로벌 변수
+const app 				= express();
+const port 				= 1092;
 
 // Multer 설정
 const storage = multer.diskStorage({
