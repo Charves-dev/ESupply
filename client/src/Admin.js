@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ProductForm from './ProductForm';
 import GoodsForm from './GoodsForm';
-import PageNation from './PageNation';
+import PageNation from './PagiNation';
 import GoodsTable from './GoodsTable';
 
 function Admin() {
@@ -150,7 +150,7 @@ console.log(res.data);
   }
 
   // currentView 값에 따라 현재 보여줄 뷰 렌더링
-  const renderContent = () => {
+  const renderContent = () => {  
     switch (currentView) {
       case 'productList':
         return (
@@ -161,10 +161,14 @@ console.log(res.data);
         )
       case 'goodsForm':
         return goodsForm();
-      case 'productForm':
-        return productForm();
       case 'goodsTable':
         return goodsTable();
+      case 'g_drop_down':
+        return goodsForm();
+      case 'productForm':
+        return productForm();
+      case 'p_drop_down':
+        return productForm();
       default:
         return null;
     }

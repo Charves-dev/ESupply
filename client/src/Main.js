@@ -3,7 +3,7 @@ import './styles/Common.css'
 import Counter from './Counter';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import PageNation from './PageNation';
+import PageNation from './PagiNation';
 
 function Main() {  
   const [orderCnt, setOrderCnt]   = useState([]);

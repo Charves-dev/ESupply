@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './styles/Common.css'
 
 const SelectBox = ({ title, options, val, setVal, index, openIndex, setOpenIndex }) => {
   const isOpen = openIndex === index; // 인덱스를 통해 열림 상태 판단
+  const [placeHolderTxt, setPlaceHolderTxt] = useState('');
 
   const handleSelect = (value) => {
     setVal(value);
@@ -17,28 +18,36 @@ const SelectBox = ({ title, options, val, setVal, index, openIndex, setOpenIndex
     if (prevOptionsRef.current !== options) {
       setVal(''); // options가 변경되면 val을 초기화
     }
-    // 현재 options를 이전 options로 업데이트
+    // 이전 options를 현재 options로 업데이트
     prevOptionsRef.current = options;
+          
+    if(options.length > 0 && (title === '' || title === null)){      
+      setPlaceHolderTxt(options[0].label);                  
+    }else{
+      setPlaceHolderTxt(title);
+    }
+    
   }, [options]); // options가 변경될 때마다 실행
-  
   
   return(
     <div>
-      <div className='inputTit'>{title}</div>
+      {title ? <div className='inputTit'>{title}</div> : ''}          
       <div className="selectBox fs14 cursor">
+        {/* selectBox */}
         <div
           className={`select ${isOpen ? 'open' : ''}`}
           onClick={() => setOpenIndex(isOpen ? null : index)} // 클릭 시 열고 닫기 토글
         >
-        { options !== '' ? 
-          <span className={val ? 'selectVal' : 'placeHolder'}>
-            {val ? options.find(option => option.value === val)?.label : title}
-          </span>
-        :
-          <span className={'placeHolder'}>{title}</span>
-        }
-        <span className="icoArrow"><img src={'/assets/Img/caret-down.png'} alt="selDown" /></span>
+          { options !== '' ? 
+            <span className={val ? 'selectVal' : 'placeHolder'}>
+              {val ? options.find(option => option.value === val)?.label : placeHolderTxt}
+            </span>
+          :
+            <span className={'placeHolder'}>{placeHolderTxt}</span>
+          }
+          <span className="icoArrow"><img src={'/assets/Img/caret-down.png'} alt="selDown" /></span>
         </div>
+        {/* dropDownMenu */}
         {isOpen && options.length > 0 && (
             <ul className="dropdown-list">
             {options.map((option) => (
