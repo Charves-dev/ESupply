@@ -89,3 +89,6 @@ values ('esupply', '(주)선아전자', '최선아', '010-2676-4550', '경기도
 insert into charves.company_info (COMPANY_ID,COMPANY_NM,MANAGER_NM,MANAGER_TEL,ADDRESS,LATITUDE,LONGITUDE)
 values ('charves', '(주)차베스전기', '손윤석', '010-6582-0385', '서울 관악구 난곡로 72길 16 4층 401호', 37.47538611, 126.9538444);
 
+-- 2024.08.14 : charves 시퀀스 생성 (주문번호 채번을 위한 시퀀스)
+CREATE OR REPLACE SEQUENCE `seq_order` start with 1 minvalue 1 maxvalue 9223372036854775806 increment by 1 cache 1000 nocycle ENGINE=InnoDB
+

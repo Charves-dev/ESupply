@@ -1,14 +1,23 @@
-const express 	= require('express');
-const cors 		= require('cors');
-const pool 		= require('./config/db');
-const multer 	= require('multer');
-const path 		= require('path');
-const bodyParser = require('body-parser');
+const express 	  = require('express');
+const session     = require('express-session');
+const cors 		    = require('cors');
+const pool 		    = require('./config/db');
+// const multer 	    = require('multer');
+const path 		    = require('path');
+const bodyParser  = require('body-parser');
+const env         = require('./CommonEnv');           // 공통 환경 및 글로벌 변수
+const OrderManager = require('./OrderManager');       // 주문관련한 모든 처리
+const app 		    = express();
+const port 		    = 7943;
 
-const env       = require('./CommonEnv');          // 공통 환경 및 글로벌 변수
-
-const app 		= express();
-const port 		= 7943;
+app.use(session({
+  secret: 'your-secret-key', // 세션 암호화를 위한 비밀 키
+  resave: false,             // 요청이 변경되지 않더라도 세션을 다시 저장할지 여부
+  saveUninitialized: false,  // 초기화되지 않은 세션을 저장할지 여부
+  cookie: {
+    maxAge: 1000 * 60 * 60,  // 세션 쿠키의 만료 시간 (여기서는 1시간으로 설정)
+  }
+}));
 
 app.use(cors());
 // app.use(express.json());
@@ -17,9 +26,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-
   res.sendFile(path.join(__dirname, '/public/index.html'));
-
 });
 
 
@@ -30,6 +37,7 @@ app.post('/login', async (req, res) => {
     conn = await pool.getConnection();
     let rtn = await conn.query(env.QG.GET_USER_LOGIN_CHECK, [userId, password]);
     if(rtn.length >= 1){
+      req.session.userId = userId;        // 로그인한 접속자의 ID를 세션에 저장해 둔다.
       let rtn1 = {
         result : 'success',
         company_id : rtn[0].COMPANY_ID,
@@ -82,6 +90,13 @@ console.log(params);
     if(conn) conn.release();
   }
 });
+
+
+
+
+
+app.post('/order/new', OrderManager.ORDER_NEW);
+
 
 
 app.listen(port, () => {

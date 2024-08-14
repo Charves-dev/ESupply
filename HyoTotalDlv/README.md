@@ -1,10 +1,10 @@
-# charves (주) 차베스전기
+# HoyTotalDlv (주)효성종합배송
 
-### 프로젝트 루트 폴더 생성 및 초기화
+### 송장번호 공식
 ```
-mkdir C:/ESupply/charves
-cd C:/ESupply/charves
-npm init -y
+송장번호(BILL_NO) = XXX(출발센터코드) + XXX(도착센터코드) + XXXXXXXX(일련번호)
+※ 일련번호는 출발센터에서 채번한다. (sequence 8자리 순환시퀀스)
+   따라서 현재 center_info 에 있는 모든 센터(295개)별로 sequence가 존재해야 한다.
 ```
 
 ### React 프로젝트 생성
@@ -55,5 +55,6 @@ npm install xml-digester
 
 ### 서버 세션관리 설정
 ```
-ESupply\charves\server> npm install express-session
+cd server 
+npm install express-session
 ```
