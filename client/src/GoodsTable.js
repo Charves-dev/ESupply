@@ -17,10 +17,13 @@ const GoodsTable = () => {
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
   const itemsPerPage = 20; // 페이지 당 항목 수
 
+  //********************************************************************************************
+  // 상품 항목 조회 및 검색 조회
+  //********************************************************************************************
   const searchResGoods = async() => {
     try {
       const res = await axios.post('http://localhost:1092/product/goodListAdm',{
-        optionNo   : optionNo === '' ? '1' : optionNo,  // 옵션선택이 없을경우 기본 1-제품명
+        optionNo   : optionNo === '' ? '1' : optionNo,  // 옵션선택이 없을경우 기본 1: 제품명
         search_txt : searchText
       });
 
@@ -34,47 +37,13 @@ const GoodsTable = () => {
       console.error('상품 목록 조회 오류:', error);
     }
   }
+  //********************************************************************************************
 
-  const handleCheck = (e, itemId) => {
-    const isChecked = e.target.checked;
-    setCheckedItems(prev =>
-      isChecked ? [...prev, itemId] : prev.filter(id => id !== itemId)
-    );
-  };
 
-  const handleCheckAll = (e) => {
-    const isChecked = e.target.checked;
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentItems = data.slice(startIndex, endIndex).map(item => item.SERIAL_NO);
 
-    setCheckedItems(isChecked 
-      ? [...checkedItems, ...currentItems.filter(id => !checkedItems.includes(id))] 
-      : checkedItems.filter(id => !currentItems.includes(id))
-    );
-    setCheckAll(isChecked);
-  };
-
-  const goodDelete = async() => {
-    try {
-      const res = await axios.post('http://localhost:1092/product/gooddel',{
-        class_id    : classId,
-        product_id  : productId,
-        serial_no   : serialNo,
-      });
-
-      console.log('상품삭제결과:', res);
-
-      if(res.data.result === 'Success'){
-        alert(`시리얼번호: ${serialNo} 삭제가 완료되었습니다.`);
-        searchResGoods();
-      }
-      
-    } catch (error) {
-      console.error('상품 삭제 오류:', error);
-    }
-  }
-
+  //********************************************************************************************
+  // 초기화
+  //********************************************************************************************
   useEffect(() => {
     searchResGoods();
     setOptionObj([
@@ -84,18 +53,144 @@ const GoodsTable = () => {
       { value: '4', label: '일렬번호' }
     ]);
   }, []);
+  //********************************************************************************************
 
+
+
+  //********************************************************************************************
+  // 단일 항목 체크/해제
+  //********************************************************************************************
+  const handleCheck = (e, item) => {
+    const isChecked = e.target.checked;
+    setCheckedItems(prev => 
+      isChecked 
+      ? [...prev, { serialNo: item.SERIAL_NO, classId: item.CLASS_ID, productId: item.PRODUCT_ID }] 
+      : prev.filter(checkedItem => checkedItem.serialNo !== item.SERIAL_NO)
+    );
+  };
+  //********************************************************************************************
+
+
+  //********************************************************************************************
+  // 항목 전체 체크/해제
+  //********************************************************************************************
+  const handleCheckAll = (e) => {
+    const isChecked = e.target.checked;
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentItems = data.slice(startIndex, endIndex);
+
+    if (isChecked) {
+        // 전체 체크할 때
+        setCheckedItems(prevCheckedItems => {
+            // currentItems(현재 페이지의 항목) 중에서 기존 checkedItems(체크된 항목들)에 없는 항목들만 추가
+            const newCheckedItems = currentItems.filter(item => 
+                !prevCheckedItems.find(checkedItem => checkedItem.serialNo === item.SERIAL_NO)
+            );
+            return [...prevCheckedItems, ...newCheckedItems.map(item => ({
+                serialNo: item.SERIAL_NO,
+                classId: item.CLASS_ID,
+                productId: item.PRODUCT_ID
+            }))];
+        });
+    } else {
+        // 전체 체크 해제할 때
+        setCheckedItems(prevCheckedItems => {
+            // 기존 checkedItems(체크된 항목들)에서 currentItems(현재 페이지의 항목)들을 제거
+            return prevCheckedItems.filter(checkedItem =>
+                !currentItems.find(item => item.SERIAL_NO === checkedItem.serialNo)
+            );
+        });
+    }
+
+    setCheckAll(isChecked);
+  };
+  //********************************************************************************************
+
+
+
+  //*********************************************************************************************
+  // 상품 삭제
+  //*********************************************************************************************
+  const goodDelete = async() => {
+
+    //*********************************************************************************************
+    // 상품 삭제 대상이 여러개(배열)인 경우
+    //*********************************************************************************************
+    if(checkedItems.length > 0){
+      let res;
+      let serial_no_message = '';
+      for (let i = 0; i < checkedItems.length; i++) {
+        let cur_serial_no = checkedItems[i].serialNo;
+        let cur_class_id = checkedItems[i].classId;
+        let cur_product_id = checkedItems[i].productId; 
+
+        try {
+          res = await axios.post('http://localhost:1092/product/gooddel',{
+            class_id    : cur_class_id,
+            product_id  : cur_product_id,
+            serial_no   : cur_serial_no,
+          });
+
+          serial_no_message += i == checkedItems.length-1 ? cur_serial_no : cur_serial_no+', ';
+        } catch (error) {
+          alert(`항목 삭제에 실패했습니다. 삭제 실패 시리얼번호: ${cur_serial_no}`)
+        }
+      }
+
+      if(res.data.result === 'Success'){
+        alert(`삭제가 완료되었습니다. 시리얼번호: ${serial_no_message} `);
+        searchResGoods();
+      }
+
+    }
+    //*********************************************************************************************
+    
+    
+    //*********************************************************************************************
+    // 단일 상품 삭제
+    //*********************************************************************************************
+    if(checkedItems.length < 0){
+      try {
+        const res = await axios.post('http://localhost:1092/product/gooddel',{
+          class_id    : classId,
+          product_id  : productId,
+          serial_no   : serialNo,
+        });
+
+        console.log('상품삭제결과:', res);
+
+        if(res.data.result === 'Success'){
+          alert(`시리얼번호: ${serialNo} 삭제가 완료되었습니다.`);
+          searchResGoods();
+        }
+        
+      } catch (error) {
+        console.error('상품 삭제 오류:', error);
+      }
+    }   
+    //********************************************************************************************* 
+  }
+  //********************************************************************************************
+
+  
+  //********************************************************************************************
+  // 단일 상품 삭제를 위한 State 설정 및 변경 감지 후 삭제 요청 실행
+  //********************************************************************************************
   useEffect(() => {
     if (classId && productId && serialNo) {
       goodDelete();
     }
   }, [classId, productId, serialNo]);
 
+  
+
   const setDelData = (classId, productId, serialNo) => {
     setClassId(classId);
     setProductId(productId);
     setSerialNo(serialNo);
   }
+  //********************************************************************************************
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
@@ -103,12 +198,15 @@ const GoodsTable = () => {
     }
   };
 
+  //********************************************************************************************
+  // 상품 항목 렌더링
+  //********************************************************************************************
   const renderProductItems = () => {
     return data.map((item, index) => {
       const isEvenRow = index % 2 === 1;
       const rowClass = `grid-item data ${isEvenRow ? 'even' : ''}`;
       const deleteClass = `grid-item data del ${isEvenRow ? 'even' : ''}`;
-      const isChecked = checkedItems.includes(item.SERIAL_NO);
+      const isChecked = checkedItems.find(checkedItem => checkedItem.serialNo === item.SERIAL_NO) !== undefined;
 
       return (
         <React.Fragment key={item.SERIAL_NO}>
@@ -116,7 +214,7 @@ const GoodsTable = () => {
             <input
               className="w18 h17"
               type="checkbox"
-              onChange={(e) => handleCheck(e, item.SERIAL_NO)}
+              onChange={(e) => handleCheck(e, item)}
               checked={isChecked}
             />
           </div>
@@ -136,9 +234,11 @@ const GoodsTable = () => {
       );
     });
   };
+  //********************************************************************************************
 
   return (
-    <div className="goodsTableWrap">                       
+    <div className="goodsTableWrap">      
+      {/* 검색 */}
       <section className='w100'> 
         <div className='flex a_i_center j_c_center mt32 mb30'>
           <div className="w50p table-search-box flex">
@@ -163,19 +263,23 @@ const GoodsTable = () => {
           </div>
         </div>  
       </section> 
+      {/* 테이블 */}
       <div className="grid-container">
         <div className="grid-item checkBox">
-          <input
-            className="w18 h17"
-            type="checkbox"
-            onChange={handleCheckAll}
-            checked={
-              data
-                .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                .every(item => checkedItems.includes(item.SERIAL_NO))
-              && data.length > 0
-            }
-          />
+        {/* 전체 체크 박스 */}
+        <input
+          className="w18 h17"
+          type="checkbox"
+          onChange={handleCheckAll}
+          checked={
+            data
+              .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+              .every(item => 
+                checkedItems.some(checkedItem => checkedItem.serialNo === item.SERIAL_NO)
+              )
+            && data.length > 0
+          }
+        />
         </div>
         <div className="grid-item header">모델ID</div>
         <div className="grid-item header">제품ID</div>
@@ -185,7 +289,7 @@ const GoodsTable = () => {
         <div className="grid-item header">일렬번호</div>
         <div className="grid-item header">상품삭제</div> 
 
-        {/* 상품목록 */}
+        {/* 상품목록 페이지 네이션 */}
         <PageNation data={renderProductItems()} itemsPerPage={itemsPerPage} type={'table'} onPageChange={setCurrentPage} />             
       </div>
     </div>
