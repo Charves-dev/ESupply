@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SelectBox from './SelectBox';
 import CommonAlert from './CommonAlert';
+import AdminHeader from "./AdminHeader";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const ProductForm = () => {
   const [image, setImage] = useState(null);
@@ -18,6 +20,7 @@ const ProductForm = () => {
   const [openIndex, setOpenIndex] = useState(null); // 열려 있는 셀렉트 박스의 인덱스를 저장
   const [commCode, setCommCode] = useState([]);
   const [alert, setAlert] = useState({ visible: false, type: '', text: '', reload: false });
+  const navigate = useNavigate();
 
   const commCodeList = async () => {
     try {
@@ -161,87 +164,101 @@ const ProductForm = () => {
   };
 
   const reloadPage = () =>{
-    window.location.reload()
+    handleMenuClick('productList')
   }
+
+  //********************************************************************************************
+  // admin 헤더 메뉴 클릭시 호출되는 함수 
+  // URL에 'view' 파라미터를 설정하여 클릭된 뷰를 표시하도록 한다
+  //********************************************************************************************
+  const handleMenuClick = (view) => {    
+    navigate(`/admin?view=${view}`);
+  };
+  //********************************************************************************************
 
   return (        
     <form encType="multipart/form-data" onSubmit={handleSubmit}>
-      <div className='formWrap flex f_d_column a_i_center j_c_center'>
-        <div className='formTit w100'>제품 등록</div>             
-        <div className='flex w100'>                    
-          <section className='w100'>
-            <div className='formLeft'>                
-              <SelectBox title={'모델ID'} options={commCode} val={classId} setVal={setClassId} index={0} openIndex={openIndex} setOpenIndex={setOpenIndex}/>      
-              {/* <SelectBox title={'제품ID'} options={commProduct} val={productId} setVal={setProductId} index={1} openIndex={openIndex} setOpenIndex={setOpenIndex}/>                       */}
-              <div className='inputTit'>제품ID</div>
-              <input type="text" name="product_id" value={productId} onChange={(e) => setProductId(e.target.value)} placeholder="제품ID" />              
-              <div className='inputTit'>제품명</div>
-              <input type="text" name="product_nm" value={productName} onChange={(e) => setProductName(e.target.value)} placeholder="제품명" />
-              <div className='inputTit'>기본가격</div>
-              <input type="text" name="price" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="기본가격" />
-              <div className='inputTit'>무게</div>
-              <input type="text" name="weight" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="무게" />
-              <div className='inputTit'>너비</div>
-              <input type="text" name="size_h" value={sizeV} onChange={(e) => setSizeV(e.target.value)} placeholder="가로크기" />
-              <div className='inputTit'>길이</div>
-              <input type="text" name="size_v" value={sizeZ} onChange={(e) => setSizeZ(e.target.value)} placeholder="세로크기" />
-              <div className='inputTit'>높이</div>
-              <input type="text" name="size_z" value={sizeH} onChange={(e) => setSizeH(e.target.value)} placeholder="높이" />
-            </div>
-          </section>
-          <section className='w100'>
-            <div className='formRight'>
-              <div className='inputTit'>사진 등록</div>
-              {/* 실제 파일 입력 필드 (숨겨진 상태) */}
-              <input
-                type="file"
-                name="image"
-                onChange={handleImageChange}
-                style={{ display: 'none' }}
-                id="fileInput"
-              />
-
-              <div className='flex mb15'>
-                {/* 커스텀 파일 선택 버튼 */}
-                <button type='button' className='file-sel-btn mr11 cursor' onClick={() => document.getElementById('fileInput').click()}>
-                  파일 선택
-                </button>
-
-                {/* 선택된 파일명 표시 */}            
-                <input className="file-name mb0" value={`${selectedFileName}`} placeholder='파일명' readOnly/>
-              </div>
-
-              {/* 이미지 미리 보기 */}
-              {previewUrl ? (
-                <div>                
-                  <img style={{width: '100%', height: 'auto', objectFit: 'contain' }} src={previewUrl} alt="Uploaded" />
-                  <div className='mt15 mb8 fs14' style={{color: '#a9a9a9'}}>썸네일</div>
-                  <img style={{width: '141px', height: '138px', objectFit: 'cover', backgroundPosition: 'center'}} src={previewUrl} alt="Uploaded" />
+      <div className='adminWrap'>
+        <div className='adminContent content'>
+          <AdminHeader currentView={'goodsTable'} setCurrentView={handleMenuClick} /> 
+          <div className='formWrap flex f_d_column a_i_center j_c_center'>
+            <div className='formTit w100'>제품 등록</div>             
+            <div className='flex w100'>                    
+              <section className='w100'>
+                <div className='formLeft'>                
+                  <SelectBox title={'모델ID'} options={commCode} val={classId} setVal={setClassId} index={0} openIndex={openIndex} setOpenIndex={setOpenIndex}/>                        
+                  <div className='inputTit'>제품ID</div>
+                  <input type="text" name="product_id" value={productId} onChange={(e) => setProductId(e.target.value)} placeholder="제품ID" />              
+                  <div className='inputTit'>제품명</div>
+                  <input type="text" name="product_nm" value={productName} onChange={(e) => setProductName(e.target.value)} placeholder="제품명" />
+                  <div className='inputTit'>기본가격</div>
+                  <input type="text" name="price" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="기본가격" />
+                  <div className='inputTit'>무게</div>
+                  <input type="text" name="weight" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="무게" />
+                  <div className='inputTit'>너비</div>
+                  <input type="text" name="size_h" value={sizeV} onChange={(e) => setSizeV(e.target.value)} placeholder="가로크기" />
+                  <div className='inputTit'>길이</div>
+                  <input type="text" name="size_v" value={sizeZ} onChange={(e) => setSizeZ(e.target.value)} placeholder="세로크기" />
+                  <div className='inputTit'>높이</div>
+                  <input type="text" name="size_z" value={sizeH} onChange={(e) => setSizeH(e.target.value)} placeholder="높이" />
                 </div>
-              ) : (
-                <div>
-                  <div className='noneImgBox w100 flex a_i_center j_c_center bgSlate100 mb40'> 이미지를 업로드 해주세요 </div>
-                  <div className='noneImgThumb flex a_i_center j_c_center bgSlate100'>썸네일</div>
+              </section>
+              <section className='w100'>
+                <div className='formRight'>
+                  <div className='inputTit'>사진 등록</div>
+                  {/* 실제 파일 입력 필드 (숨겨진 상태) */}
+                  <input
+                    type="file"
+                    name="image"
+                    onChange={handleImageChange}
+                    style={{ display: 'none' }}
+                    id="fileInput"
+                  />
+
+                  <div className='flex mb15'>
+                    {/* 커스텀 파일 선택 버튼 */}
+                    <button type='button' className='file-sel-btn mr11 cursor' onClick={() => document.getElementById('fileInput').click()}>
+                      파일 선택
+                    </button>
+
+                    {/* 선택된 파일명 표시 */}            
+                    <input className="file-name mb0" value={`${selectedFileName}`} placeholder='파일명' readOnly/>
+                  </div>
+
+                  {/* 이미지 미리 보기 */}
+                  {previewUrl ? (
+                    <div>                
+                      <img style={{width: '100%', height: 'auto', objectFit: 'contain' }} src={previewUrl} alt="Uploaded" />
+                      <div className='mt15 mb8 fs14' style={{color: '#a9a9a9'}}>썸네일</div>
+                      <img style={{width: '141px', height: '138px', objectFit: 'cover', backgroundPosition: 'center'}} src={previewUrl} alt="Uploaded" />
+                    </div>
+                  ) : (
+                    <div>
+                      <div className='noneImgBox w100 flex a_i_center j_c_center bgSlate100 mb40'> 이미지를 업로드 해주세요 </div>
+                      <div className='noneImgThumb flex a_i_center j_c_center bgSlate100'>썸네일</div>
+                    </div>
+                  )}
+                  <div className='w100 flex mb19'>
+                    <button type="submit" className='w100 h40 mt46 mr25 bgSlate100 fs14 cursor'>저장</button>
+                    <button type="button" className='w100 h40 mt46 cursor fs14 cancle' onClick={reloadPage}>취소</button>
+                  </div>
+                  <button type="button" onClick={deleteProduct} className='w100 delete fs16 cursor'>제품삭제</button>
                 </div>
-              )}
-              <div className='w100 flex mb19'>
-                <button type="submit" className='w100 h40 mt46 mr25 bgSlate100 fs14 cursor'>저장</button>
-                <button type="button" className='w100 h40 mt46 cursor fs14 cancle' onClick={reloadPage}>취소</button>
-              </div>
-              <button type="button" onClick={deleteProduct} className='w100 delete fs16 cursor'>제품삭제</button>
-            </div>
-          </section>
-        </div> 
-      </div>     
-      <div className='alertBg w100 h100' id='customAlertBg'></div>
-      {alert.visible && (
-        <CommonAlert
-          type={alert.type}
-          text={alert.text}
-          reload={alert.reload}
-          onClose={setCloseAlert}          
-        />
-      )}
+              </section>
+            </div> 
+          </div>     
+          <div className='alertBg w100 h100' id='customAlertBg'></div>
+          {alert.visible && (
+            <CommonAlert
+              type={alert.type}
+              text={alert.text}
+              reload={alert.reload}
+              reloadPage={'/admin'}
+              onClose={setCloseAlert}          
+            />
+          )}
+        </div>
+      </div>
     </form>    
   );
 };

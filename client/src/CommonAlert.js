@@ -1,6 +1,8 @@
 import React, {useEffect} from "react";
+import { useNavigate } from "react-router-dom";
 
-const CommonAlert = ({text, type, onClose, reload }) => {
+const CommonAlert = ({text, type, onClose, reload, reloadPage}) => {
+  const navigate = useNavigate();
 
   useEffect(() => {
     setAlertType();
@@ -13,7 +15,7 @@ const CommonAlert = ({text, type, onClose, reload }) => {
     document.getElementById('customAlertBg').style.display = 'none';    
     if(reload){
       //페이지 새로고침
-      window.location.reload();
+      navigate(reloadPage);
     }
   }
 

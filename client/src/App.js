@@ -4,18 +4,25 @@ import Main from './Main';
 import DeliveryView from './DeliveryView.js';
 import AdminView from './Admin.js';
 import PartList from './PartList.js';
+import GoodsForm from './GoodsForm.js';
+import GoodsTable from './GoodsTable.js';
+import ProductForm from './ProductForm.js';
 
 function App() {
   return (
     <Router>
       <div className="App">        
         <Routes>
-          <Route path="/" element={<Login/>} />
-          <Route path="/login" element={<Login/>} />
-          <Route path="/main" element={<Main />} />
+          <Route path="/"             element={<Login/>} />
+          <Route path="/login"        element={<Login/>} />
+          <Route path="/main"         element={<Main />} />
           <Route path="/deliveryView" element={<DeliveryView />} />
-          <Route path="/admin" element={<AdminView />} />
-          <Route path="/partList" element={<PartList />} />
+          <Route path="/admin"        element={<AdminView />} />
+          <Route path="/partList"     element={<PartList />} />
+          <Route path="/GoodDetail"   element={<GoodsForm />} />
+          <Route path="/GoodsTable"   element={<GoodsTable />} />
+          <Route path="/GoodsForm"    element={<GoodsForm />} />
+          <Route path='/ProductForm'  element={<ProductForm />} />
         </Routes>
       </div>
     </Router>

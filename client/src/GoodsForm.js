@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import SelectBox from './SelectBox';
 import CommonAlert from './CommonAlert';
+import AdminHeader from "./AdminHeader";
+import { useNavigate, useLocation } from 'react-router-dom';
 
-const GoodsForm = ({detail='false', detailData=[], onBackToList}) => {  
+const GoodsForm = ({detail='false', detailData=[], setViewDetail}) => {  
   const [classId, setClassId] = useState('');
   const [productId, setProductId] = useState('');
   const [productName, setProductName] = useState('');
@@ -18,12 +20,14 @@ const GoodsForm = ({detail='false', detailData=[], onBackToList}) => {
   const [commProduct, setCommProduct] = useState([]);
   const [alert, setAlert] = useState({ visible: false, type: '', text: '', reload: false });  
   const [isLoading, setIsLoading] = useState(true); // 이미지 로딩 상태를 관리하는 상태 변수
+  const navigate = useNavigate();
+
 
 
   //***********************************************************************************************
   // 공통 코드 리스트
   //***********************************************************************************************
-  const commCodeList = async () => {
+  const commCodeList = async () => {    
     try {
       const res = await axios.get('http://localhost:1092/comm/codelist', {
         params: {
@@ -36,6 +40,8 @@ const GoodsForm = ({detail='false', detailData=[], onBackToList}) => {
         label: `${item.CODE_ID} (${item.CODE_NM})`,
       }));
 
+      // console.log(res);
+      
       setCommCode(resCodes);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -63,8 +69,8 @@ const GoodsForm = ({detail='false', detailData=[], onBackToList}) => {
           name: `${item.PRODUCT_NM}`,          
         }));
         
-        console.log('resProducts');
-        console.log(resProducts);        
+        // console.log('resProducts');
+        // console.log(resProducts);        
         
         setCommProduct(resProducts);      
       }else{
@@ -103,9 +109,14 @@ const GoodsForm = ({detail='false', detailData=[], onBackToList}) => {
   //***********************************************************************************************
   // 초기화
   //***********************************************************************************************
-  useEffect(() => {        
-    searchResProducts();       
-    commCodeList();
+  useEffect(() => {       
+    console.log(detail);
+    console.log(detail === 'false');
+    
+    if(detail === 'false'){       
+      searchResProducts();       
+      commCodeList();
+    }
   }, []);
   //***********************************************************************************************
 
@@ -115,7 +126,7 @@ const GoodsForm = ({detail='false', detailData=[], onBackToList}) => {
   //***********************************************************************************************
   useEffect(() => {
     if(detail === true){     
-      console.log(detailData);
+      // console.log(detailData);
        
       const detail_item_date = detailData.MANUFACTURING_DTTM;
       let year = detail_item_date.substring(0,4);
@@ -128,7 +139,7 @@ const GoodsForm = ({detail='false', detailData=[], onBackToList}) => {
       setLotNo(detailData.LOT_NO);     
       setSerialNo(detailData.SERIAL_NO)            
     }
-
+    
     if(productName !== '' && productId !== ''){
       searchResProducts(); 
     }
@@ -228,7 +239,7 @@ const GoodsForm = ({detail='false', detailData=[], onBackToList}) => {
   };
 
   const reloadPage = () =>{
-    window.location.reload()
+    handleMenuClick('productList');
   }
 
   // 이미지 로드 완료 시 호출되는 함수
@@ -236,113 +247,134 @@ const GoodsForm = ({detail='false', detailData=[], onBackToList}) => {
     setIsLoading(false); // 로딩 상태를 false로 변경하여 로딩 메시지를 숨김
   };
 
+  const onBackToList = () =>{    
+    setViewDetail(false);
+  }
+
+
+  //********************************************************************************************
+  // admin 헤더 메뉴 클릭시 호출되는 함수 
+  // URL에 'view' 파라미터를 설정하여 클릭된 뷰를 표시하도록 한다
+  //********************************************************************************************
+  const handleMenuClick = (view) => {    
+    navigate(`/admin?view=${view}`);
+  };
+  //********************************************************************************************
+
+
   return (        
     <form encType="multipart/form-data" onSubmit={handleSubmit}>
-      <div className='formWrap flex f_d_column a_i_center j_c_center'>
-        <div className='formTit w100'>{detail === true ? '상품 상세': '상품 입고'}</div>             
-        <div className='flex w100'>                    
-          <section className='w100'>
-            <div className='formLeft'>                   
-              {detail === true ?
-              <>
-                <div className='inputTit'>모델ID</div>
-                <input type="text" name="class_id" value={classId} placeholder="모델ID" readOnly />  
-                <div className='inputTit'>제품ID</div>
-                <input type="text" name="product_id" value={productId} placeholder="제품ID" readOnly />  
-              </>
-              :         
-              <>
-                <SelectBox title={'모델ID'} options={commCode} val={classId} setVal={setClassId} index={0} openIndex={openIndex} setOpenIndex={setOpenIndex}/>      
-                <SelectBox title={'제품ID'} options={commProduct} val={productId} setVal={setProductId} index={1} openIndex={openIndex} setOpenIndex={setOpenIndex}/>                                    
-              </>
-              }              
-              <div className='inputTit'>제품명</div>
-              <input type="text" name="product_nm" value={productName} onChange={(e) => setProductName(e.target.value)} placeholder="제품명" readOnly={detail === true}  />
-              <div className='inputTit'>제조일시</div>
-              <input type="text" name="manufacturing_dttm" value={MFD} onChange={(e) => setMFD(e.target.value)} placeholder="제조일시" />
-              <div className='inputTit'>제조라인</div>
-              <input type="text" name="lot_no" value={lotNo} onChange={(e) => setLotNo(e.target.value)} placeholder="제조라인" />
-              {detail === true ? 
-                <>
-                  <div className='inputTit'>상품 시리얼 번호</div>
-                  <input type="text" name="serial_no" value={serialNo} placeholder="상품시리얼번호" readOnly />
-                </>
-              :
-                <>
-                  <div className='inputTit'>상품개수</div>
-                  <input type="number" name="count" value={count} onChange={(e) => setCount(e.target.value)} placeholder="상품개수" />
-                </>
-              }
-            </div>
-          </section>
-          <section className='w100'>
-            <div className='formRight'>  
-              <div className='inputTit'>등록된 사진</div>          
-              {/* 제품 이미지 불러오기 */}
-              {previewUrl && previewUrl !== 'null' ? (                
-                <div>
-                  {isLoading && (
-                    <div style={{ width: '100%', textAlign: 'center', color: '#a9a9a9' }}>
-                      로딩 중...
-                    </div>
-                  )}
-                  <img
-                    style={{
-                      width: '100%',
-                      height: 'auto',
-                      objectFit: 'contain',
-                      display: isLoading ? 'none' : 'block' // 로딩 중에는 숨김
-                    }}
-                    src={`/assets/Img/${previewUrl}`}
-                    alt="Uploaded"
-                    onLoad={handleImageLoad} // 이미지가 로드되면 상태 변경
-                  />
-                  {!isLoading && (
+      <div className='adminWrap'>
+        <div className={detail === true ? 'w100' : 'adminContent content'}>
+          <AdminHeader currentView={'goodsTable'} setCurrentView={handleMenuClick} /> 
+          <div className='formWrap flex f_d_column a_i_center j_c_center'>
+            <div className='formTit w100'>{detail === true ? '상품 상세': '상품 입고'}</div>             
+            <div className='flex w100'>                    
+              <section className='w100'>
+                <div className='formLeft'>                   
+                  {detail === true ?
+                  <>
+                    <div className='inputTit'>모델ID</div>
+                    <input type="text" name="class_id" value={classId} placeholder="모델ID" readOnly />  
+                    <div className='inputTit'>제품ID</div>
+                    <input type="text" name="product_id" value={productId} placeholder="제품ID" readOnly />  
+                  </>
+                  :         
+                  <>
+                    <SelectBox title={'모델ID'} options={commCode} val={classId} setVal={setClassId} index={0} openIndex={openIndex} setOpenIndex={setOpenIndex}/>      
+                    <SelectBox title={'제품ID'} options={commProduct} val={productId} setVal={setProductId} index={1} openIndex={openIndex} setOpenIndex={setOpenIndex}/>                                    
+                  </>
+                  }              
+                  <div className='inputTit'>제품명</div>
+                  <input type="text" name="product_nm" value={productName} onChange={(e) => setProductName(e.target.value)} placeholder="제품명" readOnly={detail === true}  />
+                  <div className='inputTit'>제조일시</div>
+                  <input type="text" name="manufacturing_dttm" value={MFD} onChange={(e) => setMFD(e.target.value)} placeholder="제조일시" />
+                  <div className='inputTit'>제조라인</div>
+                  <input type="text" name="lot_no" value={lotNo} onChange={(e) => setLotNo(e.target.value)} placeholder="제조라인" />
+                  {detail === true ? 
                     <>
-                      <div className='mt15 mb8 fs14' style={{ color: '#a9a9a9' }}>썸네일</div>
+                      <div className='inputTit'>상품 시리얼 번호</div>
+                      <input type="text" name="serial_no" value={serialNo} placeholder="상품시리얼번호" readOnly />
+                    </>
+                  :
+                    <>
+                      <div className='inputTit'>상품개수</div>
+                      <input type="number" name="count" value={count} onChange={(e) => setCount(e.target.value)} placeholder="상품개수" />
+                    </>
+                  }
+                </div>
+              </section>
+              <section className='w100'>
+                <div className='formRight'>  
+                  <div className='inputTit'>등록된 사진</div>          
+                  {/* 제품 이미지 불러오기 */}
+                  {previewUrl && previewUrl !== 'null' ? (                
+                    <div>
+                      {isLoading && (
+                        <div style={{ width: '100%', textAlign: 'center', color: '#a9a9a9' }}>
+                          로딩 중...
+                        </div>
+                      )}
                       <img
                         style={{
-                          width: '141px',
-                          height: '138px',
-                          objectFit: 'cover',
-                          backgroundPosition: 'center',
+                          width: '100%',
+                          height: 'auto',
+                          objectFit: 'contain',
+                          display: isLoading ? 'none' : 'block' // 로딩 중에는 숨김
                         }}
                         src={`/assets/Img/${previewUrl}`}
                         alt="Uploaded"
+                        onLoad={handleImageLoad} // 이미지가 로드되면 상태 변경
                       />
-                    </>
-                  )}
-                </div>               
-              ) : (
-                // 이미지가 없는경우 기본 박스 렌더링
-                <div>
-                  <div className='noneImgBox w100 flex a_i_center j_c_center bgSlate100 mb40'>이미지</div>
-                  <div className='noneImgThumb flex a_i_center j_c_center bgSlate100'>썸네일</div>
+                      {!isLoading && (
+                        <>
+                          <div className='mt15 mb8 fs14' style={{ color: '#a9a9a9' }}>썸네일</div>
+                          <img
+                            style={{
+                              width: '141px',
+                              height: '138px',
+                              objectFit: 'cover',
+                              backgroundPosition: 'center',
+                            }}
+                            src={`/assets/Img/${previewUrl}`}
+                            alt="Uploaded"
+                          />
+                        </>
+                      )}
+                    </div>               
+                  ) : (
+                    // 이미지가 없는경우 기본 박스 렌더링
+                    <div>
+                      <div className='noneImgBox w100 flex a_i_center j_c_center bgSlate100 mb40'>이미지</div>
+                      <div className='noneImgThumb flex a_i_center j_c_center bgSlate100'>썸네일</div>
+                    </div>
+                  )}                            
                 </div>
-              )}                            
-            </div>
-          </section>
-        </div>         
-        {detail === true ? 
-          <div className='w100 flex a_i_center j_c_center mb19'>
-            <button type="button" className='w168 h40 mt116 mr25 bgSlate100 fs14 cursor' onClick={onBackToList}>목록으로 가기</button>            
-          </div>   
-        :
-          <div className='w100 flex a_i_center j_c_center mb19'>
-            <button type="submit" className='w168 h40 mt116 mr25 bgSlate100 fs14 cursor'>저장</button>
-            <button type="button" className='w160 h40 mt116 mr38 cursor fs14 cancle' onClick={reloadPage}>취소</button>
-          </div>        
-        }
-      </div>     
-      <div className='alertBg w100 h100' id='customAlertBg'></div>
-      {alert.visible && (
-        <CommonAlert
-          type={alert.type}
-          text={alert.text}
-          reload={alert.reload}
-          onClose={setCloseAlert}          
-        />
-      )}
+              </section>
+            </div>         
+            {detail === true ? 
+              <div className='w100 flex a_i_center j_c_center mb19'>
+                <button type="button" className='w168 h40 mt116 mr25 bgSlate100 fs14 cursor' onClick={onBackToList}>목록으로 가기</button>            
+              </div>   
+            :
+              <div className='w100 flex a_i_center j_c_center mb19'>
+                <button type="submit" className='w168 h40 mt116 mr25 bgSlate100 fs14 cursor'>저장</button>
+                <button type="button" className='w160 h40 mt116 mr38 cursor fs14 cancle' onClick={reloadPage}>취소</button>
+              </div>        
+            }
+          </div>     
+          <div className='alertBg w100 h100' id='customAlertBg'></div>
+          {alert.visible && (
+            <CommonAlert
+              type={alert.type}
+              text={alert.text}
+              reload={alert.reload}
+              reloadPage={'/admin'}
+              onClose={setCloseAlert}          
+            />
+          )}
+        </div>
+      </div>
     </form>    
   );
 }
