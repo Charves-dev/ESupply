@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import CompanyList from './CustomerList';
 //import { useEffect } from 'react';
-import './Main.css';  // CSS 파일을 import
+import '../Common.css';  // CSS 파일을 import
 
 const Main = ({userData}) => {
   const [showCustomerList, setShowCustomerList] = useState(false);
@@ -30,9 +30,9 @@ const Main = ({userData}) => {
   }
 
   return (
-    <div className="main-container">
+    <div className="centerContainer">
       <h2>(주)차베스전기</h2>
-      <table>
+      <table className="centerTable edgeLine">
         <colgroup>
           <col width="35%"></col>
           <col width="*"></col>
@@ -43,16 +43,16 @@ const Main = ({userData}) => {
           </tr>
         </thead>
         <tbody>
-          <tr><th>회사아이디</th><td>{userData.company_id}</td></tr>
-          <tr><th>회사명</th><td>{userData.company_nm}</td></tr>
-          <tr><th>사용자명</th><td>{userData.user_nm}</td></tr>
-          <tr><th>사용자아이디</th><td>{userData.user_id}</td></tr>
+          <tr><th className="centerTd edgeLine">회사아이디</th><td className="centerTd edgeLine">{userData.company_id}</td></tr>
+          <tr><th className="centerTd edgeLine">회사명</th><td className="centerTd edgeLine">{userData.company_nm}</td></tr>
+          <tr><th className="centerTd edgeLine">사용자명</th><td className="centerTd edgeLine">{userData.user_nm}</td></tr>
+          <tr><th className="centerTd edgeLine">사용자아이디</th><td className="centerTd edgeLine">{userData.user_id}</td></tr>
         </tbody>
       </table>
       <br></br>
-      <label class="centerText">메뉴</label> 
+      <label class="centerText edgeLine">메뉴</label> 
       <ul>
-        <li onClick={goCustomerList} class="cursorHand">
+        <li onClick={goCustomerList} class="cursorHand edgeLine">
           고객사관리
         </li>
       </ul>

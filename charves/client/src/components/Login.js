@@ -1,7 +1,7 @@
 // src/components/Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
-import './Login.css';  // CSS 파일을 import
+import '../Common.css';  // CSS 파일을 import
 
 const Login = ({ onLogin }) => {
   const [userId, setUserId] = useState('');
@@ -30,7 +30,7 @@ const Login = ({ onLogin }) => {
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          <label>니 이름이뭐니?:</label>
+          <label>아이디 :</label>
           <input
             type="text"
             value={userId}
@@ -38,7 +38,7 @@ const Login = ({ onLogin }) => {
           />
         </div>
         <div>
-          <label>비번은? :</label>
+          <label>비밀번호 :</label>
           <input
             type="password"
             value={password}

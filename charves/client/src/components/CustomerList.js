@@ -8,14 +8,14 @@ const CustomerList = ({ customerDatas }) => {
   // console.log("customerDatas:", customerDatas);
   // console.log(customerDatas[0]);
   return(
-    <div>
+    <div className = 'centerContainer'> 
       <h2>고객사목록 화면</h2>
-      <table>
+      <table className="centerTable">
         <colgroup>
-          <col width="15%" align="center"></col>
-          <col width="25%" align="center"></col>
-          <col width="15%" align="center"></col>
-          <col width="15%" align="center"></col>
+          <col width="15%"></col>
+          <col width="25%"></col>
+          <col width="15%"></col>
+          <col width="15%"></col>
           <col width="30%"></col>
         </colgroup>
         <thead>
@@ -30,11 +30,11 @@ const CustomerList = ({ customerDatas }) => {
         <tbody>
           {customerDatas.data.map((customer, index) => (
             <tr key={index}>
-              <td>{customer.COMPANY_ID}</td>
-              <td>{customer.COMPANY_NM}</td>
-              <td>{customer.MANAGER_NM}</td>
-              <td>{customer.MANAGER_TEL}</td>
-              <td>{customer.ADDRESS}</td>
+              <td className="centerTd">{customer.COMPANY_ID}</td>
+              <td className="centerTd">{customer.COMPANY_NM}</td>
+              <td className="centerTd">{customer.MANAGER_NM}</td>
+              <td className="centerTd">{customer.MANAGER_TEL}</td>
+              <td className="leftTd">{customer.ADDRESS}</td>
             </tr>
           ))}
         </tbody>

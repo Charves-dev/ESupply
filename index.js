@@ -1,12 +1,14 @@
-const express 		= require('express');
-const cors 				= require('cors');
-const pool 				= require('./config/db');
-const multer 			= require('multer');
-const path 				= require('path');
-const bodyParser 	= require('body-parser');
-const env       	= require('./esupplyEnv');          // 공통 환경 및 글로벌 변수
-const app 				= express();
-const port 				= 1092;
+const express 			= require('express');
+const swaggerUi 		= require('swagger-ui-express');
+const swaggerJsdoc 	= require('swagger-jsdoc');
+const cors 					= require('cors');
+const pool 					= require('./config/db');
+const multer 				= require('multer');
+const path 					= require('path');
+const bodyParser 		= require('body-parser');
+const env       		= require('./esupplyEnv');          // 공통 환경 및 글로벌 변수
+const app 					= express();
+const port 					= 1092;
 
 // Multer 설정
 const storage = multer.diskStorage({
@@ -17,17 +19,33 @@ const storage = multer.diskStorage({
 		cb(null, Date.now() + path.extname(file.originalname));
 	}
 });
-  
 const upload = multer({ storage: storage });
+
+// Swagger 설정 옵션
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'API Documentation',
+      version: '1.0.0',
+      description: 'API 서버에 대한 설명입니다.',
+    },
+    servers: [
+      {
+        url: 'http://localhost:1092',
+      },
+    ],
+  },
+  apis: ['./index.js'], // JSDoc 주석이 들어갈 파일 위치
+};
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
 // Static 파일 제공을 위한 설정
 app.use('/uploads', express.static('client/public/assets/Img'));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(cors());
 
-
-//app.use(express.json());
-//app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -84,6 +102,21 @@ app.post('/upload', upload.single('image'), (req, res) => {
 //*************************************************************************************************
 //
 //*************************************************************************************************
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: "현재는 로그인에 입력했던 이름과 아이디를 반환합니다."
+ *     description: "간단하게 로그인하는 API입니다(제대로 로그인처리 안되고 있음)"
+ *     responses:
+ *       200:
+ *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: "Hello World!"
+ */
 app.post('/login', (req, res) => {
 	//console.log(req.body);
 	const { userName, userId } = req.body;

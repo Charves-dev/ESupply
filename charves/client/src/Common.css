@@ -1,0 +1,99 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* 뷰포트 높이를 100%로 설정 */
+}
+
+.main {
+  background-color: lightblue;
+  padding: 20px;
+}
+
+h1 {
+  color: navy;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* 뷰포트 높이를 100%로 설정 */
+}
+
+.centerContainer {
+  display: flex;
+  flex-direction: column;  /* 자식 요소들을 세로로 배치 */
+  justify-content: center; /* 가로 가운데 정렬 */
+  align-items: center;     /* 세로 가운데 정렬 (선택 사항) */
+  height: 100vh;           /* 세로 중앙 정렬을 위한 부모 요소 높이 (선택 사항) */
+}
+
+.company-list {
+  background-color: lightgreen;
+  padding: 20px;
+}
+
+.centerTable {
+  justify-content: center;
+}
+
+.edgeLine {
+  border: 1px solid #444444;
+}
+
+.centerTd {
+  text-align: center;
+}
+
+.leftTd {
+  text-align: left;
+}
+
+ul {
+  list-style-type: none;
+}
+
+li {
+  padding: 5px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  width: 300px; /* 원하는 폼의 너비 */
+}
+
+form div {
+  margin-bottom: 15px; /* 폼 항목 간의 간격 */
+}
+
+button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+label {
+  width:120px;
+  display: inline-block; /* 인라인 블록으로 변경 */
+}
+
+
+
+.centerText {
+  text-align: center;
+}
+
+.cursorHand {
+  cursor:pointer;
+}
+
