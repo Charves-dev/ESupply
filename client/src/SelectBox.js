@@ -14,8 +14,8 @@ const SelectBox = ({ title, options, val, setVal, index, openIndex, setOpenIndex
   const prevOptionsRef = useRef(options);
   
   useEffect(() => {
-    // 이전 options와 현재 options를 비교
-    if (prevOptionsRef.current !== options) {
+    // 이전 options와 현재 options를 비교 && 초기 렌더링 시에는 초기화하지 않음
+    if (prevOptionsRef.current !== options && prevOptionsRef.current.length > 0) {      
       setVal(''); // options가 변경되면 val을 초기화
     }
     // 이전 options를 현재 options로 업데이트

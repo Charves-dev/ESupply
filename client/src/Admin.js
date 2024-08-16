@@ -18,6 +18,7 @@ function Admin() {
   const [isMenuHovered, setIsMenuHovered] = useState(false);
   const [isGoodsLiHovered, setIsGoodsLiHovered] = useState(false);
   const [isGoodsMenuHovered, setIsGoodsMenuHovered] = useState(false);
+  const [resetKey, setResetKey] = useState(0); // 초기화 키
   const navigate = useNavigate();
 
   // **********************************************************************************************
@@ -141,8 +142,14 @@ console.log(res.data);
 
   // 상품목록 테이블 반환
   const goodsTable = () => {
-    return <GoodsTable/>
+    return <GoodsTable resetKey={resetKey} onBackToList={() => handleViewChange('goodsTable')}/>
   }
+
+  // 화면 리프레시
+  const handleViewChange = (view) => {
+    setCurrentView(view);
+    setResetKey(prevKey => prevKey + 1); // 키를 변경하여 강제로 리렌더링
+  };
 
   // 제품등록 폼 반환
   const productForm = () => {    
@@ -227,6 +234,9 @@ console.log(res.data);
   const dropDownMenuClick = (view) => {
     // console.log(`Setting current view to: ${view}`);
     setCurrentView(view);
+    if (view === 'goodsTable') {
+      setResetKey(prevKey => prevKey + 1); // 키를 변경하여 강제로 리렌더링
+    }
     // 드롭다운 메뉴를 숨기기 위해 상태 초기화
     setIsLiHovered(false);
     setIsMenuHovered(false);

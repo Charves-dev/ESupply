@@ -2,19 +2,22 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import SelectBox from './SelectBox';
 import PageNation from './PagiNation';
+import GoodsForm from "./GoodsForm";
 
-const GoodsTable = () => {
-  const [data, setData] = useState([]); // 상품 목록 데이터
-  const [checkedItems, setCheckedItems] = useState([]); // 체크된 항목의 ID
-  const [classId, setClassId] = useState('');
-  const [productId, setProductId] = useState('');
-  const [serialNo, setSerialNo] = useState('');
-  const [optionNo, setOptionNo] = useState('');
-  const [optionObj, setOptionObj] = useState([]);  
-  const [searchText, setSearchText] = useState('');
-  const [openIndex, setOpenIndex] = useState(null); // 열려 있는 셀렉트 박스의 인덱스를 저장
-  const [checkAll, setCheckAll] = useState(false); // 전체 선택 상태
-  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
+const GoodsTable = ({ resetKey, onBackToList }) => {
+  const [data, setData] = useState([]);                    // 상품 목록 데이터
+  const [checkedItems, setCheckedItems] = useState([]);    // 체크된 항목의 ID
+  const [classId, setClassId]           = useState('');
+  const [productId, setProductId]       = useState('');
+  const [serialNo, setSerialNo]         = useState('');
+  const [optionNo, setOptionNo]         = useState('');
+  const [optionObj, setOptionObj]       = useState([]);  
+  const [searchText, setSearchText]     = useState('');
+  const [openIndex, setOpenIndex]       = useState(null);  // 열려 있는 셀렉트 박스의 인덱스를 저장
+  const [checkAll, setCheckAll]         = useState(false); // 전체 선택 상태
+  const [currentPage, setCurrentPage]   = useState(1);     // 현재 페이지 번호
+  const [viewDetail, setViewDetail]     = useState(false); // 상품 상세 화면 렌더링 조건
+  const [detailItem, setDetailItem]     = useState([]);    // 상품 상세 데이터
   const itemsPerPage = 20; // 페이지 당 항목 수
 
   //********************************************************************************************
@@ -27,8 +30,8 @@ const GoodsTable = () => {
         search_txt : searchText
       });
 
-      console.log('상품목록테이블 조회결과: ');      
-      console.log(res);
+      // console.log('상품목록테이블 조회결과: ');      
+      // console.log(res);
 
       setData(res.data);
       setCheckedItems([]); // 새로운 데이터가 로드될 때 체크박스 초기화
@@ -44,15 +47,17 @@ const GoodsTable = () => {
   //********************************************************************************************
   // 초기화
   //********************************************************************************************
-  useEffect(() => {
+  useEffect(() => {    
     searchResGoods();
+    setViewDetail(false);
     setOptionObj([
       { value: '1', label: '제품명' },
       { value: '2', label: '제조일시' },
       { value: '3', label: '제조라인' },
       { value: '4', label: '일렬번호' }
     ]);
-  }, []);
+    
+  }, [resetKey]);
   //********************************************************************************************
 
 
@@ -192,11 +197,23 @@ const GoodsTable = () => {
   }
   //********************************************************************************************
 
-  const handleKeyPress = (event) => {
+  const handleKeyPress = (event) => { // 검색 엔터 동작
     if (event.key === 'Enter') {
       searchResGoods();
     }
   };
+
+  //********************************************************************************************
+  // 상품 상세 보기
+  //********************************************************************************************
+  const viewGoodDetail = (item) =>{
+    setViewDetail(true);
+    // viewDetail = true;
+    setDetailItem(item);
+  }
+  //********************************************************************************************
+
+
 
   //********************************************************************************************
   // 상품 항목 렌더링
@@ -212,18 +229,23 @@ const GoodsTable = () => {
         <React.Fragment key={item.SERIAL_NO}>
           <div className="grid-item checkBox">
             <input
-              className="w18 h17"
+              className="w18 h17 cursor"
               type="checkbox"
               onChange={(e) => handleCheck(e, item)}
-              checked={isChecked}
+              checked={isChecked}              
             />
           </div>
-          <div className={rowClass}>{item.CLASS_ID}</div>
-          <div className={rowClass}>{item.PRODUCT_ID}</div>
-          <div className={rowClass}>{item.PRODUCT_NM}</div>
-          <div className={rowClass}>{item.MANUFACTURING_DTTM}</div>
-          <div className={rowClass}>{item.LOT_NO}</div>
-          <div className={rowClass}>{item.SERIAL_NO}</div>
+          <div
+            className="grid-item-group cursor"            
+            onClick={() => viewGoodDetail(item)}
+          >
+            <div className={rowClass}>{item.CLASS_ID}</div>
+            <div className={rowClass}>{item.PRODUCT_ID}</div>
+            <div className={rowClass}>{item.PRODUCT_NM}</div>
+            <div className={rowClass}>{item.MANUFACTURING_DTTM}</div>
+            <div className={rowClass}>{item.LOT_NO}</div>
+            <div className={rowClass}>{item.SERIAL_NO}</div>
+          </div>
           <div
             className={deleteClass}
             onClick={() => setDelData(item.CLASS_ID, item.PRODUCT_ID, item.SERIAL_NO)}
@@ -236,37 +258,87 @@ const GoodsTable = () => {
   };
   //********************************************************************************************
 
-  return (
-    <div className="goodsTableWrap">      
-      {/* 검색 */}
-      <section className='w100'> 
-        <div className='flex a_i_center j_c_center mt32 mb30'>
-          <div className="w50p table-search-box flex">
-            <div className="w133 mr11">
-              <SelectBox
-                title={''}
-                options={optionObj}
-                val={optionNo}
-                setVal={setOptionNo}
-                index={0}
-                openIndex={openIndex}
-                setOpenIndex={setOpenIndex}
-              />
-            </div>
-            <input
-              type='text'
-              className='search'
-              onChange={(e) => setSearchText(e.target.value)}
-              onKeyDown={handleKeyPress}
+
+
+  //********************************************************************************************
+  // 상위 JSX: GoodsPage
+  // 상품 목록 페이지의 메인 컴포넌트로, 상세 보기와 테이블 뷰를 조건부로 렌더링
+  //********************************************************************************************
+  const GoodsPage = () => {
+    return (
+      <div>
+        {viewDetail ? (
+          <DetailView /> // 상품상세
+        ) : (
+          <TableView /> // 상품목록
+        )}
+      </div>
+    );
+  };
+  
+
+  //********************************************************************************************
+  // 하위 JSX: DetailView
+  // 상품상세 페이지 전환
+  //********************************************************************************************
+  const DetailView = () => (
+    <div className="detailWrap content">
+      <GoodsForm detail={true} detailData={detailItem} onBackToList={onBackToList} />
+    </div>
+  );
+  
+
+  //********************************************************************************************
+  // 하위 JSX: TableView
+  // 상품목록 및 검색 섹션 렌더링
+  //********************************************************************************************
+  const TableView = () => (
+    <div className="goodsTableWrap">
+      <SearchSection />
+      <GoodsTable />
+    </div>
+  );
+  
+
+  //********************************************************************************************
+  // 하위 JSX: SearchSection
+  // 상품 검색창 렌더링
+  //********************************************************************************************
+  const SearchSection = () => (
+    <section className='w100'>
+      <div className='flex a_i_center j_c_center mt32 mb30'>
+        <div className="w50p table-search-box flex">
+          <div className="w133 mr11">
+            <SelectBox
+              title={''}
+              options={optionObj}
+              val={optionNo}
+              setVal={setOptionNo}
+              index={0}
+              openIndex={openIndex}
+              setOpenIndex={setOpenIndex}
             />
-            <div onClick={searchResGoods} className='searchBtn bgSlate100 fs16 flex a_i_center j_c_center'>검색</div>
           </div>
-        </div>  
-      </section> 
-      {/* 테이블 */}
-      <div className="grid-container">
-        <div className="grid-item checkBox">
-        {/* 전체 체크 박스 */}
+          <input
+            type='text'
+            className='search'
+            onChange={(e) => setSearchText(e.target.value)}
+            onKeyDown={handleKeyPress}
+          />
+          <div onClick={searchResGoods} className='searchBtn bgSlate100 fs16 flex a_i_center j_c_center'>검색</div>
+        </div>
+      </div>
+    </section>
+  );
+  
+
+  //********************************************************************************************
+  // 하위 JSX: GoodsTable
+  // 상품 목록 렌더링(전체 체크 박스, 테이블헤더, 페이지네이션)
+  //********************************************************************************************
+  const GoodsTable = () => (
+    <div className="grid-container">
+      <div className="grid-item checkBox">
         <input
           className="w18 h17"
           type="checkbox"
@@ -274,25 +346,45 @@ const GoodsTable = () => {
           checked={
             data
               .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-              .every(item => 
+              .every(item =>
                 checkedItems.some(checkedItem => checkedItem.serialNo === item.SERIAL_NO)
               )
             && data.length > 0
           }
         />
-        </div>
-        <div className="grid-item header">모델ID</div>
-        <div className="grid-item header">제품ID</div>
-        <div className="grid-item header">제품명</div>
-        <div className="grid-item header">제조일자</div>
-        <div className="grid-item header">제조라인</div>
-        <div className="grid-item header">일렬번호</div>
-        <div className="grid-item header">상품삭제</div> 
-
-        {/* 상품목록 페이지 네이션 */}
-        <PageNation data={renderProductItems()} itemsPerPage={itemsPerPage} type={'table'} onPageChange={setCurrentPage} />             
       </div>
+      <TableHeaders />
+      <PageNation
+        data={renderProductItems()}
+        itemsPerPage={itemsPerPage}
+        type={'table'}
+        onPageChange={setCurrentPage}
+      />
     </div>
+  );
+  
+
+  //********************************************************************************************
+  // 하위 JSX: TableHeaders
+  // 테이블 헤더 렌더링
+  //********************************************************************************************
+  const TableHeaders = () => (
+    <>
+      <div className="grid-item header">모델ID</div>
+      <div className="grid-item header">제품ID</div>
+      <div className="grid-item header">제품명</div>
+      <div className="grid-item header">제조일자</div>
+      <div className="grid-item header">제조라인</div>
+      <div className="grid-item header">일렬번호</div>
+      <div className="grid-item header">상품삭제</div>
+    </>
+  );
+  
+
+  return (
+    <>      
+      {GoodsPage()}
+    </>
   );
 }
 

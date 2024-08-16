@@ -3,14 +3,14 @@ import axios from 'axios';
 import SelectBox from './SelectBox';
 import CommonAlert from './CommonAlert';
 
-const GoodsForm = () => {
-  const [image, setImage] = useState(null);
+const GoodsForm = ({detail='false', detailData=[], onBackToList}) => {  
   const [classId, setClassId] = useState('');
   const [productId, setProductId] = useState('');
   const [productName, setProductName] = useState('');
-  const [MFD, setMFD] = useState(''); // 제조일자
-  const [lotNo, setLotNo] = useState('');
-  const [count, setCount] = useState(''); // 상품개수
+  const [MFD, setMFD] = useState('');           // 제조일자
+  const [lotNo, setLotNo] = useState('');       // 제조라인
+  const [count, setCount] = useState('');       // 상품개수
+  const [serialNo, setSerialNo] = useState('')  // 시리얼 넘버
   
   const [previewUrl, setPreviewUrl] = useState(null);
   const [openIndex, setOpenIndex] = useState(null); // 열려 있는 셀렉트 박스의 인덱스를 저장
@@ -100,9 +100,40 @@ const GoodsForm = () => {
   //***********************************************************************************************
 
 
-  useEffect(() => {
-    commCodeList();  
+  //***********************************************************************************************
+  // 초기화
+  //***********************************************************************************************
+  useEffect(() => {        
+    searchResProducts();       
+    commCodeList();
   }, []);
+  //***********************************************************************************************
+
+
+  //***********************************************************************************************
+  // 상품 상세 보기 초기화(데이터 세팅)
+  //***********************************************************************************************
+  useEffect(() => {
+    if(detail === true){     
+      console.log(detailData);
+       
+      const detail_item_date = detailData.MANUFACTURING_DTTM;
+      let year = detail_item_date.substring(0,4);
+      let month = detail_item_date.substring(4,6);
+      let day = detail_item_date.substring(6,8);
+      setMFD(year+month+day);
+      setClassId(detailData.CLASS_ID);
+      setProductId(detailData.PRODUCT_ID);
+      setProductName(detailData.PRODUCT_NM);
+      setLotNo(detailData.LOT_NO);     
+      setSerialNo(detailData.SERIAL_NO)            
+    }
+
+    if(productName !== '' && productId !== ''){
+      searchResProducts(); 
+    }
+  }, [detailData, detail, productName, productId])
+  //***********************************************************************************************
 
 
   useEffect(() => {
@@ -208,20 +239,40 @@ const GoodsForm = () => {
   return (        
     <form encType="multipart/form-data" onSubmit={handleSubmit}>
       <div className='formWrap flex f_d_column a_i_center j_c_center'>
-        <div className='formTit w100'>상품 입고</div>             
+        <div className='formTit w100'>{detail === true ? '상품 상세': '상품 입고'}</div>             
         <div className='flex w100'>                    
           <section className='w100'>
-            <div className='formLeft'>                
-              <SelectBox title={'모델ID'} options={commCode} val={classId} setVal={setClassId} index={0} openIndex={openIndex} setOpenIndex={setOpenIndex}/>      
-              <SelectBox title={'제품ID'} options={commProduct} val={productId} setVal={setProductId} index={1} openIndex={openIndex} setOpenIndex={setOpenIndex}/>                                    
+            <div className='formLeft'>                   
+              {detail === true ?
+              <>
+                <div className='inputTit'>모델ID</div>
+                <input type="text" name="class_id" value={classId} placeholder="모델ID" readOnly />  
+                <div className='inputTit'>제품ID</div>
+                <input type="text" name="product_id" value={productId} placeholder="제품ID" readOnly />  
+              </>
+              :         
+              <>
+                <SelectBox title={'모델ID'} options={commCode} val={classId} setVal={setClassId} index={0} openIndex={openIndex} setOpenIndex={setOpenIndex}/>      
+                <SelectBox title={'제품ID'} options={commProduct} val={productId} setVal={setProductId} index={1} openIndex={openIndex} setOpenIndex={setOpenIndex}/>                                    
+              </>
+              }              
               <div className='inputTit'>제품명</div>
-              <input type="text" name="product_nm" value={productName} onChange={(e) => setProductName(e.target.value)} placeholder="제품명" readOnly />
+              <input type="text" name="product_nm" value={productName} onChange={(e) => setProductName(e.target.value)} placeholder="제품명" readOnly={detail === true}  />
               <div className='inputTit'>제조일시</div>
               <input type="text" name="manufacturing_dttm" value={MFD} onChange={(e) => setMFD(e.target.value)} placeholder="제조일시" />
               <div className='inputTit'>제조라인</div>
               <input type="text" name="lot_no" value={lotNo} onChange={(e) => setLotNo(e.target.value)} placeholder="제조라인" />
-              <div className='inputTit'>상품개수</div>
-              <input type="number" name="count" value={count} onChange={(e) => setCount(e.target.value)} placeholder="상품개수" />
+              {detail === true ? 
+                <>
+                  <div className='inputTit'>상품 시리얼 번호</div>
+                  <input type="text" name="serial_no" value={serialNo} placeholder="상품시리얼번호" readOnly />
+                </>
+              :
+                <>
+                  <div className='inputTit'>상품개수</div>
+                  <input type="number" name="count" value={count} onChange={(e) => setCount(e.target.value)} placeholder="상품개수" />
+                </>
+              }
             </div>
           </section>
           <section className='w100'>
@@ -272,10 +323,16 @@ const GoodsForm = () => {
             </div>
           </section>
         </div>         
-        <div className='w100 flex a_i_center j_c_center mb19'>
-          <button type="submit" className='w168 h40 mt116 mr25 bgSlate100 fs14 cursor'>저장</button>
-          <button type="button" className='w160 h40 mt116 mr38 cursor fs14 cancle' onClick={reloadPage}>취소</button>
-        </div>        
+        {detail === true ? 
+          <div className='w100 flex a_i_center j_c_center mb19'>
+            <button type="button" className='w168 h40 mt116 mr25 bgSlate100 fs14 cursor' onClick={onBackToList}>목록으로 가기</button>            
+          </div>   
+        :
+          <div className='w100 flex a_i_center j_c_center mb19'>
+            <button type="submit" className='w168 h40 mt116 mr25 bgSlate100 fs14 cursor'>저장</button>
+            <button type="button" className='w160 h40 mt116 mr38 cursor fs14 cancle' onClick={reloadPage}>취소</button>
+          </div>        
+        }
       </div>     
       <div className='alertBg w100 h100' id='customAlertBg'></div>
       {alert.visible && (
