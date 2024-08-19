@@ -157,7 +157,7 @@ function Main() {
   //***********************************************************************************************
   // todo 상품 주문 API 요청
   //***********************************************************************************************
-  const handleOrder = () => {
+  const handleOrder = async() => {
     /* /product/neworder */
     const orderDetails = [];
     const p_count = productObj.count;   // 상품 전체 개수
@@ -166,9 +166,10 @@ function Main() {
       if(orderCnt[i] <= 0){ 
         continue;
       }
+      
       orderDetails.push({
-        product_id : product.product_id,
-        orderCnt   : orderCnt[i]
+        product_id : product.PRODUCT_ID,
+        qty   : orderCnt[i]
       });
     }
 
@@ -177,7 +178,18 @@ function Main() {
       user_id : username,
       order   : orderDetails
     }
-    console.log(orderData);
+// console.log('주문 받아요~');    
+// console.log(orderData.order);
+
+    // const res = await axios.post('http://localhost:1092/product/neworder',{
+    //   user_id : orderData.user_id,
+    //   order   : orderData.order,
+    // })
+
+    // console.log('주문 결과~');
+    
+    // console.log(res);
+    
   };
   //***********************************************************************************************
 
@@ -212,7 +224,7 @@ function Main() {
     <div className='MainWrap'>
       <header className='w100'>
         <div className='menuBox w100 flex a_i_center j_c_between'>
-          <div className='logo cursor' onClick={goMain}>Esuply</div>
+          <div className='logo cursor' onClick={goMain}>Esupply</div>
           <ul className='flex'>
             <li className='mr35' onClick={goAdminView}>관리자</li>            
             <li onClick={goDeliveryView}>배송조회</li>

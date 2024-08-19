@@ -84,7 +84,7 @@ const AdminHeader = ({ currentView, setCurrentView }) => {
   return (
     <header className='w100'>
       <div className='menuBox w100 flex a_i_center j_c_between'>
-        <div className='logo cursor' onClick={() => navigate('/admin')}>Esuply_Admin</div>
+        <div className='logo cursor' onClick={() => navigate('/admin')}>Esupply_Admin</div>
         <ul className='flex h100'>
           {menuItems.map((item) => (
             <div
