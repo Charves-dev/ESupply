@@ -859,6 +859,9 @@ justify-content: center;
   border: 1px solid #112a3e;  
   font-size: 16px;
 }
+.grid-item-group{
+  display: contents
+}
 .grid-item{
   text-align: center;
 }
@@ -895,11 +898,21 @@ justify-content: center;
   cursor: pointer;
 }
 /* 행마다 두 번째 셀의 border-left 제거 */
-.grid-container > .data:nth-child(8n + 2) {
+/* .grid-container > .data:nth-child(8n + 2) {
+  border-left: 0;
+} */
+
+.grid-container .grid-item-group .grid-item:nth-child(1){
   border-left: 0;
 }
 
 /* 상품 목록 테이블 e */
+
+/* 상품 상세 s */
+.detailWrap{
+  margin: 0 auto;
+}
+/* 상품 상세 e */
 
 /* 관리자 화면 e */
 
