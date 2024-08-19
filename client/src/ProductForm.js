@@ -180,7 +180,7 @@ const ProductForm = () => {
     <form encType="multipart/form-data" onSubmit={handleSubmit}>
       <div className='adminWrap'>
         <div className='adminContent content'>
-          <AdminHeader currentView={'goodsTable'} setCurrentView={handleMenuClick} /> 
+          <AdminHeader currentView={'productForm'} setCurrentView={handleMenuClick} /> 
           <div className='formWrap flex f_d_column a_i_center j_c_center'>
             <div className='formTit w100'>제품 등록</div>             
             <div className='flex w100'>                    

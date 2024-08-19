@@ -20,6 +20,7 @@ const GoodsForm = ({detail='false', detailData=[], setViewDetail}) => {
   const [commProduct, setCommProduct] = useState([]);
   const [alert, setAlert] = useState({ visible: false, type: '', text: '', reload: false });  
   const [isLoading, setIsLoading] = useState(true); // 이미지 로딩 상태를 관리하는 상태 변수
+  const [currentView, setCurrentView] = useState('goodsForm');
   const navigate = useNavigate();
 
 
@@ -109,10 +110,7 @@ const GoodsForm = ({detail='false', detailData=[], setViewDetail}) => {
   //***********************************************************************************************
   // 초기화
   //***********************************************************************************************
-  useEffect(() => {       
-    console.log(detail);
-    console.log(detail === 'false');
-    
+  useEffect(() => {           
     if(detail === 'false'){       
       searchResProducts();       
       commCodeList();
@@ -257,6 +255,7 @@ const GoodsForm = ({detail='false', detailData=[], setViewDetail}) => {
   // URL에 'view' 파라미터를 설정하여 클릭된 뷰를 표시하도록 한다
   //********************************************************************************************
   const handleMenuClick = (view) => {    
+    setCurrentView(view);
     navigate(`/admin?view=${view}`);
   };
   //********************************************************************************************
@@ -266,7 +265,7 @@ const GoodsForm = ({detail='false', detailData=[], setViewDetail}) => {
     <form encType="multipart/form-data" onSubmit={handleSubmit}>
       <div className='adminWrap'>
         <div className={detail === true ? 'w100' : 'adminContent content'}>
-          <AdminHeader currentView={'goodsTable'} setCurrentView={handleMenuClick} /> 
+          <AdminHeader currentView={currentView} setCurrentView={handleMenuClick} /> 
           <div className='formWrap flex f_d_column a_i_center j_c_center'>
             <div className='formTit w100'>{detail === true ? '상품 상세': '상품 입고'}</div>             
             <div className='flex w100'>                    
