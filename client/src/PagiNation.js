@@ -141,10 +141,10 @@ const PageNation = ({data, itemsPerPage, type = '', onPageChange}) => {
           {/* 다음 페이지 그룹 버튼 */}
           <span
             className="ml18"
-            onClick={() => currentPageGroup < (totalPages/5) ? handlePageChange(endIndex+1) : ''}
+            onClick={() => currentPageGroup < Math.ceil(totalPages / maxVisiblePages) ? handlePageChange(endIndex+1) : ''}
             style={{
-              cursor: currentPageGroup < (totalPages/5) ? 'pointer' : 'default',
-              color: currentPageGroup < (totalPages/5) ? 'black' : '#a9a9a9'
+              cursor: currentPageGroup < Math.ceil(totalPages / maxVisiblePages) ? 'pointer' : 'default',
+              color: currentPageGroup < Math.ceil(totalPages / maxVisiblePages) ? 'black' : '#a9a9a9'
             }}
           >
             &gt;&gt;
