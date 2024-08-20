@@ -1,7 +1,4 @@
 import React, { useEffect } from 'react';
-import GoodsForm from './GoodsForm';
-import GoodsTable from './GoodsTable';
-import ProductForm from './ProductForm';
 import PageNation from './PagiNation';
 
 export const renderContent = (currentView, components, navigate) => {
@@ -48,24 +45,18 @@ export const renderContent = (currentView, components, navigate) => {
 
 const GoodsFormWrapper = ({ navigate }) => {
   useEffect(() => {
-    navigate('/GoodsForm');
-  }, [navigate]);
-
-  return <div><GoodsForm /></div>;
+    navigate('/goodsForm');
+  }, [navigate]);  
 };
 
 const GoodsTableWrapper = ({ navigate }) => {
   useEffect(() => {
-    navigate('/GoodsTable');
-  }, [navigate]);
-
-  return <div><GoodsTable /></div>;
+    navigate('/goodsTable');
+  }, [navigate]);  
 };
 
 const ProductFormWrapper = ({ navigate }) => {
   useEffect(() => {
-    navigate('/ProductForm');
-  }, [navigate]);
-
-  return <div><ProductForm /></div>;
+    navigate('/productForm');
+  }, [navigate]);  
 };

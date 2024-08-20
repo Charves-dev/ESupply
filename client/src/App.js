@@ -19,10 +19,9 @@ function App() {
           <Route path="/deliveryView" element={<DeliveryView />} />
           <Route path="/admin"        element={<AdminView />} />
           <Route path="/partList"     element={<PartList />} />
-          <Route path="/GoodDetail"   element={<GoodsForm />} />
-          <Route path="/GoodsTable"   element={<GoodsTable />} />
-          <Route path="/GoodsForm"    element={<GoodsForm />} />
-          <Route path='/ProductForm'  element={<ProductForm />} />
+          <Route path="/goodsTable"   element={<GoodsTable />} />
+          <Route path="/goodsForm"    element={<GoodsForm />} />
+          <Route path='/productForm'  element={<ProductForm />} />
         </Routes>
       </div>
     </Router>
