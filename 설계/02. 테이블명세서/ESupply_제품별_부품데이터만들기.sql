@@ -102,3 +102,7 @@ select 'DIO_008'	,	'DIO_008_CDLRWB678354'	, 'CWF054CC9700G', 2 from dual union a
 select 'DIO_120'	,	'DIO_120_DLCGBB999340'	, 'CWF054CC9800G', 2 from dual union all
 select 'TRN_362'	,	'TRN_362_DLCGBB999340'	, 'CWF054CC9800G', 5 from dual;
 /*********************************************************************************************/
+
+-- 제일 중요한 커밋~~
+commit;
+

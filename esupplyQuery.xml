@@ -100,4 +100,24 @@
      AND PRODUCT_ID = ?
 </UPD_INVENTORY_DN>
 <!-- ========================================================================================== -->
+
+<!-- ==============================================================================================
+  부품목록 조회
+=============================================================================================== -->
+<GET_PRODUCT_PART_LIST>
+SELECT ppl.PART_NO
+     , pm.PART_NM 
+     , pm.PRICE
+	   , pm.WEIGHT
+	   , pm.SIZE_H
+	   , pm.SIZE_V
+	   , pm.SIZE_Z
+	   , ppl.COUNT 
+  FROM esupply.product_part_list ppl
+ INNER JOIN esupply.part_master pm on ppl.PART_NO = pm.PART_NO 
+ WHERE ppl.PRODUCT_ID = 'CAP_001_CERA_DW467823'
+ ORDER BY ppl.PART_NO
+</GET_PRODUCT_PART_LIST>
+
+<!-- ========================================================================================== --> 
 </query>

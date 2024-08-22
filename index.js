@@ -502,6 +502,27 @@ app.post('/product/gooddel', async (req, res) => {
 
 
 
+//*************************************************************************************************
+// 제품별 파트리스트 조회
+//*************************************************************************************************
+app.post('/part/list', async (req, res) => {
+	const { product_id } = req.body;
+	let conn 			= null;
+	let selQuery 	= env.QG.GET_PRODUCT_PART_LIST;
+	try{
+		conn = await pool.getConnection();
+		let result = await conn.query(selQuery);
+		res.json(result);
+	}catch(err){
+		res.status(500).send(err.toString());
+	}finally{
+		if (conn) conn.release();
+	}
+});
+//*************************************************************************************************
+
+
+
 //******************************* */
 app.listen(port, () => {
 	console.log(`서버가 실행됩니다. http://localhost:${port}`);
