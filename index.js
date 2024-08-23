@@ -108,6 +108,7 @@ app.post('/upload', upload.single('image'), (req, res) => {
  *   post:
  *     summary: "현재는 로그인에 입력했던 이름과 아이디를 반환합니다."
  *     description: "간단하게 로그인하는 API입니다(제대로 로그인처리 안되고 있음)"
+ *     tags: [product]
  *     responses:
  *       200:
  *         description: 성공
@@ -145,12 +146,57 @@ app.get('/product/sequencecheck', async (req, res) => {
 //*************************************************************************************************
 // 제품삭제 (2024.08.08 최선아 개발)
 //*************************************************************************************************
+/**
+ * @swagger
+ * /product/delete:
+ *  post:
+ *    summary: "제품 삭제"
+ *    description: "특정 클레스(모델)의 제품을 삭제한다."
+ *    tags: [product]
+ *    requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               class_id:
+ *                 type: string
+ *                 description: The class ID
+ *               product_id:
+ *                 type: string
+ *                 description: The product ID
+ *    responses:
+ *       200:
+ *         description: Successful deletion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: string
+ *                   description: "Result status (Success or Failure)"
+ *                   example: "Success"
+ *                 message:
+ *                   type: string
+ *                   description: "Result message"
+ *                   example: "성공"
+ *                 count:
+ *                   type: integer
+ *                   description: "Number of affected rows"
+ *                   example: 1
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Internal server error
+ */
 app.post('/product/delete', async (req, res) => {
 	const { class_id, product_id } = req.body;
-	console.log("****************************************************");
-	console.log("req.body");
-	console.log(req.body);
-	console.log("****************************************************");
+	// console.log("****************************************************");
+	// console.log("req.body");
+	// console.log(req.body);
+	// console.log("****************************************************");
 
 	let conn = null;
 
@@ -195,12 +241,56 @@ app.post('/product/delete', async (req, res) => {
 //*************************************************************************************************
 // 제품등록
 //*************************************************************************************************
+/**
+ * @swagger
+ * /product/add:
+ *  post:
+ *    summary: "제품 등록"
+ *    description: "신규 제품을 등록합니다"
+ *    tags: [product]
+ *    requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               class_id:
+ *                 type: string
+ *                 description: The class ID
+ *               product_id:
+ *                 type: string
+ *                 description: The product ID
+ *    responses:
+ *       200:
+ *         description: Successful deletion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: string
+ *                   description: "Result status (Success or Failure)"
+ *                   example: "Success"
+ *                 message:
+ *                   type: string
+ *                   description: "Result message"
+ *                   example: "성공"
+ *                 count:
+ *                   type: integer
+ *                   description: "Number of affected rows"
+ *                   example: 1
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Internal server error
+ */
 app.post('/product/add', upload.single('image'), async (req, res) => {
-
-console.log("****************************************************");
-console.log("req.body");
-console.log(req.body);
-console.log("****************************************************");
+// console.log("****************************************************");
+// console.log("req.body");
+// console.log(req.body);
+// console.log("****************************************************");
 	const { class_id, product_id, product_nm, price, weight, size_h, size_v, size_z } = req.body;
 
 	let originalName = null;
@@ -284,13 +374,57 @@ console.log("****************************************************");
 // 수정자: 최선아 (2024.08.09)
 // - 기능 개선: checkQuery, insertQuery 추가하여 재고 등록 시 항목 존재 여부 확인 및 필요 시 신규 등록
 //*************************************************************************************************
+/**
+ * @swagger
+ * /product/addgoods:
+ *  post:
+ *    summary: "상품 입고"
+ *    description: "생산된 상품을 입고합니다."
+ *    tags: [product]
+ *    requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               class_id:
+ *                 type: string
+ *                 description: The class ID
+ *               product_id:
+ *                 type: string
+ *                 description: The product ID
+ *    responses:
+ *       200:
+ *         description: Successful deletion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: string
+ *                   description: "Result status (Success or Failure)"
+ *                   example: "Success"
+ *                 message:
+ *                   type: string
+ *                   description: "Result message"
+ *                   example: "성공"
+ *                 count:
+ *                   type: integer
+ *                   description: "Number of affected rows"
+ *                   example: 1
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Internal server error
+ */
 app.post('/product/addgoods', async (req, res) => {
-	
 	const { class_id, product_id, manufacturing_dttm, lot_no, count } = req.body;
-	console.log("****************************************************");
-	console.log("req.body");
-	console.log(req.body);
-	console.log("****************************************************");
+	// console.log("****************************************************");
+	// console.log("req.body");
+	// console.log(req.body);
+	// console.log("****************************************************");
 	const prod = product_id.replace(class_id, '');
 	const serial_h = class_id.substring(0,3) + prod.substring(0,4) + manufacturing_dttm.substring(0,8);
 	const seqName  = 'seq' + class_id.substring(0,3).toLowerCase();
@@ -364,6 +498,51 @@ app.post('/product/addgoods', async (req, res) => {
 //*************************************************************************************************
 // 공통 코드 리스트 가져오기 (콤보박스용) - 나중에 공통영역이 만들어지면 그쪽으로 이동할 예정
 //*************************************************************************************************
+/**
+ * @swagger
+ * /comm/codelist:
+ *  post:
+ *    summary: "공통 코드 조회"
+ *    description: "공통 코드 리스트 가져오기 (콤보박스용) - 나중에 공통영역이 만들어지면 그쪽으로 이동할 예정"
+ *    tags: [product]
+ *    requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               class_id:
+ *                 type: string
+ *                 description: The class ID
+ *               product_id:
+ *                 type: string
+ *                 description: The product ID
+ *    responses:
+ *       200:
+ *         description: Successful deletion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: string
+ *                   description: "Result status (Success or Failure)"
+ *                   example: "Success"
+ *                 message:
+ *                   type: string
+ *                   description: "Result message"
+ *                   example: "성공"
+ *                 count:
+ *                   type: integer
+ *                   description: "Number of affected rows"
+ *                   example: 1
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Internal server error
+ */
 app.get('/comm/codelist', async (req, res) => {
 	const { group_id } = req.query;
 	let conn = null;
@@ -386,6 +565,51 @@ app.get('/comm/codelist', async (req, res) => {
 //*************************************************************************************************
 // 공통 제품 리스트 가져오기 (콤보박스용) - 나중에 공통영역이 만들어지면 그쪽으로 이동할 예정
 //*************************************************************************************************
+/**
+ * @swagger
+ * /comm/productlist:
+ *  post:
+ *    summary: "공통 제품 목록 가져오기(콤보박스용)"
+ *    description: "공통 제품 리스트 가져오기 (콤보박스용) - 나중에 공통영역이 만들어지면 그쪽으로 이동할 예정"
+ *    tags: [product]
+ *    requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               class_id:
+ *                 type: string
+ *                 description: The class ID
+ *               product_id:
+ *                 type: string
+ *                 description: The product ID
+ *    responses:
+ *       200:
+ *         description: Successful deletion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: string
+ *                   description: "Result status (Success or Failure)"
+ *                   example: "Success"
+ *                 message:
+ *                   type: string
+ *                   description: "Result message"
+ *                   example: "성공"
+ *                 count:
+ *                   type: integer
+ *                   description: "Number of affected rows"
+ *                   example: 1
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Internal server error
+ */
 app.get('/comm/productlist', async (req, res) => {
 	const { class_id } = req.query;
 	let conn = null;
@@ -409,6 +633,51 @@ console.log(result);
 //*************************************************************************************************
 // 제품 리스트 조회(상품리스트 조회) - 나중에 제품또는 상품이란 영역이 만들어지면 그쪽으로 이동할 예정
 //*************************************************************************************************
+/**
+ * @swagger
+ * /product/goodList:
+ *  post:
+ *    summary: "제품 리스트 조회(상품리스트 조회)"
+ *    description: "제품 리스트 조회(상품리스트 조회) - 나중에 제품또는 상품이란 영역이 만들어지면 그쪽으로 이동할 예정"
+ *    tags: [product]
+ *    requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               class_id:
+ *                 type: string
+ *                 description: The class ID
+ *               product_id:
+ *                 type: string
+ *                 description: The product ID
+ *    responses:
+ *       200:
+ *         description: Successful deletion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: string
+ *                   description: "Result status (Success or Failure)"
+ *                   example: "Success"
+ *                 message:
+ *                   type: string
+ *                   description: "Result message"
+ *                   example: "성공"
+ *                 count:
+ *                   type: integer
+ *                   description: "Number of affected rows"
+ *                   example: 1
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Internal server error
+ */
 app.post('/product/goodList', async (req, res) => {
 	const { product_nm, product_id } = req.body;
 	let nm_where = '';
@@ -448,6 +717,51 @@ app.post('/product/goodList', async (req, res) => {
 //*************************************************************************************************
 // Admin 전용 상품조회 ( 나중에 Admin 영역이 만들어지면 그쪽으로 이동할 예정 )
 //*************************************************************************************************
+/**
+ * @swagger
+ * /product/goodListAdm:
+ *  post:
+ *    summary: "Admin 전용 상품조회"
+ *    description: "Admin 전용 상품조회 ( 나중에 Admin 영역이 만들어지면 그쪽으로 이동할 예정 )"
+ *    tags: [product]
+ *    requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               class_id:
+ *                 type: string
+ *                 description: The class ID
+ *               product_id:
+ *                 type: string
+ *                 description: The product ID
+ *    responses:
+ *       200:
+ *         description: Successful deletion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: string
+ *                   description: "Result status (Success or Failure)"
+ *                   example: "Success"
+ *                 message:
+ *                   type: string
+ *                   description: "Result message"
+ *                   example: "성공"
+ *                 count:
+ *                   type: integer
+ *                   description: "Number of affected rows"
+ *                   example: 1
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Internal server error
+ */
 app.post('/product/goodListAdm', async (req, res) => {
 	const { optionNo, search_txt } = req.body;			// (optionNo : 1=제품명, 2=제조일시, 3=제조라인, 4=일련번호 )
 	let conn = null;
@@ -480,6 +794,51 @@ app.post('/product/goodListAdm', async (req, res) => {
 //*************************************************************************************************
 // 상품 삭제
 //*************************************************************************************************
+/**
+ * @swagger
+ * /product/gooddel:
+ *  post:
+ *    summary: "상품 삭제"
+ *    description: "상품 삭제"
+ *    tags: [product]
+ *    requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               class_id:
+ *                 type: string
+ *                 description: The class ID
+ *               product_id:
+ *                 type: string
+ *                 description: The product ID
+ *    responses:
+ *       200:
+ *         description: Successful deletion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: string
+ *                   description: "Result status (Success or Failure)"
+ *                   example: "Success"
+ *                 message:
+ *                   type: string
+ *                   description: "Result message"
+ *                   example: "성공"
+ *                 count:
+ *                   type: integer
+ *                   description: "Number of affected rows"
+ *                   example: 1
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Internal server error
+ */
 app.post('/product/gooddel', async (req, res) => {
 	const { class_id, product_id, serial_no } = req.body;
 	let conn = null;
@@ -505,13 +864,54 @@ app.post('/product/gooddel', async (req, res) => {
 //*************************************************************************************************
 // 제품별 파트리스트 조회
 //*************************************************************************************************
+/**
+ * @swagger
+ * /part/list:
+ *  post:
+ *    summary: "제품별 파트(부품)리스트 조회"
+ *    description: "제품별 부품리스트를 조회합니다."
+ *    tags: [product]
+ *    requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               product_id:
+ *                 type: string
+ *                 description: The product ID
+ *    responses:
+ *       200:
+ *         description: Successful deletion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: string
+ *                   description: "Result status (Success or Failure)"
+ *                   example: "Success"
+ *                 message:
+ *                   type: string
+ *                   description: "Result message"
+ *                   example: "성공"
+ *                 count:
+ *                   type: integer
+ *                   description: "Number of affected rows"
+ *                   example: 1
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Internal server error
+ */
 app.post('/part/list', async (req, res) => {
 	const { product_id } = req.body;
 	let conn 			= null;
-	let selQuery 	= env.QG.GET_PRODUCT_PART_LIST;
 	try{
 		conn = await pool.getConnection();
-		let result = await conn.query(selQuery);
+		let result = await conn.query(env.QG.GET_PRODUCT_PART_LIST, [product_id]);
 		res.json(result);
 	}catch(err){
 		res.status(500).send(err.toString());

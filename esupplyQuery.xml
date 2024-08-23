@@ -115,7 +115,7 @@ SELECT ppl.PART_NO
 	   , ppl.COUNT 
   FROM esupply.product_part_list ppl
  INNER JOIN esupply.part_master pm on ppl.PART_NO = pm.PART_NO 
- WHERE ppl.PRODUCT_ID = 'CAP_001_CERA_DW467823'
+ WHERE ppl.PRODUCT_ID = ?
  ORDER BY ppl.PART_NO
 </GET_PRODUCT_PART_LIST>
 
