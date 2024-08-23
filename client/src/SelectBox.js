@@ -22,7 +22,7 @@ const SelectBox = ({ title, options, val, setVal, index, openIndex, setOpenIndex
     prevOptionsRef.current = options;
           
     if(options.length > 0 && (title === '' || title === null)){      
-      setPlaceHolderTxt(options[0].label);                  
+      setPlaceHolderTxt(options[0].label);               
     }else{
       setPlaceHolderTxt(title);
     }
@@ -30,7 +30,7 @@ const SelectBox = ({ title, options, val, setVal, index, openIndex, setOpenIndex
   }, [options]); // options가 변경될 때마다 실행
   
   return(
-    <div>
+    <>
       {title ? <div className='inputTit'>{title}</div> : ''}          
       <div className="selectBox fs14 cursor">
         {/* selectBox */}
@@ -68,8 +68,8 @@ const SelectBox = ({ title, options, val, setVal, index, openIndex, setOpenIndex
         <ul className="dropdown-list"><div className='h190 flex a_i_center j_c_center'> {title}(이)가 0건 입니다</div></ul>
       )}
       </div>
-    </div>
-    )
+    </>
+  )
 }
 
 export default SelectBox;
