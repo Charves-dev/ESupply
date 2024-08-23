@@ -99,6 +99,10 @@
    WHERE CLASS_ID = ?
      AND PRODUCT_ID = ?
 </UPD_INVENTORY_DN>
+<INS_GOOD_OUT>
+  INSERT INTO esupply.order_out_good (PRODUCT_ID, SERIAL_NO, OUT_TYPE, ORDER_NO)
+  VALUES (?, ?, ?, ?)
+</INS_GOOD_OUT>
 <!-- ========================================================================================== -->
 
 <!-- ==============================================================================================

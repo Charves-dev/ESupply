@@ -244,11 +244,11 @@ app.post('/product/delete', async (req, res) => {
 /**
  * @swagger
  * /product/add:
- *  post:
- *    summary: "제품 등록"
- *    description: "신규 제품을 등록합니다"
- *    tags: [product]
- *    requestBody:
+ *   post:
+ *     summary: "제품 등록"
+ *     description: "신규 제품을 등록합니다"
+ *     tags: [product]
+ *     requestBody:
  *       required: true
  *       content:
  *         application/json:
@@ -257,13 +257,36 @@ app.post('/product/delete', async (req, res) => {
  *             properties:
  *               class_id:
  *                 type: string
- *                 description: The class ID
+ *                 description: 모델(class) ID
  *               product_id:
  *                 type: string
- *                 description: The product ID
- *    responses:
+ *                 description: 제품 ID
+ *               product_nm:
+ *                 type: string
+ *                 description: 제품 이름
+ *               price: 
+ *                 type: integer
+ *                 description: 제품 단가
+ *                 example: 0
+ *               weight: 
+ *                 type: number
+ *                 description: 제품 무게
+ *                 example: 0.0
+ *               size_h:
+ *                 type: number
+ *                 description: 제품 크기(가로)
+ *                 example: 0.0
+ *               size_v:
+ *                 type: number
+ *                 description: 제품 크기(세로)
+ *                 example: 0.0
+ *               size_z:
+ *                 type: number
+ *                 description: 제품 크기(높이)
+ *                 example: 0.0
+ *     responses:
  *       200:
- *         description: Successful deletion
+ *         description: Successful product addition
  *         content:
  *           application/json:
  *             schema:
@@ -390,10 +413,19 @@ app.post('/product/add', upload.single('image'), async (req, res) => {
  *             properties:
  *               class_id:
  *                 type: string
- *                 description: The class ID
+ *                 description: 모델(class) ID
  *               product_id:
  *                 type: string
- *                 description: The product ID
+ *                 description: 제품 ID
+ *               manufacturing_dttm: 
+ *                 type: string
+ *                 description: 제조일시(yyyymmddhh24miss)
+ *               lot_no:
+ *                 type: string
+ *                 description: 생산라인 번호
+ *               count:
+ *                 type: string
+ *                 description: 제조한 상품 갯수 (갯수만큼 serial_no가 채번된다.)
  *    responses:
  *       200:
  *         description: Successful deletion
@@ -402,18 +434,10 @@ app.post('/product/add', upload.single('image'), async (req, res) => {
  *             schema:
  *               type: object
  *               properties:
- *                 result:
- *                   type: string
- *                   description: "Result status (Success or Failure)"
- *                   example: "Success"
- *                 message:
- *                   type: string
- *                   description: "Result message"
- *                   example: "성공"
- *                 count:
- *                   type: integer
- *                   description: "Number of affected rows"
- *                   example: 1
+ *                 SERIAL_NOS:
+ *                   type: object
+ *                   description: "채번된 serial_no 배열"
+ *                   example: ["CAPCERA2024072910001", "CAPCERA2024072910002", "CAPCERA2024072910003"]
  *       400:
  *         description: Invalid input
  *       500:
@@ -512,32 +536,28 @@ app.post('/product/addgoods', async (req, res) => {
  *           schema:
  *             type: object
  *             properties:
- *               class_id:
+ *               group_id:
  *                 type: string
- *                 description: The class ID
- *               product_id:
- *                 type: string
- *                 description: The product ID
+ *                 description: 그룹 ID
+ *                 example: "OUT_TYPE"
  *    responses:
  *       200:
  *         description: Successful deletion
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 result:
- *                   type: string
- *                   description: "Result status (Success or Failure)"
- *                   example: "Success"
- *                 message:
- *                   type: string
- *                   description: "Result message"
- *                   example: "성공"
- *                 count:
- *                   type: integer
- *                   description: "Number of affected rows"
- *                   example: 1
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   CODE_ID:
+ *                     type: string
+ *                     description: "Code identifier"
+ *                     example: "DISPOSE"
+ *                   CODE_NM:
+ *                     type: string
+ *                     description: "Code name"
+ *                     example: "폐기_처분"
  *       400:
  *         description: Invalid input
  *       500:
@@ -581,30 +601,25 @@ app.get('/comm/codelist', async (req, res) => {
  *             properties:
  *               class_id:
  *                 type: string
- *                 description: The class ID
- *               product_id:
- *                 type: string
- *                 description: The product ID
+ *                 description: 모델(class) ID
  *    responses:
  *       200:
  *         description: Successful deletion
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 result:
- *                   type: string
- *                   description: "Result status (Success or Failure)"
- *                   example: "Success"
- *                 message:
- *                   type: string
- *                   description: "Result message"
- *                   example: "성공"
- *                 count:
- *                   type: integer
- *                   description: "Number of affected rows"
- *                   example: 1
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   PRODUCT_ID:
+ *                     type: string
+ *                     description: "Code identifier"
+ *                     example: "DIO_008_CDLRWB678354"
+ *                   PRODUCT_NM:
+ *                     type: string
+ *                     description: "Code name"
+ *                     example: "광다이오드_17P"
  *       400:
  *         description: Invalid input
  *       500:
@@ -618,7 +633,6 @@ app.get('/comm/productlist', async (req, res) => {
 	try{
 		conn = await pool.getConnection();
 		const result = await conn.query(prodQuery, [class_id]);
-console.log(result);
 		res.send(result);
 	}catch(err){
 		res.status(500).send(err.toString());
@@ -647,32 +661,64 @@ console.log(result);
  *           schema:
  *             type: object
  *             properties:
- *               class_id:
+ *               product_nm:
  *                 type: string
- *                 description: The class ID
+ *                 description: 제품 이름
+ *                 example: "광다이오드_120"
  *               product_id:
  *                 type: string
- *                 description: The product ID
+ *                 description: 제품 ID
+ *                 example: "DIO_120_DLCGBB999340"
  *    responses:
  *       200:
  *         description: Successful deletion
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 result:
- *                   type: string
- *                   description: "Result status (Success or Failure)"
- *                   example: "Success"
- *                 message:
- *                   type: string
- *                   description: "Result message"
- *                   example: "성공"
- *                 count:
- *                   type: integer
- *                   description: "Number of affected rows"
- *                   example: 1
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   CLASS_ID:
+ *                     type: string
+ *                     description: 모델(class) ID
+ *                     example: "CAP_001"
+ *                   PRODUCT_ID:
+ *                     type: string
+ *                     description: "제품 ID"
+ *                     example: "CAP_001_CERA_DW467823"
+ *                   PRODUCT_NM:
+ *                     type: string
+ *                     description: "제품 명"
+ *                     example: "세라믹_저항_DW"
+ *                   PRICE:
+ *                     type: string
+ *                     description: "단가(가격)"
+ *                     example: 12000
+ *                   WEIGHT:
+ *                     type: number
+ *                     description: "무게"
+ *                     example: 20.3
+ *                   SIZE_H:
+ *                     type: number
+ *                     description: "가로 크기"
+ *                     example: 21.42 
+ *                   SIZE_V:
+ *                     type: number
+ *                     description: "세로 크기"
+ *                     example: 13.454 
+ *                   SIZE_Z:
+ *                     type: number
+ *                     description: "높이"
+ *                     example: 12.98 
+ *                   COUNT:
+ *                     type: int
+ *                     description: "재고 수량"
+ *                     example: 120 
+ *                   IMAGE:
+ *                     type: string
+ *                     description: "제품 이미지 파일명(path포함)"
+ *                     example: "1722403040248.jpg"
  *       400:
  *         description: Invalid input
  *       500:
@@ -731,32 +777,48 @@ app.post('/product/goodList', async (req, res) => {
  *           schema:
  *             type: object
  *             properties:
- *               class_id:
+ *               optionNo:
  *                 type: string
- *                 description: The class ID
- *               product_id:
+ *                 description:  1=제품명, 2=제조일시, 3=제조라인, 4=일련번호
+ *                 example: 1
+ *               search_txt:
  *                 type: string
- *                 description: The product ID
+ *                 description: 찾는 검색어
+ *                 example: "다이오드"
  *    responses:
  *       200:
  *         description: Successful deletion
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 result:
- *                   type: string
- *                   description: "Result status (Success or Failure)"
- *                   example: "Success"
- *                 message:
- *                   type: string
- *                   description: "Result message"
- *                   example: "성공"
- *                 count:
- *                   type: integer
- *                   description: "Number of affected rows"
- *                   example: 1
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   CLASS_ID:
+ *                     type: string
+ *                     description: 모델(class) ID
+ *                     example: "CAP_001"
+ *                   PRODUCT_ID:
+ *                     type: string
+ *                     description: 제품 ID
+ *                     example: "CAP_001_CERA_DW467823"
+ *                   PRODUCT_NM:
+ *                     type: string
+ *                     description: 제품 명
+ *                     example: "세라믹_저항_DW"
+ *                   MANUFACTURING_DTTM:
+ *                     type: string
+ *                     description: 제조 일시(yyyymmddhh24miss)
+ *                     example: "20240729154057"
+ *                   LOT_NO:
+ *                     type: string
+ *                     description: 생산라인 번호
+ *                     example: "F002"
+ *                   SERIAL_NO:
+ *                     type: string
+ *                     description: 일련번호
+ *                     example: "CAPCERA2024072910001"
  *       400:
  *         description: Invalid input
  *       500:
@@ -792,14 +854,14 @@ app.post('/product/goodListAdm', async (req, res) => {
 
 
 //*************************************************************************************************
-// 상품 삭제
+// 상품 삭제(출고)
 //*************************************************************************************************
 /**
  * @swagger
  * /product/gooddel:
  *  post:
- *    summary: "상품 삭제"
- *    description: "상품 삭제"
+ *    summary: "상품 삭제(출고)"
+ *    description: "상품 삭제(출고)"
  *    tags: [product]
  *    requestBody:
  *       required: true
@@ -810,10 +872,21 @@ app.post('/product/goodListAdm', async (req, res) => {
  *             properties:
  *               class_id:
  *                 type: string
- *                 description: The class ID
+ *                 description: 모델(class) ID
+ *                 example: "CAP_001"
  *               product_id:
  *                 type: string
- *                 description: The product ID
+ *                 description: 제품 ID
+ *                 example: "CAP_001_CERA_DW467823"
+ *               serial_no:
+ *                 description: 일련번호
+ *                 example: "CAPCERA2024072910001"
+ *               out_type:
+ *                 description: 출고 구분("DISPOSE", "SALE")
+ *                 example: "DISPOSE"
+ *               order_no:
+ *                 description: 주문번호(출고구분이 "SALE" 일때 필수입력)
+ *                 example: null
  *    responses:
  *       200:
  *         description: Successful deletion
@@ -826,32 +899,26 @@ app.post('/product/goodListAdm', async (req, res) => {
  *                   type: string
  *                   description: "Result status (Success or Failure)"
  *                   example: "Success"
- *                 message:
- *                   type: string
- *                   description: "Result message"
- *                   example: "성공"
- *                 count:
- *                   type: integer
- *                   description: "Number of affected rows"
- *                   example: 1
  *       400:
  *         description: Invalid input
  *       500:
  *         description: Internal server error
  */
 app.post('/product/gooddel', async (req, res) => {
-	const { class_id, product_id, serial_no } = req.body;
+	const { class_id, product_id, serial_no, out_type, order_no } = req.body;
 	let conn = null;
 	try{
 		conn = await pool.getConnection();
 		const result = await conn.query(env.QG.DEL_GOOD, [serial_no]);
 		const invRst = await conn.query(env.QG.UPD_INVENTORY_DN, [class_id, product_id ]);
+		const insOut = await conn.query(env.INS_GOOD_OUT, [product_id, serial_no, out_type, order_no]);
 		await conn.commit();
 		let rtnMsg = {
 			result : 'Success',
 		};
 		res.send(rtnMsg);
 	}catch(err){
+		await conn.rollback();
 		res.status(500).send(err.toString());
 	}finally{
 		if (conn) conn.release();
@@ -881,26 +948,49 @@ app.post('/product/gooddel', async (req, res) => {
  *               product_id:
  *                 type: string
  *                 description: The product ID
+ *                 example: "CAP_001_CERA_DW467823"
  *    responses:
  *       200:
  *         description: Successful deletion
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 result:
- *                   type: string
- *                   description: "Result status (Success or Failure)"
- *                   example: "Success"
- *                 message:
- *                   type: string
- *                   description: "Result message"
- *                   example: "성공"
- *                 count:
- *                   type: integer
- *                   description: "Number of affected rows"
- *                   example: 1
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   PART_NO:
+ *                     type: string
+ *                     description: "부품 번호"
+ *                     example: "DDI563_19830508_0140"
+ *                   PART_NM: 
+ *                     type: string
+ *                     description: "부품 이름"
+ *                     example: "다이오드140ma"
+ *                   PRICE:
+ *                     type: integer
+ *                     description: "부품 단가"
+ *                     example: 1300
+ *                   WEIGHT:
+ *                     type: number
+ *                     description: "무게(중량)"
+ *                     example: 22.3
+ *                   SIZE_H:
+ *                     type: number
+ *                     description: "가로크기"
+ *                     example: 25.23
+ *                   SIZE_V:
+ *                     type: number
+ *                     description: "세로크기"
+ *                     example: 20.56
+ *                   SIZE_Z:
+ *                     type: number
+ *                     description: "높이"
+ *                     example: 33.74
+ *                   COUNT:
+ *                     type: integer
+ *                     description: "부품 소요 갯수"
+ *                     example: 3
  *       400:
  *         description: Invalid input
  *       500:
