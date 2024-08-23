@@ -3,7 +3,7 @@ import './styles/Common.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import AdminHeader from './AdminHeader';
-import { renderContent } from './renderContent';
+import { AdminRenderContent } from './AdminRenderContent';
 
 function Admin() {
   const [currentView, setCurrentView] = useState('default');
@@ -111,7 +111,7 @@ function Admin() {
             style={{ backgroundImage: `url(/assets/Img/${product.IMAGE})` }}
           ></figure>
           <div className='desc relative'>
-            <a href=''>
+            <a>
               <div className='product_nm'>{product.PRODUCT_NM}</div>
               <div className='priceText'>{price}원</div>
               <div className='product_detail'>
@@ -195,7 +195,7 @@ function Admin() {
     <div className='adminWrap'>
       <AdminHeader currentView={currentView} setCurrentView={setCurrentView} />
       <div className={currentView === 'goodsTable' ? 'adminContent mt67 w100' : 'adminContent content'}>
-        {currentView === 'default' ? null : renderContent(currentView, components, navigate)}
+        {currentView === 'default' ? null : AdminRenderContent(currentView, components, navigate)}
       </div>{/*currentView가 default인 경우 useEffect에서 productList로 설정함 */}
     </div>
   );

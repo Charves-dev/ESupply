@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import PageNation from './PagiNation';
 
-export const renderContent = (currentView, components, navigate) => {
+export const AdminRenderContent = (currentView, components, navigate) => {
   const { searchContent, productRender } = components;
 
   switch (currentView) {
@@ -38,6 +38,20 @@ export const renderContent = (currentView, components, navigate) => {
         <ProductFormWrapper navigate={navigate} />
       );
 
+    case 'pd_delivery_view':
+      return (
+        <DeliveryViewWrapper navigate={navigate} pageType={'PD'}/>
+      );
+
+    case 'pt_delivery_view':  
+      return(
+        <DeliveryViewWrapper navigate={navigate} pageType={'PT'}/>
+      );
+      
+    case 'd_drop_down':
+      return (
+        <DeliveryViewWrapper navigate={navigate} pageType={'PD'}/>
+      );
     default:
       return null;
   }
@@ -59,4 +73,10 @@ const ProductFormWrapper = ({ navigate }) => {
   useEffect(() => {
     navigate('/productForm');
   }, [navigate]);  
+};
+
+const DeliveryViewWrapper = ({ navigate, pageType }) => {
+  useEffect(() => {
+    navigate('/deliveryView', { state: { type: pageType }});
+  }, [navigate])
 };

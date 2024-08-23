@@ -6,6 +6,7 @@ const AdminHeader = ({ currentView, setCurrentView }) => {
   const [isMenuHovered, setIsMenuHovered] = useState(false);
   const [isGoodsLiHovered, setIsGoodsLiHovered] = useState(false);
   const [isGoodsMenuHovered, setIsGoodsMenuHovered] = useState(false);
+  const [isDeliveryHovered, setIsDeliveryHovered] = useState(false);
 
   const navigate = useNavigate();
 
@@ -20,62 +21,77 @@ const AdminHeader = ({ currentView, setCurrentView }) => {
     { label: '부품재고목록', view: 'partList' },
     { label: '상품관리', view: 'g_drop_down' },
     { label: '제품관리', view: 'p_drop_down' },
+    { label: '배송조회', view: 'd_drop_down' },
   ];
 
   const viewMap = {
     'g_drop_down': ['goodsForm', 'goodsTable'],
     'p_drop_down': ['productForm'],
+    'd_drop_down': ['pd_delivery_view', 'pt_delivery_view']
   };
 
-  const isGoodsMenuHoveredRef = useRef(false);
-  const isMenuHoveredRef = useRef(false);
+  // const isGoodsMenuHoveredRef = useRef(false);
+  // const isMenuHoveredRef = useRef(false);
 
-  const menuBoxMouseEnter = (view) => {
-    if (view === 'g_drop_down') {
-      isGoodsMenuHoveredRef.current = true;
-      setIsGoodsMenuHovered(true);
-    }
+  // const menuBoxMouseEnter = (view) => {
+  //   if (view === 'g_drop_down') {
+  //     // isGoodsMenuHoveredRef.current = true;
+  //     // setIsGoodsMenuHovered(true);
+  //   }
 
-    if (view === 'p_drop_down') {
-      isMenuHoveredRef.current = true;
-      setIsMenuHovered(true);
-    }
-  };
+  //   if (view === 'p_drop_down') {
+  //     // isMenuHoveredRef.current = true;
+  //     // setIsMenuHovered(true);
+  //   }
+
+  //   if (view === 'd_drop_down') {
+  //     setIsDeliveryHovered(true);
+  //   }
+  // };
 
   const menuBoxMouseLeave = (view) => {
     if (view === 'g_drop_down') {
-      isGoodsMenuHoveredRef.current = false;
+      // isGoodsMenuHoveredRef.current = false;
       setIsGoodsMenuHovered(false);
     }
 
     if (view === 'p_drop_down') {
-      isMenuHoveredRef.current = false;
+      // isMenuHoveredRef.current = false;
       setIsMenuHovered(false);
+    }
+
+    if (view === 'd_drop_down') {
+      setIsDeliveryHovered(false);
     }
   };
 
   const menuMouseEnter = (view) => {
     if (view === 'p_drop_down') {
-      setIsLiHovered(true);
+      // setIsLiHovered(true);
       setIsMenuHovered(true);
     }
+    
     if (view === 'g_drop_down') {
-      setIsGoodsLiHovered(true);
+      // setIsGoodsLiHovered(true);
       setIsGoodsMenuHovered(true);
     }
-  };
 
-  const menuMouseLeave = (view) => {
-    if (view === 'g_drop_down') {
-      setIsGoodsLiHovered(false);
-      setIsGoodsMenuHovered(false);
-    }
-
-    if (view === 'p_drop_down') {
-      setIsLiHovered(false);
-      setIsMenuHovered(false);
+    if (view === 'd_drop_down') {
+      setIsDeliveryHovered(true);
     }
   };
+
+  // const menuMouseLeave = (view) => {
+  //   if (view === 'g_drop_down') {
+  //     setIsGoodsLiHovered(false);
+  //     setIsGoodsMenuHovered(false);
+  //   }
+
+  //   if (view === 'p_drop_down') {
+  //     setIsLiHovered(false);
+  //     setIsMenuHovered(false);
+  //   }
+  // };
 
   const isActiveMenuItem = (view, currentView) => {
     return viewMap[view]?.includes(currentView);
@@ -89,7 +105,7 @@ const AdminHeader = ({ currentView, setCurrentView }) => {
           {menuItems.map((item) => (
             <div
               key={item.view}
-              onMouseEnter={() => menuBoxMouseEnter(item.view)}
+              // onMouseEnter={() => menuBoxMouseEnter(item.view)}
               onMouseLeave={() => menuBoxMouseLeave(item.view)}
               className='h100 relative mr3 flex a_i_center'
             >
@@ -112,10 +128,16 @@ const AdminHeader = ({ currentView, setCurrentView }) => {
               <div className={`dd-menu ${item.view === 'p_drop_down' && isMenuHovered ? 'visible' : ''}`}>
                 <div onClick={() => setCurrentView('productForm')} className='white h42 cursor'>제품등록</div>
               </div>
+
+              {/* 배송조회 드롭다운*/}
+              <div className={`dd-menu ${item.view === 'd_drop_down' && isDeliveryHovered ? 'visible delivery' : ''}`}>
+                <div onClick={() => setCurrentView('pd_delivery_view')} className='white h42 cursor'>상품배송조회</div>
+                <div onClick={() => setCurrentView('pt_delivery_view')} className='white h42 cursor'>부품배송조회</div>
+              </div>
             </div>
           ))}
         </ul>
-        <button className="logOut cursor" onClick={handleLogout}><b>로그아웃</b></button>
+        <button className="logOut cursor" onClick={handleLogout}>로그아웃</button>
         <button className="goBack cursor" onClick={() => navigate('/main')}>메인으로가기</button>
       </div>
     </header>

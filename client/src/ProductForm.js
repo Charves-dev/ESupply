@@ -3,7 +3,7 @@ import axios from 'axios';
 import SelectBox from './SelectBox';
 import CommonAlert from './CommonAlert';
 import AdminHeader from "./AdminHeader";
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const ProductForm = () => {
   const [image, setImage] = useState(null);

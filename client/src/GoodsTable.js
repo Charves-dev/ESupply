@@ -1,10 +1,10 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import SelectBox from './SelectBox';
-import PageNation from './PagiNation';
+import PageNation,{resetPageNum} from './PagiNation';
 import GoodsForm from "./GoodsForm";
 import AdminHeader from "./AdminHeader";
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const GoodsTable = ({ resetKey, onBackToList }) => {
   const [data, setData] = useState([]);                    // 상품 목록 데이터
@@ -37,6 +37,7 @@ const GoodsTable = ({ resetKey, onBackToList }) => {
       // console.log('상품목록테이블 조회결과: ');      
       // console.log(res);
 
+      resetPageNum();
       setData(res.data);
       setCheckedItems([]); // 새로운 데이터가 로드될 때 체크박스 초기화
       
