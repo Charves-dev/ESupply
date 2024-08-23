@@ -13,13 +13,13 @@ const OrderList = () => {
 
   useEffect(() => {
     setOptionObj([
-      {value: '1', label: '상품명'},
-      {value: '2', label: '상품코드'}
+      {value: '1', label: '제품명'},
+      {value: '2', label: '제품코드'}
     ])
   },[])
 
 
-  // 전체 제품 목록 가져오기 or 검색시 대상 제품 목록 가져오기
+  // 전체 주문 목록 가져오기 또는 검색시 대상 제품 가져오기
   const searchResProducts = async () => {
     const search_key_word = searchKeyWord;
     

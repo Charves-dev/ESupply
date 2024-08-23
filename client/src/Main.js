@@ -67,8 +67,8 @@ function Main() {
     };
 
     setOptionObj([
-      {value: '1', label: '상품명'},
-      {value: '2', label: '상품코드'}
+      {value: '1', label: '제품명'},
+      {value: '2', label: '제품ID'}
     ])
   }, []);
 
