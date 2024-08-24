@@ -98,7 +98,7 @@ function PartList() {
     try {
       const res = await axios.post('http://localhost:1092/product/goodList', {
         product_nm: searchPnm, // 상품명
-        product_id: '', // 상품 ID
+        product_id: '',        // 상품 ID
       });
 
       setProductId(res.data[0].PRODUCT_ID);
@@ -121,12 +121,8 @@ function PartList() {
         product_id : productId,    // 상품 ID
       });
 
-      console.log('검색 키워드: ');
-      console.log(productId);
-      
-      
-      console.log('부품리스트: ');      
-      console.log(res);
+      // console.log('부품리스트: ');      
+      // console.log(res);
       
       // 상품 리스트 설정
       setProductObj({ count: res.data.length, pList: res.data });       
