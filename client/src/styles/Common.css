@@ -783,7 +783,6 @@ justify-content: center;
 }
 .adminWrap .partListContent{
   width: 50%;
-  margin: 0 auto;
 }
 .adminWrap .menuBox li{
   padding-inline:20px;
@@ -949,6 +948,12 @@ justify-content: center;
   margin: 0 auto;
 }
 /* 상품 상세 e */
+
+/* 부품 목록 s*/
+.partListContent{
+  margin-bottom: 114px;
+}
+/* 부품 목록 e */
 
 /* 관리자 화면 e */
 

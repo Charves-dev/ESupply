@@ -86,8 +86,8 @@ function Admin() {
   //**********************************************************************************************
   // 부품목록 보기로 이동
   //**********************************************************************************************
-  const goPartListView = () => {
-    navigate('/partList');
+  const goPartListView = (productId, productNm) => {
+    navigate('/partList',{ state: { productId: productId, productNm: productNm}});
   };
   //**********************************************************************************************
 
@@ -127,7 +127,7 @@ function Admin() {
                 <span className='label'>무게</span> {product.WEIGHT} g
               </div>
             </a>
-            <button onClick={goPartListView} className='absolute partListBtn fs14 bgSlate100 cursor'>
+            <button onClick={() => goPartListView(product.PRODUCT_ID, product.PRODUCT_NM)} className='absolute partListBtn fs14 bgSlate100 cursor'>
               부품목록
             </button>
           </div>

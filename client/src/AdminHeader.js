@@ -18,7 +18,7 @@ const AdminHeader = ({ currentView, setCurrentView }) => {
 
   const menuItems = [
     { label: '상품재고목록', view: 'productList' },
-    { label: '부품재고목록', view: 'partList' },
+    { label: '부품재고목록', view: 'partAllList' },
     { label: '상품관리', view: 'g_drop_down' },
     { label: '제품관리', view: 'p_drop_down' },
     { label: '배송조회', view: 'd_drop_down' },
