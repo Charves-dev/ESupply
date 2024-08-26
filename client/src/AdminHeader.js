@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AdminHeader = ({ currentView, setCurrentView }) => {
-  const [isLiHovered, setIsLiHovered] = useState(false);
+  // const [isLiHovered, setIsLiHovered] = useState(false);
   const [isMenuHovered, setIsMenuHovered] = useState(false);
-  const [isGoodsLiHovered, setIsGoodsLiHovered] = useState(false);
+  // const [isGoodsLiHovered, setIsGoodsLiHovered] = useState(false);
   const [isGoodsMenuHovered, setIsGoodsMenuHovered] = useState(false);
   const [isDeliveryHovered, setIsDeliveryHovered] = useState(false);
 
