@@ -92,3 +92,36 @@ values ('charves', '(주)차베스전기', '손윤석', '010-6582-0385', '서울
 -- 2024.08.14 : charves 시퀀스 생성 (주문번호 채번을 위한 시퀀스)
 CREATE OR REPLACE SEQUENCE `seqOrder` start with 1 minvalue 1 maxvalue 9999999999 increment by 1 cache 1000 cycle ENGINE=InnoDB
 
+
+-- 2024.08.26 : charves 제품, 상품 등록
+insert into charves.product_master(PRODUCT_ID, PRODUCT_NM, WEIGHT, SIZE_H, SIZE_V, SIZE_Z, PRICE)
+select 'TRAN-0032-2847-72640', '트랜지스터', 2.3, 1,1,1, 900 from dual union all
+select 'LDIO-2314-4562-82939', '광다이오드', 2.3, 1,1,1, 900 from dual union all
+select 'RAMD-2222-6666-75588', '어스LEG', 2.3, 1,1,1, 900 from dual union all
+select 'DDRM-3332-2333-74567', 'DDR게이트', 2.3, 1,1,1, 900 from dual union all
+select 'JIND-4623-2854-90742', '베어링', 2.3, 1,1,1, 900 from dual union all
+select 'ROUT-2839-3374-94847', '라우터', 2.3, 1,1,1, 900 from dual union all
+select 'CAPA-7843-4536-27384', '카파푸어', 2.3, 1,1,1, 900 from dual union all
+select 'THPD-4565-1526-46375', '써멀패드', 2.3, 1,1,1, 900 from dual;
+
+insert into charves.goods (PRODUCT_ID, SERIAL_NO, MANUFACTURING_DTTM, LOT_NO)
+select 'TRAN-0032-2847-72640', 'TRAN-20240826-000002', '20240826185502', 'R3-32' from dual union all
+select 'TRAN-0032-2847-72640', 'TRAN-20240826-000003', '20240826185502', 'R3-32' from dual union all
+select 'TRAN-0032-2847-72640', 'TRAN-20240826-000004', '20240826185502', 'R3-32' from dual union all
+select 'TRAN-0032-2847-72640', 'TRAN-20240826-000005', '20240826185502', 'R3-32' from dual union all
+select 'LDIO-2314-4562-82939', 'LDIO-20240826-000001', '20240826185504', 'G3-72' from dual union all
+select 'LDIO-2314-4562-82939', 'LDIO-20240826-000002', '20240826185505', 'G3-72' from dual union all
+select 'LDIO-2314-4562-82939', 'LDIO-20240826-000003', '20240826185506', 'G3-72' from dual union all
+select 'LDIO-2314-4562-82939', 'LDIO-20240826-000004', '20240826185507', 'G3-72' from dual union all
+select 'LDIO-2314-4562-82939', 'LDIO-20240826-000005', '20240826185508', 'G3-72' from dual union all
+select 'DDRM-3332-2333-74567', 'DDRM-20240826-000001', '20240826185508', 'G3-72' from dual union all
+select 'DDRM-3332-2333-74567', 'DDRM-20240826-000002', '20240826185508', 'G3-72' from dual union all
+select 'DDRM-3332-2333-74567', 'DDRM-20240826-000003', '20240826185508', 'F9-72' from dual union all
+select 'CAPA-7843-4536-27384', 'CAPA-20240826-000001', '20240826185508', 'F1-10' from dual union all
+select 'CAPA-7843-4536-27384', 'CAPA-20240826-000002', '20240826185508', 'R5-36' from dual union all
+select 'CAPA-7843-4536-27384', 'CAPA-20240826-000003', '20240826185508', 'R1-27' from dual union all
+select 'THPD-4565-1526-46375', 'THPD-20240826-000001', '20240826185508', 'R4-22' from dual union all
+select 'THPD-4565-1526-46375', 'THPD-20240826-000002', '20240826185508', 'R4-11' from dual union all
+select 'THPD-4565-1526-46375', 'THPD-20240826-000003', '20240826185508', 'R4-15' from dual;
+;
+commit;
