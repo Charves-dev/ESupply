@@ -6,21 +6,29 @@ import Counter from './Counter';
 import AdminHeader from './AdminHeader';
 import PageNation from './PagiNation';
 import FilterSearchBar from './FilterSearchBar';
+import CommonAlert from './CommonAlert';
 
 function PartList() {
   const location = useLocation();
-  const [productId, setProductId] = useState(location.state?.productId || '');  
-  const [productNm, setProductNm] = useState(location.state?.productNm || '');
-  const [searchKeyWord, setSearchKeyWord] = useState(productNm);
+  const [classId, setClassId]         = useState('');
+  const [productId, setProductId]     = useState(location.state?.productId || '');  
+  const [productNm, setProductNm]     = useState(location.state?.productNm || '');
   const [currentView, setCurrentView] = useState('partList');
-  const [orderCnt, setOrderCnt]   = useState([]);
-  const [username, setUsername]   = useState(null);  
-  const [partObj, setPartObj] = useState({ count: 0, pList: [] });  
+  const [orderCnt, setOrderCnt]       = useState([]);
+  const [username, setUsername]       = useState(null);  
+  const [partObj, setPartObj]         = useState({ count: 0, pList: [] });
+  const [alert, setAlert] = useState({ visible: false, type: '', text: '', reload: false });    
   const navigate = useNavigate();
 
   useEffect(() => {
     /* 부품목록 불러오기 */
     searchResParts();
+
+    // 로컬스토리지에서 productId를 가져와서 state에 설정(새로고침으로 인한 삭제를 막기 위함)
+    const storedProductId = localStorage.getItem('productId');
+    if (storedProductId) {
+      setProductId(storedProductId);
+    }
 
     // 세션에서 사용자 아이디를 가져와서 username에 설정
     const savedUsername = sessionStorage.getItem('username');
@@ -29,14 +37,11 @@ function PartList() {
     };
   }, []);
 
-  const goAdmin = () => {
-    navigate('/admin');
-  };
-
   // productId가 변경될 때 부품 목록을 가져옴
   useEffect(() => {
     if (productId) {
         searchResParts();
+        localStorage.setItem('productId', productId);
     }
   }, [productId]);
 
@@ -95,23 +100,16 @@ function PartList() {
   //***********************************************************************************************
   // 제품ID 검색(제품명으로 검색시 부품조회에 필요)
   //***********************************************************************************************
-  const searchResProduct = async () =>{
-    // const searchPnm = searchKeyWord === '' ? productNm : searchKeyWord; // 검색 키워드    
-    try {
-      // 제품명 검색시 productId를 먼저 검색한다
-      if(productNm !== ''){        
+  const searchResProduct = async () =>{ 
+    try {           
         const res = await axios.post('http://localhost:1092/product/goodList', {
           product_nm: productNm, // 상품명
-          product_id: '',        // 상품 ID
+          product_id: productId,        // 상품 ID
         });
+        
+        setClassId(res.data[0].CLASS_ID);
+        setProductId(res.data[0].PRODUCT_ID);   
 
-        setProductId(res.data[0].PRODUCT_ID);
-        // setproductNm(searchPnm);
-        // searchResParts();
-      }else{
-        setProductId(productId);
-      }
-      
     } catch (e) {
       console.log('상품 목록 가져오기 애러: ' + e);
     }
@@ -123,10 +121,9 @@ function PartList() {
   // 전체 부품 목록 가져오기 or 검색시 대상 부품 목록 가져오기
   //***********************************************************************************************
   const searchResParts = async () => {
-    try{
-      console.log(productId);
-      
-      const res = await axios.post('http://localhost:1092/part/list',{
+
+    try{            
+      const res = await axios.post('http://localhost:1092/product/part/list',{
         product_id : productId,    // 상품 ID
       });
 
@@ -137,7 +134,7 @@ function PartList() {
       setPartObj({ count: res.data.length, pList: res.data });       
 
     }catch(e){
-      console.log('부품 목록 가져오기 애러: ' + e);
+      console.log('부품 목록 가져오기 에러: ' + e);
     }
   };
   //***********************************************************************************************
@@ -158,73 +155,148 @@ function PartList() {
       let price = parseFloat(part.PRICE).toLocaleString('ko-KR');      
       partList.push(
         <div className='list-item' key={part.PART_NO}>                                    
-            <div className='desc'>
-                <a>
-                  <div className='product_nm'>
-                    {part.PART_NM}
-                  </div>
-                  <div className='priceText'>
-                    {price}원
-                  </div>
-                  <div className='product_detail'>
-                    <span className='label'>높이</span> {part.SIZE_Z} mm
-                  </div>
-                  <div className='product_detail'>
-                    <span className='label'>너비</span> {part.SIZE_H} mm
-                  </div>
-                  <div className='product_detail'>
-                    <span className='label'>길이</span> {part.SIZE_V} mm
-                  </div>
-                  <div className='product_detail'>
-                    <span className='label'>무게</span> {part.WEIGHT} g
-                  </div>
-                </a>                
-            </div>
-            <div className='ml20 flex f_d_column a_i_center j_c_center'>
-                <p className='mb10 pt5 pb5 fs16 w100 t_a_center border-top-bottom'>소요수량</p>
-                <Counter 
-                  count={orderCnt[i]}
-                  onIncrement={() => handleIncrement(i)}
-                  onDecrement={() => handleDecrement(i)}
-                />
-            </div>
+          <div className='desc relative'>
+              <a>
+                <div className='product_nm'>
+                  {part.PART_NM}
+                </div>
+                <div className='priceText'>
+                  {price}원
+                </div>
+                <div className='product_detail'>
+                  <span className='label'>높이</span> {part.SIZE_Z} mm
+                </div>
+                <div className='product_detail'>
+                  <span className='label'>너비</span> {part.SIZE_H} mm
+                </div>
+                <div className='product_detail'>
+                  <span className='label'>길이</span> {part.SIZE_V} mm
+                </div>
+                <div className='product_detail'>
+                  <span className='label'>무게</span> {part.WEIGHT} g
+                </div>
+              </a>    
+              <button onClick={()=>{savePart(part.PART_NO, orderCnt[i])}} className='absolute partListBtn fs14 bgSlate100 cursor'>
+                저장하기
+              </button>            
+          </div>
+          <div className='ml20 flex f_d_column a_i_center j_c_center'>
+              <p className='mb10 pt5 pb5 fs16 w100 t_a_center border-top-bottom'>소요수량</p>
+              <Counter 
+                count={orderCnt[i]}
+                onIncrement={() => handleIncrement(i)}
+                onDecrement={() => handleDecrement(i)}
+              />
+          </div>
         </div>
       )
     }
     return partList;
   }
   //***********************************************************************************************
+  
+
+  
+  //***********************************************************************************************
+  // 부품 수량 일괄 저장
+  //***********************************************************************************************
+
+  const saveAllParts = async() => {    
+    const p_count = partObj.count;
+    let res = {};
+
+    try {
+      for (let i = 0; i < p_count; i++) {
+        const part = partObj.pList[i];
+        if(orderCnt[i] <= 0){ 
+          continue;
+        }    
+        
+        res = await axios.post('http://localhost:1092/product/part/save',{
+          class_id    : classId,
+          product_id  : productId,
+          part_no     : part.PART_NO,
+          count       : orderCnt[i],
+        });    
+      }
+
+      if(res.data.result === "Success"){
+        setAlert({
+          visible: true,
+          type: 'ok',
+          text: '저장이 완료되었습니다.',
+          reload: true
+        });   
+      }else{
+        setAlert({
+          visible: true,
+          type: 'faile',
+          text: '저장 실패: ' + res.data.message,
+          reload: false
+        }); 
+      }
+
+    } catch (e) {
+      console.log('부품 일괄 저장 에러: ' + e);
+      setAlert({
+        visible: true,
+        type: 'faile',
+        text: 'message: ' + e,
+        reload: false
+      }); 
+    }
+  }
+
+  //***********************************************************************************************
 
 
   //***********************************************************************************************
   // 부품 수량 저장 
   //***********************************************************************************************
-  const savePart = () => {
-    console.log('');
-    const orderDetails = [];
-    const p_count = partObj.count;
+  const savePart = async(partNo, qty) => {
 
-    for (let i = 0; i < p_count; i++) {
-      const part = partObj.pList[i];
-      if(orderCnt[i] <= 0){ 
-        continue;
+    try{            
+      const res = await axios.post('http://localhost:1092/product/part/save',{
+        class_id    : classId,
+        product_id  : productId,
+        part_no     : partNo,
+        count       : qty,
+      });
+
+      if(res.data.result === "Success"){
+        setAlert({
+          visible: true,
+          type: 'ok',
+          text: '저장이 완료되었습니다.',
+          reload: true
+        });   
+      }else{
+        setAlert({
+          visible: true,
+          type: 'faile',
+          text: '저장 실패: ' + res.data.message,
+          reload: false
+        }); 
       }
       
-      orderDetails.push({
-        part_no : part.PART_NO,
-        qty   : orderCnt[i]
-      });
-    }
-
-    let orderData = {};
-    orderData = {
-      user_id : username,
-      order   : orderDetails
-    }
-
+    }catch(e){
+      console.log('부품 저장 에러: ' + e);
+      setAlert({
+        visible: true,
+        type: 'faile',
+        text: 'message: ' + e,
+        reload: false
+      }); 
+    }  
   }
   //***********************************************************************************************
 
+
+  const setCloseAlert = () => {
+    setAlert({ ...alert, visible: false });
+  };
+
+  
   return (
     <div className='adminWrap'>
       <AdminHeader currentView={currentView} setCurrentView={handleMenuClick} /> 
@@ -235,8 +307,18 @@ function PartList() {
         {orderCnt.length > 0 && <PageNation data = {prartRender()} itemsPerPage={5}/>}
       </div>
       <div className='flex'>
-        <button className="orderBtn cursor" onClick={savePart}><b>저장하기</b></button>
+        <button className="orderBtn cursor" onClick={saveAllParts}><b>일괄 저장하기</b></button>
       </div>
+      <div className='alertBg w100 h100' id='customAlertBg'></div>
+      {alert.visible && (
+        <CommonAlert
+          type={alert.type}
+          text={alert.text}
+          reload={alert.reload}
+          reloadPage={`/partList`}
+          onClose={setCloseAlert}          
+        />
+      )}
     </div>
   );
 }
