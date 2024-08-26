@@ -8,7 +8,7 @@ import PageNation from './PagiNation';
 import FilterSearchBar from './FilterSearchBar';
 import CommonAlert from './CommonAlert';
 
-function PartList() {
+function ProductPartList() {
   const location = useLocation();
   const [classId, setClassId]         = useState('');
   const [productId, setProductId]     = useState(location.state?.productId || '');  
@@ -291,6 +291,14 @@ function PartList() {
   }
   //***********************************************************************************************
 
+  const addPart = () => {
+    // savePart(); 아래 viewPartList 와 연계작업 대기..
+  };
+
+  const viewPartList = () => {
+    // /part/list API 작업중...
+  };
+
 
   const setCloseAlert = () => {
     setAlert({ ...alert, visible: false });
@@ -306,6 +314,7 @@ function PartList() {
         {/* 부품목록 */}
         {orderCnt.length > 0 && <PageNation data = {prartRender()} itemsPerPage={5}/>}
       </div>
+      <div className='addPartBtn' onClick={addPart}>부품<br/>추가</div>
       <div className='flex'>
         <button className="orderBtn cursor" onClick={saveAllParts}><b>일괄 저장하기</b></button>
       </div>
@@ -315,7 +324,7 @@ function PartList() {
           type={alert.type}
           text={alert.text}
           reload={alert.reload}
-          reloadPage={`/partList`}
+          reloadPage={`/productPartList`}
           onClose={setCloseAlert}          
         />
       )}
@@ -323,4 +332,4 @@ function PartList() {
   );
 }
 
-export default PartList;
+export default ProductPartList;

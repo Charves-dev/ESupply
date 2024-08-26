@@ -87,7 +87,7 @@ function Admin() {
   // 부품목록 보기로 이동
   //**********************************************************************************************
   const goPartListView = (productId, productNm) => {
-    navigate('/partList',{ state: { productId: productId, productNm: productNm}});
+    navigate('/productPartList',{ state: { productId: productId, productNm: productNm}});
   };
   //**********************************************************************************************
 

@@ -3,7 +3,7 @@ import Login from "./Login.js";
 import Main from './Main';
 import DeliveryView from './DeliveryView.js';
 import AdminView from './Admin.js';
-import PartList from './PartList.js';
+import ProductPartList from './ProductPartList.js';
 import GoodsForm from './GoodsForm.js';
 import GoodsTable from './GoodsTable.js';
 import ProductForm from './ProductForm.js';
@@ -20,7 +20,7 @@ function App() {
           <Route path="/main"         element={<Main />} />
           <Route path="/deliveryView" element={<DeliveryView />} />
           <Route path="/admin"        element={<AdminView />} />
-          <Route path="/partList"     element={<PartList />} />
+          <Route path="/productPartList"     element={<ProductPartList />} />
           <Route path="/goodsTable"   element={<GoodsTable />} />
           <Route path="/goodsForm"    element={<GoodsForm />} />
           <Route path='/productForm'  element={<ProductForm />} />

@@ -953,6 +953,25 @@ justify-content: center;
 .partListContent{
   margin-bottom: 114px;
 }
+.addPartBtn{
+  position: fixed;
+  bottom: 9rem;
+  right: 9%;
+  height: 8rem;
+  width: 8rem;
+  padding-left: 4px;
+  background: #ec1944;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  line-height: 1.8rem;
+  letter-spacing: 6px;
+  text-align: center;
+}
 /* 부품 목록 e */
 
 /* 관리자 화면 e */
