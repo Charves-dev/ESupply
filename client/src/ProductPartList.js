@@ -13,7 +13,7 @@ function ProductPartList() {
   const [classId, setClassId]         = useState('');
   const [productId, setProductId]     = useState(location.state?.productId || '');  
   const [productNm, setProductNm]     = useState(location.state?.productNm || '');
-  const [currentView, setCurrentView] = useState('partList');
+  const [currentView, setCurrentView] = useState('productPartList');
   const [orderCnt, setOrderCnt]       = useState([]);
   const [username, setUsername]       = useState(null);  
   const [partObj, setPartObj]         = useState({ count: 0, pList: [] });
