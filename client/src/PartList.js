@@ -4,16 +4,18 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Counter from './Counter';
 import AdminHeader from './AdminHeader';
+import PageNation from './PagiNation';
+import FilterSearchBar from './FilterSearchBar';
 
 function PartList() {
   const location = useLocation();
   const [productId, setProductId] = useState(location.state?.productId || '');  
-  const [productNm, setproductNm] = useState(location.state?.productNm || '');
+  const [productNm, setProductNm] = useState(location.state?.productNm || '');
   const [searchKeyWord, setSearchKeyWord] = useState(productNm);
   const [currentView, setCurrentView] = useState('partList');
   const [orderCnt, setOrderCnt]   = useState([]);
   const [username, setUsername]   = useState(null);  
-  const [productObj, setProductObj] = useState({ count: 0, pList: [] });  
+  const [partObj, setPartObj] = useState({ count: 0, pList: [] });  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,10 +41,10 @@ function PartList() {
   }, [productId]);
 
   useEffect(() => {
-    if (productObj.pList.length > 0) {
-      setOrderCnt(initializeOrderCnt(productObj.pList));
+    if (partObj.pList.length > 0) {
+      setOrderCnt(initializeOrderCnt(partObj.pList));
     }
-  }, [productObj]);
+  }, [partObj]);
 
 
   //********************************************************************************************
@@ -75,7 +77,7 @@ function PartList() {
       
       return newCounts;
     });
-  }, [productObj]);
+  }, [partObj]);
 
 
   // 부품 주문 개수 감소
@@ -94,16 +96,21 @@ function PartList() {
   // 제품ID 검색(제품명으로 검색시 부품조회에 필요)
   //***********************************************************************************************
   const searchResProduct = async () =>{
-    const searchPnm = searchKeyWord === '' ? productNm : searchKeyWord; // 검색 키워드    
+    // const searchPnm = searchKeyWord === '' ? productNm : searchKeyWord; // 검색 키워드    
     try {
-      const res = await axios.post('http://localhost:1092/product/goodList', {
-        product_nm: searchPnm, // 상품명
-        product_id: '',        // 상품 ID
-      });
+      // 제품명 검색시 productId를 먼저 검색한다
+      if(productNm !== ''){        
+        const res = await axios.post('http://localhost:1092/product/goodList', {
+          product_nm: productNm, // 상품명
+          product_id: '',        // 상품 ID
+        });
 
-      setProductId(res.data[0].PRODUCT_ID);
-      setproductNm(searchPnm);
-      searchResParts();
+        setProductId(res.data[0].PRODUCT_ID);
+        // setproductNm(searchPnm);
+        // searchResParts();
+      }else{
+        setProductId(productId);
+      }
       
     } catch (e) {
       console.log('상품 목록 가져오기 애러: ' + e);
@@ -117,6 +124,8 @@ function PartList() {
   //***********************************************************************************************
   const searchResParts = async () => {
     try{
+      console.log(productId);
+      
       const res = await axios.post('http://localhost:1092/part/list',{
         product_id : productId,    // 상품 ID
       });
@@ -125,7 +134,7 @@ function PartList() {
       // console.log(res);
       
       // 상품 리스트 설정
-      setProductObj({ count: res.data.length, pList: res.data });       
+      setPartObj({ count: res.data.length, pList: res.data });       
 
     }catch(e){
       console.log('부품 목록 가져오기 애러: ' + e);
@@ -138,18 +147,18 @@ function PartList() {
   //***********************************************************************************************
   //부품 목록 렌더링
   //***********************************************************************************************
-  const productRender = () =>{    
-    const productList = [];
-    const p_count = productObj.count;   // 부품 전체 개수
-    const pList   = productObj.pList;   // 부품 정보    
+  const prartRender = () =>{    
+    const partList = [];
+    const p_count = partObj.count;   // 부품 전체 개수
+    const pList   = partObj.pList;   // 부품 정보    
 
     for (let i = 0; i < p_count; i++) {
       const part = pList[i];
       
       let price = parseFloat(part.PRICE).toLocaleString('ko-KR');      
-      productList.push(
-        <li className='mt30 mb44' key={part.PART_NO}>                                    
-            <div className='desc relative'>
+      partList.push(
+        <div className='list-item' key={part.PART_NO}>                                    
+            <div className='desc'>
                 <a>
                   <div className='product_nm'>
                     {part.PART_NM}
@@ -179,10 +188,40 @@ function PartList() {
                   onDecrement={() => handleDecrement(i)}
                 />
             </div>
-        </li>
+        </div>
       )
     }
-    return <ul className="thumb-list row-line2">{productList}</ul>;
+    return partList;
+  }
+  //***********************************************************************************************
+
+
+  //***********************************************************************************************
+  // 부품 수량 저장 
+  //***********************************************************************************************
+  const savePart = () => {
+    console.log('');
+    const orderDetails = [];
+    const p_count = partObj.count;
+
+    for (let i = 0; i < p_count; i++) {
+      const part = partObj.pList[i];
+      if(orderCnt[i] <= 0){ 
+        continue;
+      }
+      
+      orderDetails.push({
+        part_no : part.PART_NO,
+        qty   : orderCnt[i]
+      });
+    }
+
+    let orderData = {};
+    orderData = {
+      user_id : username,
+      order   : orderDetails
+    }
+
   }
   //***********************************************************************************************
 
@@ -190,19 +229,13 @@ function PartList() {
     <div className='adminWrap'>
       <AdminHeader currentView={currentView} setCurrentView={handleMenuClick} /> 
       <div className='partListContent mt67'>
-        {/* 검색 */}
-        <section className='w100 mt32'> 
-          <div className='flex'>
-            <input type='text' className='search' onChange={(e) => setSearchKeyWord(e.target.value)} value={searchKeyWord}/>
-            <div onClick={searchResProduct} className='searchBtn bgSlate100 fw700 fs18 flex a_i_center j_c_center'>검색</div>
-          </div>  
-        </section>              
+        <FilterSearchBar initialValue={productNm} setProductNm={setProductNm} setProductId={setProductId} searchRes={searchResProduct}/>        
         
         {/* 부품목록 */}
-        {orderCnt.length > 0 && productRender()}
+        {orderCnt.length > 0 && <PageNation data = {prartRender()} itemsPerPage={5}/>}
       </div>
       <div className='flex'>
-        <button className="orderBtn cursor"><b>저장하기</b></button>
+        <button className="orderBtn cursor" onClick={savePart}><b>저장하기</b></button>
       </div>
     </div>
   );
