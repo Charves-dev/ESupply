@@ -308,7 +308,7 @@ function ProductPartList() {
   return (
     <div className='adminWrap'>
       <AdminHeader currentView={currentView} setCurrentView={handleMenuClick} /> 
-      <div className='partListContent mt67'>
+      <div className='partListContent content mt67'>
         <FilterSearchBar initialValue={productNm} setProductNm={setProductNm} setProductId={setProductId} searchRes={searchResProduct}/>        
         
         {/* 부품목록 */}

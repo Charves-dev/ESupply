@@ -782,7 +782,7 @@ justify-content: center;
   border-bottom: 1px solid #000;
 }
 .adminWrap .partListContent{
-  width: 50%;
+  /* width: 50%; */
 }
 .adminWrap .menuBox li{
   padding-inline:20px;
@@ -956,7 +956,7 @@ justify-content: center;
 .addPartBtn{
   position: fixed;
   bottom: 9rem;
-  right: 9%;
+  right: 18%;
   height: 8rem;
   width: 8rem;
   padding-left: 4px;
@@ -973,6 +973,30 @@ justify-content: center;
   line-height: 1.6rem;
   letter-spacing: 4px;
   text-align: center;
+  cursor: pointer;
+}
+
+.charvesPartsBtn{
+  position: fixed;
+  bottom: 9rem;
+  right: 18%;
+  height: 8rem;
+  width: 8rem;
+  padding-left: 4px;
+  background: linear-gradient(135deg, #6aaeff, #1a8cff);
+  border-radius: 50%;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  line-height: 1.6rem;
+  letter-spacing: 4px;
+  text-align: center;
+  cursor: pointer;
 }
 /* 부품 목록 e */
 
@@ -1016,6 +1040,10 @@ justify-content: center;
   .table-search-box{
     width: 620px;
   }
+
+  .addPartBtn, .charvesPartsBtn{
+    right: 3vw;
+  }
 }
 
 /* 데스크탑 스타일 적용 */
@@ -1023,6 +1051,19 @@ justify-content: center;
   .goodsTableWrap{
     width: 100%;
     padding-inline: 30px;
+  }
+
+  .addPartBtn, .charvesPartsBtn{
+    width: 7rem;
+    height: 7rem;
+    right: 6vw;
+  }
+}
+
+/* 너비 1607 이하 */
+@media (min-width: 1440px) and (max-width: 1607px) {
+  .addPartBtn, .charvesPartsBtn{
+    right: 10%;
   }
 }
 
