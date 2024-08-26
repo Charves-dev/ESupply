@@ -933,7 +933,7 @@ app.post('/product/gooddel', async (req, res) => {
 //*************************************************************************************************
 /**
  * @swagger
- * /part/list:
+ * /product/part/list:
  *  post:
  *    summary: "제품별 파트(부품)리스트 조회"
  *    description: "제품별 부품리스트를 조회합니다."
@@ -996,7 +996,7 @@ app.post('/product/gooddel', async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-app.post('/part/list', async (req, res) => {
+app.post('/product/part/list', async (req, res) => {
 	const { product_id } = req.body;
 	let conn 			= null;
 	try{
@@ -1011,6 +1011,262 @@ app.post('/part/list', async (req, res) => {
 });
 //*************************************************************************************************
 
+
+
+//*************************************************************************************************
+// 제품별 부품 정보 저장
+//*************************************************************************************************
+/**
+ * @swagger
+ * /product/part/save:
+ *  post:
+ *    summary: "제품별 부품 정보 저장"
+ *    description: "제품 생산에 필요한 부품정보를 저장합니다."
+ *    tags: [product]
+ *    requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               class_id:
+ *                 type: string
+ *                 description: 모델(class) ID
+ *               product_id:
+ *                 type: string
+ *                 description: 제품 ID
+ *               part_no:
+ *                 type: string
+ *                 description: 부품번호
+ *               count:
+ *                 type: integer
+ *                 description: 소요되는 부품 갯수
+ *    responses:
+ *       200:
+ *         description: Successful deletion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: string
+ *                   description: "작업 결과"
+ *                   example: "Success"
+ *                 count:
+ *                   type: integer
+ *                   description: "작업 Row수"
+ *                   example: 1
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Internal server error
+ */
+app.post('/product/part/save', async (req, res) => {
+	const { class_id, product_id, part_no, count  } = req.body;
+	let conn = null;
+	try{
+		conn = await pool.getConnection();
+		let result = await conn.query(env.QG.UPD_PRODUCT_PART_CNT, [count, class_id, product_id, part_no]);
+		let response = {
+			result : "Success",
+			count  : result.affectedRows
+		};
+		await conn.commit();
+		res.json(response);
+	}catch(err){
+		await conn.rollback();
+		res.status(500).send(err.toString());
+	}finally{
+		if(conn) conn.release();
+	}
+});
+//*************************************************************************************************
+
+
+
+//*************************************************************************************************
+// 부품 상세조회
+//*************************************************************************************************
+/**
+ * @swagger
+ * /part/detail:
+ *  post:
+ *    summary: "부품 마스터 상세 조회"
+ *    description: "부품 마스터 상세 조회"
+ *    tags: [product]
+ *    requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               part_no:
+ *                 type: string
+ *                 description: 부품번호
+ *    responses:
+ *       200:
+ *         description: Successful deletion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 part_no:
+ *                   type: string
+ *                   description: "부품번호"
+ *                   example: "DDI563_19830508_0140"
+ *                 part_nm:
+ *                   type: string
+ *                   description: "부품이름"
+ *                   example: "다이오드140ma"
+ *                 price:
+ *                   type: integer
+ *                   description: "부품 단가"
+ *                   example: 309
+ *                 weight:
+ *                   type: number
+ *                   description: "부품 중량"
+ *                   example: 2.4
+ *                 size_h:
+ *                   type: number
+ *                   description: "부품 가로크기"
+ *                   example: 2.45
+ *                 size_v:
+ *                   type: number
+ *                   description: "부품 세로크기"
+ *                   example: 8.7
+ *                 size_z:
+ *                   type: string
+ *                   description: "부품 높이"
+ *                   example: 3.3
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Internal server error
+ */
+app.post('/part/detail', async (req, res) => {
+	const { part_no } = req.body;
+	let conn = null;
+	try{
+		conn = await pool.getConnection();
+		let result = await conn.query(env.QG.GET_PART_MASTER, [part_no]);
+		res.json(result);
+	}catch(err){
+		res.status(500).send(err.toString());
+	}finally{
+		if(conn) conn.release();
+	}
+});
+//*************************************************************************************************
+
+
+
+//*************************************************************************************************
+// 부품 상세 저장
+//*************************************************************************************************
+/**
+ * @swagger
+ * /part/save:
+ *  post:
+ *    summary: "부품 마스터 상세 조회"
+ *    description: "부품 마스터 상세 조회"
+ *    tags: [product]
+ *    requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *                 part_no:
+ *                   type: string
+ *                   description: "부품번호"
+ *                   example: "DDI563_19830508_0140"
+ *                 part_nm:
+ *                   type: string
+ *                   description: "부품이름"
+ *                   example: "다이오드140ma"
+ *                 price:
+ *                   type: integer
+ *                   description: "부품 단가"
+ *                   example: 309
+ *                 weight:
+ *                   type: number
+ *                   description: "부품 중량"
+ *                   example: 2.4
+ *                 size_h:
+ *                   type: number
+ *                   description: "부품 가로크기"
+ *                   example: 2.45
+ *                 size_v:
+ *                   type: number
+ *                   description: "부품 세로크기"
+ *                   example: 8.7
+ *                 size_z:
+ *                   type: string
+ *                   description: "부품 높이"
+ *                   example: 3.3
+ *    responses:
+ *       200:
+ *         description: Successful deletion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: string
+ *                   description: "작업결과"
+ *                   example: "Success"
+ *                 count:
+ *                   type: integer
+ *                   description: "작업Row수"
+ *                   example: 1
+ *                 job:
+ *                   type: string
+ *                   description: "Insert / Update 구분"
+ *                   example: "I"
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Internal server error
+ */
+app.post('/part/detail/save', async (req, res) => {
+	const { part_no, part_nm, price, weight, size_h, size_v, size_z } = req.body;
+	let conn = null;
+	try{
+		conn = await pool.getConnection();
+		let partCnt = await conn.query(env.QG.GET_PART_CNT, [part_no]);
+		if(partCnt[0].cnt > 0){
+			let result = await conn.query(env.QG.UPD_PART_INFO, [part_nm, price, weight, size_h, size_v, size_z, part_no]);
+			let response = {
+				result : "Success",
+				count  : result.affectedRows,
+				job    : "U"
+			}
+			await conn.commit();
+			res.json(response);
+		}else{
+			let result = await conn.query(env.QG.INS_PART_INFO, [part_no, part_nm, price, weight, size_h, size_v, size_z]);
+			let response = {
+				result : "Success",
+				count  : result.affectedRows,
+				job    : "I"
+			}
+			await conn.commit();
+			res.json(response);
+		}
+	}catch(err){
+		await conn.rollback();
+		res.status(500).send(err.toString());
+	}finally{
+		if(conn) conn.release();
+	}
+});
+//*************************************************************************************************
 
 
 //******************************* */
