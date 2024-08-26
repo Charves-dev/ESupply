@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '/public/index.html'));
+  res.sendFile(path.join(__dirname, '/index.html'));
 });
 
 
@@ -91,8 +91,41 @@ console.log(params);
   }
 });
 
+app.get('/parts_show', async (req, res) => {
+  res.sendFile(path.join(__dirname, '/parts_show.html'));
+})
+//*************************************************************************************************
+// 상품 목록 조회하기
+//*************************************************************************************************
+app.post('/goods/list', async (req, res) => {
+  const { optionNo, searchTxt } = req.body;
+  conn = null;
+  try{
 
+    console.log(optionNo);
+    console.log(searchTxt);
 
+    conn = await pool.getConnection();
+    let strQuery = env.QG.GET_PRODUCT_LIST;
+    if(optionNo === null || optionNo === ''){
+      const result = await conn.query(strQuery);
+      res.json(result);
+    }else if(optionNo === '1'){
+      strQuery += env.QG.GET_PRODUCT_LIST_NM;
+      const result = await conn.query(strQuery, [searchTxt]);
+      res.json(result);
+    }else{
+      strQuery += env.QG.GET_PRODUCT_LIST_ID;
+      const result = await conn.query(strQuery, [searchTxt]);
+      res.json(result);
+    }
+  }catch(err){
+    res.status(500).send(err.toString());
+  }finally{
+    if(conn) conn.release();
+  }
+});
+//*************************************************************************************************
 
 
 app.post('/order/new', OrderManager.ORDER_NEW);

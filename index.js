@@ -1234,7 +1234,7 @@ app.post('/part/detail', async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-app.post('/part/detail/save', async (req, res) => {
+app.post('/part/save', async (req, res) => {
 	const { part_no, part_nm, price, weight, size_h, size_v, size_z } = req.body;
 	let conn = null;
 	try{
@@ -1268,6 +1268,9 @@ app.post('/part/detail/save', async (req, res) => {
 });
 //*************************************************************************************************
 
+app.get('/part/show', async(req, res)=> {
+	res.redirect('http://localhost:7943/parts_show');
+});
 
 //******************************* */
 app.listen(port, () => {
