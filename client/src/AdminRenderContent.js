@@ -13,6 +13,10 @@ export const AdminRenderContent = (currentView, components, navigate) => {
         </>
       );
 
+    case 'partList':
+      return (
+        <PartListWrapper navigate={navigate}/>
+      );
     case 'goodsForm':
       return (
         <GoodsFormWrapper navigate={navigate} />
@@ -79,4 +83,10 @@ const DeliveryViewWrapper = ({ navigate, pageType }) => {
   useEffect(() => {
     navigate('/deliveryView', { state: { type: pageType }});
   }, [navigate])
+};
+
+const PartListWrapper = ({navigate}) => {
+  useEffect(() => {
+    navigate('/partList')
+  }, [navigate]);
 };

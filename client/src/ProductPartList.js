@@ -74,7 +74,7 @@ function ProductPartList() {
   };
 
 
-  // 부품 주문 개수 증가
+  // 부품 소요 개수 증가
   const handleIncrement = useCallback((index) => {
     setOrderCnt(prevOrderCnt => {
       const newCounts = [...prevOrderCnt];
@@ -85,7 +85,7 @@ function ProductPartList() {
   }, [partObj]);
 
 
-  // 부품 주문 개수 감소
+  // 부품 소요 개수 감소
   const handleDecrement = (index) => {
       setOrderCnt(prevOrderCnt => {
         const newCounts = [...prevOrderCnt];
@@ -144,7 +144,7 @@ function ProductPartList() {
   //***********************************************************************************************
   //부품 목록 렌더링
   //***********************************************************************************************
-  const prartRender = () =>{    
+  const partRender = () =>{    
     const partList = [];
     const p_count = partObj.count;   // 부품 전체 개수
     const pList   = partObj.pList;   // 부품 정보    
@@ -312,7 +312,7 @@ function ProductPartList() {
         <FilterSearchBar initialValue={productNm} setProductNm={setProductNm} setProductId={setProductId} searchRes={searchResProduct}/>        
         
         {/* 부품목록 */}
-        {orderCnt.length > 0 && <PageNation data = {prartRender()} itemsPerPage={5}/>}
+        {orderCnt.length > 0 && <PageNation data = {partRender()} itemsPerPage={5}/>}
       </div>
       <div className='addPartBtn' onClick={addPart}>부품<br/>추가</div>
       <div className='flex'>

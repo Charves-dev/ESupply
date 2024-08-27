@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import SelectBox from "./SelectBox";
 
-function FilterSearchBar ({setProductNm, setProductId, searchRes, initialValue = ''}) {
+function FilterSearchBar ({setProductNm, setProductId, searchRes, initialOptionObj = [], initialValue = ''}) {
   const [searchKeyWord, setSearchKeyWord] = useState(initialValue);
   const [optionObj, setOptionObj]       = useState([]);   
   const [optionNo, setOptionNo]         = useState('');
@@ -9,10 +9,14 @@ function FilterSearchBar ({setProductNm, setProductId, searchRes, initialValue =
   const [searchCompleted, setSearchCompleted] = useState(false);
   
   useEffect(() => {
-    setOptionObj([
-      {value: '1', label: '제품명'},
-      {value: '2', label: '제품ID'}
-    ])
+    if(initialOptionObj.length > 0){
+      setOptionObj(initialOptionObj)
+    }else{
+      setOptionObj([
+        {value: '1', label: '제품명'},
+        {value: '2', label: '제품ID'}
+      ])
+    }
   }, [])
 
   useEffect(()=>{

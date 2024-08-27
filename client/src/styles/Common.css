@@ -530,6 +530,129 @@ ul{
   border: none;
   color: #fff;
 }
+
+.hamburger-menu-line{
+  width: 50px;
+  border: 2px solid #fff;
+  background-color: #fff;
+}
+
+.hamburger-menu-container {
+    position: relative;
+    display: none;
+}
+
+.hamburger-icon {
+    width: 30px;
+    height: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.hamburger-icon span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: #333;
+    transition: all 0.3s;
+}
+
+.hamburger-icon.open span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger-icon.open span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-icon.open span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+.side-menu {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 200px;
+    height: 100vh;
+    background-color: #333;
+    color: #fff;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+.side-menu ul {
+    list-style: none;
+    padding: 20px;
+}
+
+.side-menu ul li {
+    margin: 20px 0;
+}
+
+/* Hamburger-menu s 햄버거*/
+.hamburger-menu-container {
+  position: relative;
+}
+
+.hamburger-icon {
+  width: 30px;
+  height: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.hamburger-icon span {
+  display: block;
+  width: 100%;
+  height: 3px;
+  background-color: #fff;
+  transition: all 0.3s;
+}
+
+.hamburger-icon.open span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger-icon.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-icon.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+.side-menu {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  width: 200px;
+  height: 100vh;
+  background-color: #333;
+  color: #fff;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.side-menu.show {
+  transform: translateX(-100%);
+  left: 68px;
+}
+
+.side-menu ul {
+  list-style: none;
+  padding: 20px;
+}
+
+.side-menu ul li {
+  margin: 20px 0;
+}
+
+/* Hamburger-menu e */
 /* header e */
 
 /* Main page s*/
@@ -949,10 +1072,28 @@ justify-content: center;
 }
 /* 상품 상세 e */
 
-/* 부품 목록 s*/
+/* 부품 목록(제품별 부품목록, 부품재고) s*/
 .partListContent{
   margin-bottom: 114px;
 }
+
+.partListContent .partOrderBtn{
+  margin-top: 11px;
+  background: #63B8FF;
+  color: white;
+  padding: 3px 20px;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* 호버 효과용 트랜지션 */
+  cursor: pointer; 
+}
+
+.partListContent .partOrderBtn:hover{
+  background-color: #112a3e;
+  transform: translateY(-2px); /* 호버 시 살짝 위로 이동 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 .addPartBtn{
   position: fixed;
   bottom: 9rem;
@@ -983,7 +1124,7 @@ justify-content: center;
   height: 8rem;
   width: 8rem;
   padding-left: 4px;
-  background: linear-gradient(135deg, #6aaeff, #1a8cff);
+  background: linear-gradient(135deg, #98beff, #177bdf);    
   border-radius: 50%;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -997,6 +1138,10 @@ justify-content: center;
   letter-spacing: 4px;
   text-align: center;
   cursor: pointer;
+}
+
+.charvesPartsBtn:hover{
+  background: linear-gradient(135deg, #98beff, #135394);
 }
 /* 부품 목록 e */
 
@@ -1024,6 +1169,33 @@ justify-content: center;
   }
 }
 
+@media (max-width: 1024px) {
+  /* .logo{
+    width: 60px;
+    word-wrap: break-word;
+    font-size: 14px;
+  } */
+
+  .header-right-menu{
+    display: none;
+  }
+
+  .hamburger-menu-container{
+    display: flex;
+  }
+
+  .menu-list{
+    visibility: hidden;
+  }
+
+  .addPartBtn, .charvesPartsBtn{
+    width: 5.8rem !important;
+    height: 5.8rem !important;
+    font-size: 16px;
+    right: 3vw;
+  }
+}
+
 /* 태블릿 스타일 적용 */
 @media (min-width: 601px) and (max-width: 1024px) {
   .loginWrap .box{
@@ -1042,6 +1214,8 @@ justify-content: center;
   }
 
   .addPartBtn, .charvesPartsBtn{
+    width: 7rem;
+    height: 7rem;
     right: 3vw;
   }
 }
@@ -1060,7 +1234,7 @@ justify-content: center;
   }
 }
 
-/* 너비 1607 이하 */
+/* 너비 1607px ~ 1440px 구간*/
 @media (min-width: 1440px) and (max-width: 1607px) {
   .addPartBtn, .charvesPartsBtn{
     right: 10%;

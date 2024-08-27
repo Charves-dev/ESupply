@@ -18,7 +18,7 @@ const AdminHeader = ({ currentView, setCurrentView }) => {
 
   const menuItems = [
     { label: '상품재고목록', view: 'productList' },
-    { label: '부품재고목록', view: 'partAllList' },
+    { label: '부품재고목록', view: 'partList' },
     { label: '상품관리', view: 'g_drop_down' },
     { label: '제품관리', view: 'p_drop_down' },
     { label: '배송조회', view: 'd_drop_down' },
@@ -101,7 +101,7 @@ const AdminHeader = ({ currentView, setCurrentView }) => {
     <header className='w100'>
       <div className='menuBox w100 flex a_i_center j_c_between'>
         <div className='logo cursor' onClick={() => navigate('/admin')}>Esupply_Admin</div>
-        <ul className='flex h100'>
+        <ul className='menu-list flex h100'>
           {menuItems.map((item) => (
             <div
               key={item.view}
@@ -137,10 +137,51 @@ const AdminHeader = ({ currentView, setCurrentView }) => {
             </div>
           ))}
         </ul>
-        <button className="logOut cursor" onClick={handleLogout}>로그아웃</button>
-        <button className="goBack cursor" onClick={() => navigate('/main')}>메인으로가기</button>
+        <HamburgerMenu setCurrentView={setCurrentView}/>
+        <div className='header-right-menu flex a_i_center'>
+          <button className="logOut cursor" onClick={handleLogout}>로그아웃</button>
+          <button className="goBack cursor" onClick={() => navigate('/main')}>메인으로가기</button>
+        </div>
       </div>
     </header>
+  );
+};
+
+const HamburgerMenu = ({ setCurrentView }) => {
+  const navigate = useNavigate();  
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleMenu = () => {
+      setIsOpen(!isOpen);
+  };
+
+  const handleLogout = () => {
+    // 로그아웃 시 세션에서 아이디를 제거하고 상태 초기화
+    sessionStorage.removeItem('username');
+    navigate('/login');
+  };
+
+  return (
+      <div className="hamburger-menu-container">
+          <div className={`hamburger-icon ${isOpen ? 'open' : ''}`} onClick={toggleMenu}>
+              <span></span>
+              <span></span>
+              <span></span>
+          </div>
+          <div className={`side-menu ${isOpen ? 'show' : ''}`}>
+              <ul>
+                <li onClick={() => setCurrentView('productList')} className='white h42 cursor'>상품재고목록</li>
+                <li onClick={() => setCurrentView('partList')} className='white h42 cursor'>부품재고목록</li>
+                <li onClick={() => setCurrentView('goodsForm')} className='white h42 cursor'>상품입고</li>
+                <li onClick={() => setCurrentView('goodsTable')} className='white h42 cursor'>상품목록</li>
+                <li onClick={() => setCurrentView('productForm')} className='white h42 cursor'>제품등록</li>
+                <li onClick={() => setCurrentView('pd_delivery_view')} className='white h42 cursor'>상품배송조회</li>
+                <li onClick={() => setCurrentView('pt_delivery_view')} className='white h42 cursor'>부품배송조회</li>
+                <li onClick={handleLogout} className='white h42 cursor'>로그아웃</li>
+                <li onClick={() => navigate('/main')} className='white h42 cursor'>메인으로가기</li>
+              </ul>
+          </div>
+      </div>
   );
 };
 

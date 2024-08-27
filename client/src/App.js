@@ -9,6 +9,7 @@ import GoodsTable from './GoodsTable.js';
 import ProductForm from './ProductForm.js';
 import OrderList from './OrderList.js';
 import MyPage from './MyPage.js';
+import PartList from './PartList.js';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path='/productForm'  element={<ProductForm />} />
           <Route path='/orderList'    element={<OrderList />} />
           <Route path='/myPage'       element={<MyPage />}/>
+          <Route path='/partList'     element={<PartList />}/>
         </Routes>
       </div>
     </Router>
