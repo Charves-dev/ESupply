@@ -12,12 +12,17 @@ const session = require('express-session');
 //            그것은 한 순간에 Sold Out 된 것이다.
 //*************************************************************************************************
 exports.ORDER_NEW = async function (req, res) {
+
+  const {user_id, company_id, orderInfo } = req.body;
   let conn = null;
   try{
     conn = await pool.getConnection();
 
     // 주문 접수 처리 절차
     // get from goods
+    // orderInfo = [{product_id , count}, {product_id , count}, {product_id , count}...] ;
+    // orderInfo의 갯수만큼 총금액을 산정하고
+    // (현재는 할인이 없으므로)Purchase 동일
     // insert into order_out_good (주문 갯수만큼 insert 되도록)
     // 여기서 우선 commit을 한다. (만일 안되면 sold out이 된거다.)
     // 주문번호 채번
@@ -25,11 +30,11 @@ exports.ORDER_NEW = async function (req, res) {
     // insert into order_master
     // update order_out_good set order_no = 채번한 order_no
 
-    let result = await conn.query(env.QG.GET_ORDER_NO);
+    let orderNo = await conn.query(env.QG.GET_ORDER_NO);
 
     let rtn = {
       user_id  : req.session.userId,
-      order_no : result[0].nextSN,
+      order_no : orderNo[0].ORDER_NO
     }
     res.send(rtn);
   }catch(err){

@@ -127,7 +127,7 @@
   주문 관리
 =============================================================================================== -->
 <GET_ORDER_NO>
-  select concat(DATE_FORMAT(CURRENT_TIMESTAMP(), '%Y%m%d%H%i%s') , '-' , lpad(nextval(charves.seqOrder), 10, '0')) as nextSN from dual
+  select concat('CO-', date_format(current_timestamp(), '%y%m%d%H%i%s'), '-', lpad(nextval(charves.seqorder), 12, '0')) as ORDER_NO from dual
 </GET_ORDER_NO>
 <NEW_ORDER>
   insert into charves.order_master (
