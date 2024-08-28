@@ -1,6 +1,7 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import SelectBox from "./SelectBox";
 
+let getOrderNo;
 function FilterSearchBar ({setProductNm, setProductId, searchRes, initialOptionObj = [], initialValue = ''}) {
   const [searchKeyWord, setSearchKeyWord] = useState(initialValue);
   const [optionObj, setOptionObj]       = useState([]);   
@@ -23,6 +24,14 @@ function FilterSearchBar ({setProductNm, setProductId, searchRes, initialOptionO
     searchRes();
     setSearchCompleted(false);
   },[searchCompleted])
+
+
+  getOrderNo = useCallback(() => {  
+    if(optionNo === ''){
+      return '1';
+    }  
+    return optionNo;
+  }, [optionNo]);
 
   const handleSearchInput = () => {
     if(optionNo === '1' || optionNo === ''){      
@@ -70,4 +79,5 @@ function FilterSearchBar ({setProductNm, setProductId, searchRes, initialOptionO
   );
 }
 
+export { getOrderNo };
 export default FilterSearchBar;
