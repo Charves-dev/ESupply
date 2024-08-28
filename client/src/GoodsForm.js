@@ -97,7 +97,9 @@ const GoodsForm = ({detail='false', detailData=[], setViewDetail}) => {
         product_id : productId,                  // 상품 ID
       });
 
-      setPreviewUrl(res.data[0].IMAGE);             // 이미지 세팅
+      if(classId !== '' && productId !== ''){
+        setPreviewUrl(res.data[0].IMAGE);             // 이미지 세팅
+      }
 // console.log('IMAGE_Res: ');
 // console.log(res.data[0].IMAGE);
     }catch(e){
