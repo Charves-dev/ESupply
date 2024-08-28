@@ -16,6 +16,17 @@
    where USER_ID = ?
      and USER_PW = ?
 </GET_USER_LOGIN_CHECK>
+<GET_COMPANY_INFO>
+  select COMPANY_ID
+       , COMPANY_NM
+       , MANAGER_NM
+       , MANAGER_TEL
+       , ADDRESS
+       , LATITUDE
+       , LONGITUDE 
+    from charves.company_info 
+   where COMPANY_ID = ?;
+</GET_COMPANY_INFO>
 <!-- ========================================================================================== -->
 
 
@@ -184,4 +195,24 @@
   update charves.order_master set ARRIVE_YN = 'C'
 </CANCEL_ORDER>
 <!-- ========================================================================================== -->
+
+
+
+<GET_ONE_PRICE>
+  select PRICE * ? as PRICE
+    from charves.product_master 
+   where PRODUCT_ID = ?
+</GET_ONE_PRICE>
+
+<GET_GOOD_SERIALNOS>
+  select SERIAL_NO 
+    from charves.goods 
+   where PRODUCT_ID = ?
+     and SERIAL_NO not in (select SERIAL_NO 
+                             from charves.order_out_good 
+                            where PRODUCT_ID = ?
+                          )
+   order by SERIAL_NO 
+   limit ?
+</GET_GOOD_SERIALNOS>
 </query>

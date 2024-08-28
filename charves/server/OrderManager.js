@@ -15,30 +15,103 @@ exports.ORDER_NEW = async function (req, res) {
 
   const {user_id, company_id, orderInfo } = req.body;
   let conn = null;
+  let lastProdId = '';
   try{
     conn = await pool.getConnection();
+    //***************************************************************
+    // 사용자 회사정보 가져오기(주소가 목적이것지?)
+    //***************************************************************
+    let compInfo = await conn.query(env.QG.GET_COMPANY_INFO, [company_id]);
+    if(compInfo.length < 1){
+      const result = {
+        result : 'Failed',
+        order_no : '',
+        msg : 'COMPANY INFO NOT FOUND'
+      }
+      return res.json(result);
+    }
+    //***************************************************************
 
-    // 주문 접수 처리 절차
-    // get from goods
-    // orderInfo = [{product_id , count}, {product_id , count}, {product_id , count}...] ;
-    // orderInfo의 갯수만큼 총금액을 산정하고
-    // (현재는 할인이 없으므로)Purchase 동일
-    // insert into order_out_good (주문 갯수만큼 insert 되도록)
-    // 여기서 우선 commit을 한다. (만일 안되면 sold out이 된거다.)
-    // 주문번호 채번
-    // insert into order_good
-    // insert into order_master
-    // update order_out_good set order_no = 채번한 order_no
 
-    let orderNo = await conn.query(env.QG.GET_ORDER_NO);
+    //***************************************************************
+    // 미리 주문번호를 채번 할 수 밖에 없는것은 NEW_GOOD_OUT 에서 주문번호를 넣기 때문인데... 안넣어도 되는데... 좀더 체계적으로 ..
+    //***************************************************************
+    let orNo = await conn.query(env.QG.GET_ORDER_NO);
+    let orderNo = orNo[0].ORDER_NO;
+    //***************************************************************
+
+
+    let totalPrice = BigInt(0);
+    for(let i=0;i<orderInfo.length;i++){
+      lastProdId = orderInfo[i].product_id;
+
+      //*************************************************************
+      // 제품 단가 계산 및 시리얼 번호 가져오기 위해....
+      //*************************************************************
+      let GoodPrice = await conn.query(env.QG.GET_ONE_PRICE, [orderInfo[i].count, lastProdId]);
+      totalPrice += BigInt(GoodPrice[0].PRICE);
+      let GoodSerials = await conn.query(env.QG.GET_GOOD_SERIALNOS, [lastProdId, lastProdId, orderInfo[i].count]);
+      //*************************************************************
+console.log(lastProdId);
+console.log(env.QG.GET_GOOD_SERIALNOS);
+console.log(GoodSerials);
+      //*************************************************************
+      // 상품이 주문한 갯수만큼 없으면 SOLD OUT
+      //*************************************************************
+      if(GoodSerials.length < orderInfo[i].count){
+        // Sold Out처리 
+        const result = {
+          result : 'Failed',
+          order_no : '',
+          msg : 'SOLD OUT [' + lastProdId + '], Request='+ orderInfo[i].count + ', Inventory=' + GoodSerials.length
+        }
+        await conn.rollback();
+        return res.json(result);
+      }
+      //*************************************************************
+
+
+      //*************************************************************
+      // 재고가 0으로 맞아 떨어지도록 하기 위해 여기서 세마포어를 구동한다.
+      // 아마 여기서 PK충돌에 의해 에러가 나면 catch로 넘어갈 것으로 예상된다.
+      //*************************************************************
+      for(let j=0;j<GoodSerials.length;j++){
+console.log("prodId = " + lastProdId);
+console.log("sn = " + GoodSerials[j].SERIAL_NO);
+        let outRes = await conn.query(env.QG.NEW_GOOD_OUT, [lastProdId, GoodSerials[j].SERIAL_NO, 'SALE', orderNo]);
+      }
+      //*************************************************************
+
+      //*************************************************************
+      // 주문 상세 상품정보 Insert
+      //*************************************************************
+      await conn.query(env.QG.NEW_ORDER_GOOD, [orderNo, lastProdId, orderInfo[i].count]);
+      //*************************************************************
+    }
+
+    //***************************************************************
+    // 주문 발주 처리
+    //***************************************************************
+    await conn.query(env.QG.NEW_ORDER, [orderNo, company_id, user_id, totalPrice, totalPrice, compInfo[0].ADDRESS]);
+    //***************************************************************
+
+    await conn.commit();
 
     let rtn = {
-      user_id  : req.session.userId,
-      order_no : orderNo[0].ORDER_NO
+      result  : 'Success',
+      order_no : orderNo,
+      msg : ''
     }
-    res.send(rtn);
+    return res.json(rtn);
   }catch(err){
-    res.status(500).send(err.toString());
+    console.log(err.toString());
+    await conn.rollback();
+    const result = {
+      result : 'Failed',
+      order_no : '',
+      msg : 'PK Error SOLD OUT [' + lastProdId + ']'
+    }
+    return res.json(result);
   }finally{
     if(conn) conn.release();
   }
