@@ -81,7 +81,7 @@ const ProductFormWrapper = ({ navigate }) => {
 
 const DeliveryViewWrapper = ({ navigate, pageType }) => {
   useEffect(() => {
-    navigate('/deliveryView', { state: { type: pageType }});
+    navigate('/deliveryView', { state: { type: pageType , sourcePage: 'admin'}});
   }, [navigate])
 };
 

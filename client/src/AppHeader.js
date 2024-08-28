@@ -16,7 +16,7 @@ const AppHeader = () => {
   }
 
   const goDeliveryView = () => {
-    navigate('/deliveryView', { state: { type: 'PD' }});
+    navigate('/deliveryView', { state: { type: 'PD', sourcePage: 'main'}});
   };
 
   const goAdminView = () => {

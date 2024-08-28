@@ -3,20 +3,34 @@ import { useLocation } from 'react-router-dom';
 import './styles/Common.css';
 import { useNavigate } from 'react-router-dom';
 import AppHeader from "./AppHeader";
+import AdminHeader from './AdminHeader';
+import SelectBox from './SelectBox';
 
 function DeliveryView() {
+  const navigate = useNavigate();
+  const deliveryViewWrapRef = useRef(null);
   const location = useLocation();
   const { type } = location.state || { type: 'PD' }; // 배송 조회 타입 'PD' : 상품 배송 조회 , 'PT' : 부품 배송 조회
+  const { sourcePage } = location.state || { sourcePage: 'main' };
   const [searchOption, setSearchOption] = useState('invoiceNo');
   const [dlGroupCount, setDlGroupCount] = useState(0);
-  const deliveryViewWrapRef = useRef(null);
-  const navigate = useNavigate();
+  const [currentView, setCurrentView] = useState('goodsForm');
+  const [openIndex, setOpenIndex]       = useState(null);  // 열려 있는 셀렉트 박스의 인덱스를 저장
+  const [optionObj, setOptionObj] = useState([]);
+  // const [sliceCount, setSliceCount] = useState(4);
+  let sliceCount = 4;
 
   useEffect(() => {
     if (deliveryViewWrapRef.current) {
       const count = deliveryViewWrapRef.current.querySelectorAll('.dl-group').length;
       setDlGroupCount(count);      
     }
+
+    setOptionObj([
+      {value: 'invoiceNo', label: '송장번호'},
+      {value: 'partNo', label: '부품번호'},
+      {value: 'productNo', label: '상품번호'},
+    ])
   }, []);  
 
   // 상품 배송상태 가져오기 
@@ -59,20 +73,29 @@ function DeliveryView() {
     navigate('/main');
   };
 
+
+  //********************************************************************************************
+  // admin 헤더 메뉴 클릭시 호출되는 함수 
+  // URL에 'view' 파라미터를 설정하여 클릭된 뷰를 표시하도록 한다
+  //********************************************************************************************
+  const handleMenuClick = (view) => {    
+    setCurrentView(view);
+    navigate(`/admin?view=${view}`);
+  };
+  //********************************************************************************************
+
+
   return(
-    <div>
-      <AppHeader/>
-      <div className='delivery-wrap w100 h100 mt67'>      
-        <div>{type}</div>
-        <div className='cursor' onClick={goMain}>메인으로 가기</div>
+    <div className={ sourcePage === 'main' ? `MainWrap` : `adminWrap`}>
+      { sourcePage === 'main' ? <AppHeader/> : <AdminHeader currentView={currentView} setCurrentView={handleMenuClick} /> }
+
+      <div className='delivery-wrap content w100 h100 mt67'>                    
         {/* 통합 배송 조회 */}
         <section className='w100'> 
-          <div className='flex'>
-            <select value={searchOption} onChange={(e) => setSearchOption(e.target.value)}>
-              <option value='invoiceNo'>송장번호</option>
-              <option value='partNo'>부품번호</option>
-              <option value='productNo'>상품번호</option>
-            </select>
+          <div className='flex mt32'>
+            <div className="w133 mr11">
+              <SelectBox options={optionObj} val={searchOption} setVal={setSearchOption} index={0} openIndex={openIndex} setOpenIndex={setOpenIndex}/>     
+            </div>
             <input type='text' className='search'/>        
             <div onClick={setSearchKind} className='searchBtn bgSlate100 fw700 fs18 flex a_i_center j_c_center'>검색</div>
           </div>  
@@ -115,14 +138,21 @@ function DeliveryView() {
                   <div className='delText mt20'>충청한누리대로</div>
                 </div>
                 
-                <div className='line'></div>      
+                <div className='line'></div> 
+                <section style={{ display: dlGroupCount > sliceCount ? 'block' : 'none'}}>
+                  <img className='deliveryArrow absolute' src="/assets/Img/double-arrow-right.png" alt="Double Arrow Right"/>
+                </section>
               </div>            
             </div>              
-          </section>                        
+          </section>                                  
 
-          <section style={{ display: dlGroupCount > 4 ? 'block' : 'none' }}>
+          <section className='lastDlGroup' style={{ display: dlGroupCount > sliceCount ? 'block' : 'none' }}>
             <div className='delivery-view sec2 h100 flex a_i_center'>          
-              <div className='flex a_i_center j_c_center relative'>              
+              <div className='flex a_i_center j_c_center relative'>     
+                <section style={{ display: dlGroupCount > sliceCount ? 'block' : 'none'}}>
+                  <img className='deliveryArrow last absolute' src="/assets/Img/double-arrow-right.png" alt="Double Arrow Right"/>
+                </section>
+         
                 <div className='dl-group relative'>                
                   <div className='flex f_d_column a_i_center j_c_center'>
                     <figure className="truck-ico" style={{ backgroundImage: `url(/assets/Img/truck.png)`}}>
@@ -139,12 +169,12 @@ function DeliveryView() {
                   <div className='delText mt20'>충청한누리대로</div>
                 </div>
 
-                <div className='dl-group relative mr0'>
+                <div className='dl-group relative mr0 dlArrive'>
                   <div className='flex f_d_column a_i_center j_c_center'>
                     <figure className="truck-ico" style={{ backgroundImage: `url(/assets/Img/truck_check.png)`}}>
                     </figure>
                   </div>
-                  <div className='delText mt20'>도착지</div>
+                  <div className='delText mt20'>도착완료!</div>
                 </div>
 
                 
