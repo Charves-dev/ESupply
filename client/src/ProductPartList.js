@@ -17,7 +17,9 @@ function ProductPartList() {
   const [orderCnt, setOrderCnt]       = useState([]);
   const [username, setUsername]       = useState(null);  
   const [partObj, setPartObj]         = useState({ count: 0, pList: [] });
-  const [alert, setAlert] = useState({ visible: false, type: '', text: '', reload: false });    
+  const [alert, setAlert]             = useState({ visible: false, type: '', text: '', reload: false });    
+  const [addPartNo, setAddPartNo]     = useState('');
+  const [addPartCnt, setAddPartCnt]   = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -142,7 +144,7 @@ function ProductPartList() {
 
 
   //***********************************************************************************************
-  //부품 목록 렌더링
+  // 제품별 부품 목록 렌더링
   //***********************************************************************************************
   const partRender = () =>{    
     const partList = [];
@@ -200,7 +202,6 @@ function ProductPartList() {
   //***********************************************************************************************
   // 부품 수량 일괄 저장
   //***********************************************************************************************
-
   const saveAllParts = async() => {    
     const p_count = partObj.count;
     let res = {};
@@ -290,18 +291,26 @@ function ProductPartList() {
   }
   //***********************************************************************************************
 
+
+
   const addPart = () => {
-    // savePart(); 아래 viewPartList 와 연계작업 대기..
+    document.getElementById('customAlert').style.display = 'flex';
+    document.getElementById('customAlertBg').style.display = 'flex';
   };
 
-  const viewPartList = () => {
-    // /part/list API 작업중...
-  };
-
+  const addPartClose = () => {
+    document.getElementById('customAlertBg').style.display = 'none';
+    document.getElementById('customAlert').style.display = 'none';
+  }
 
   const setCloseAlert = () => {
     setAlert({ ...alert, visible: false });
   };
+
+  const addPartSave = () => {
+    savePart(addPartNo, addPartCnt);
+    addPartClose();
+  }
 
   
   return (
@@ -321,9 +330,11 @@ function ProductPartList() {
       <div className='flex'>
         <button className="orderBtn cursor" onClick={saveAllParts}><b>일괄 저장하기</b></button>
       </div>
-      
-      {/* 저장, 실패 알림 */}
+
+      {/* 알림 배경 */}
       <div className='alertBg w100 h100' id='customAlertBg'></div>
+
+      {/* 저장완료 또는 실패 알림 */}
       {alert.visible && (
         <CommonAlert
           type={alert.type}
@@ -333,6 +344,36 @@ function ProductPartList() {
           onClose={setCloseAlert}          
         />
       )}
+
+      {/* 부품 추가 팝업 */}
+      <div id='customAlert' className='custom-alert partPopup formWrap flex f_d_column a_i_center'>        
+        <span className='alert-tit'>부품 추가하기</span>
+        
+        <ul className="inputList ml10 flex f_d_column a_icenter j_c_center">
+          <li className="relative flex mt50">
+            <span className="inputLabel">제품ID </span>
+            <input className="w277" type='text' value={productId} placeholder="제품ID" readOnly/> 
+          </li>
+          <li className="relative flex mt20">
+            <span className="inputLabel">제품명 </span>
+            <input className="w277" type='text' value={productNm} placeholder="제품명" readOnly/>
+          </li>
+          <li className="relative flex mt20">
+            <span className="inputLabel">부품번호 </span>
+            <input className="w277" type='text' value={addPartNo} onChange={(e) => setAddPartNo(e.target.value)} placeholder="부품번호"/>
+          </li>
+          <li className="relative flex mt20">
+            <span className="inputLabel">소요개수 </span>
+            <input className="w277" type='text' value={addPartCnt} onChange={(e) => setAddPartCnt(e.target.value)} placeholder="소요개수"/>
+          </li>
+        </ul>
+        <div className='w100 flex a_i_center j_c_center mb19'>
+          <button type="button" onClick={addPartSave} className='w168 h40 mt116 mr25 bgSlate100 fs14 cursor'>저장</button>
+          <button type="button" onClick={addPartClose} className='w160 h40 mt116 mr38 cursor fs14 cancle'>취소</button>
+        </div>    
+        <div className='deco-pin-l'></div>
+        <div className='deco-pin-r'></div>
+      </div>
     </div>
   );
 }
