@@ -9,15 +9,12 @@ import SelectBox from './SelectBox';
 import FilterSearchBar from './FilterSearchBar';
 
 function Main() {  
-  const [orderCnt, setOrderCnt]   = useState([]);
-  const [username, setUsername]   = useState(null);
-  const [searchKeyWord, setSearchKeyWord] = useState('');
-  const [productNm, setProductNm] = useState('');
-  const [productId, setProductId] = useState('');
+  const [orderCnt, setOrderCnt]     = useState([]);
+  const [username, setUsername]     = useState(null);  
+  const [productNm, setProductNm]   = useState('');
+  const [productId, setProductId]   = useState('');
   const [productObj, setProductObj] = useState({ count: 0, pList: [] });  
-  const [optionObj, setOptionObj]       = useState([]);    
-  const [optionNo, setOptionNo]         = useState('');
-  const [openIndex, setOpenIndex]       = useState(null);  // 열려 있는 셀렉트 박스의 인덱스를 저장
+  const [optionObj, setOptionObj]   = useState([]);      
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -134,37 +131,37 @@ function Main() {
       
       productList.push(
         <div className='list-item' key={product.PRODUCT_ID}>
-            <figure className="thumb-photo" style={{ backgroundImage: `url(/assets/Img/${product.IMAGE})` }}></figure>            
-            <div className='desc'>
-                <a>
-                  <div className='product_nm'>
-                    {product.PRODUCT_NM}
-                  </div>
-                  <div className='priceText'>
-                    {price}원
-                  </div>
-                  <div className='product_detail'>
-                    <span className='label'>높이</span> {product.SIZE_Z} mm
-                  </div>
-                  <div className='product_detail'>
-                    <span className='label'>너비</span> {product.SIZE_H} mm
-                  </div>
-                  <div className='product_detail'>
-                    <span className='label'>길이</span> {product.SIZE_V} mm
-                  </div>
-                  <div className='product_detail'>
-                    <span className='label'>무게</span> {product.WEIGHT} g
-                  </div>
-                </a>
-            </div>
-            <div className='ml20 flex f_d_column a_i_center j_c_between'>
-                <p className='mb10 pt5 pb5 fs16 w100 t_a_center border-top-bottom'>수량</p>
-                <Counter 
-                  count={orderCnt[i]}
-                  onIncrement={() => handleIncrement(i)}
-                  onDecrement={() => handleDecrement(i)}
-                />
-            </div>
+          <figure className="thumb-photo" style={{ backgroundImage: `url(/assets/Img/${product.IMAGE})` }}></figure>            
+          <div className='desc'>
+            <a>
+              <div className='product_nm'>
+                {product.PRODUCT_NM}
+              </div>
+              <div className='priceText'>
+                {price}원
+              </div>
+              <div className='product_detail'>
+                <span className='label'>높이</span> {product.SIZE_Z} mm
+              </div>
+              <div className='product_detail'>
+                <span className='label'>너비</span> {product.SIZE_H} mm
+              </div>
+              <div className='product_detail'>
+                <span className='label'>길이</span> {product.SIZE_V} mm
+              </div>
+              <div className='product_detail'>
+                <span className='label'>무게</span> {product.WEIGHT} g
+              </div>
+            </a>
+          </div>
+          <div className='ml20 flex f_d_column a_i_center j_c_between'>
+              <p className='mb10 pt5 pb5 fs16 w100 t_a_center border-top-bottom'>수량</p>
+              <Counter 
+                count={orderCnt[i]}
+                onIncrement={() => handleIncrement(i)}
+                onDecrement={() => handleDecrement(i)}
+              />
+          </div>
         </div>
       )
     }
@@ -177,7 +174,7 @@ function Main() {
   // todo 제품 주문 API 요청
   //***********************************************************************************************
   const handleOrder = async() => {
-    /* /product/neworder */
+    /* /product/neworder API 개발중..*/
     const orderDetails = [];
     const p_count = productObj.count;   // 제품 전체 개수
     for (let i = 0; i < p_count; i++) {
@@ -217,14 +214,18 @@ function Main() {
     <div className='MainWrap'>
       <AppHeader/>      
       <div className='MainContent content'>
+
+        {/* 공통 검색 바 */}
         <FilterSearchBar setProductNm={setProductNm} setProductId={setProductId} searchRes={searchResProducts}/>
       
         {/* 제품목록 */}
         <PageNation data = {productRender()} itemsPerPage={5}/>
 
+        {/* 주문 버튼 */}
         <div className='flex'>
           <button className="orderBtn cursor" onClick={handleOrder}><b>주문하기</b></button>
         </div>
+        
       </div>
     </div>
   );
