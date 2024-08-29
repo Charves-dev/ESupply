@@ -89,7 +89,7 @@
 		   , pm.SIZE_V
 		   , pm.SIZE_Z
 		   , pm.PRICE
-		   , gd.CNT
+       , CAST(gd.CNT AS CHAR) as CNT
 	  from charves.product_master pm
 	  left join (select PRODUCT_ID
 	  				        , count(*) as CNT 

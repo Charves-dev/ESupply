@@ -104,8 +104,8 @@ app.post('/goods/list', async (req, res) => {
   conn = null;
   try{
 
-    console.log(optionNo);
-    console.log(searchTxt);
+  console.log(optionNo);
+  console.log(searchTxt);
     conn = await pool.getConnection();
     let strQuery = env.QG.GET_PRODUCT_LIST;
 
