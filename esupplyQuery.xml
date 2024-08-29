@@ -137,7 +137,7 @@ SELECT ppl.PART_NO
        , SIZE_H
        , SIZE_V
        , SIZE_Z
-    FROM esupply.product_part_list
+    FROM esupply.part_master
    WHERE PART_NO = ?
 </GET_PART_MASTER>
 <GET_PART_CNT>

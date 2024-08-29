@@ -14,7 +14,7 @@ function DeliveryView() {
   const { sourcePage } = location.state || { sourcePage: 'main' };
   const [searchOption, setSearchOption] = useState('invoiceNo');
   const [dlGroupCount, setDlGroupCount] = useState(0);
-  const [currentView, setCurrentView] = useState('goodsForm');
+  const [currentView, setCurrentView] = useState( type === 'PD' ? 'pd_delivery_view' : 'pt_delivery_view');
   const [openIndex, setOpenIndex]       = useState(null);  // 열려 있는 셀렉트 박스의 인덱스를 저장
   const [optionObj, setOptionObj] = useState([]);
   // const [sliceCount, setSliceCount] = useState(4);
@@ -68,10 +68,6 @@ function DeliveryView() {
       }
     }
   }
-
-  const goMain = () => {        
-    navigate('/main');
-  };
 
 
   //********************************************************************************************

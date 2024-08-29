@@ -1,65 +1,25 @@
 import React, {useEffect, useState, useCallback} from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import AdminHeader from "./AdminHeader";
-import FilterSearchBar from "./FilterSearchBar";
+import FilterSearchBar, {getOrderNo} from "./FilterSearchBar";
 import Counter from './Counter';
 import PageNation from './PagiNation';
+import axios from "axios";
 
 const PartList = () =>{
   const location = useLocation();
   const [currentView, setCurrentView] = useState('partList');
-  const [partNm, setPartNm] = useState('');
-  const [productId, setPartId] = useState('');
-  const [orderCnt, setOrderCnt]   = useState([]);
-  const [username, setUsername]   = useState(null);
+  const [partNm, setPartNm]           = useState('');
+  const [partId, setPartId]           = useState('');
+  const [orderCnt, setOrderCnt]       = useState([]);
+  const [username, setUsername]       = useState(null);
+  const [partObj , setPartObj]        = useState([]);
   const navigate = useNavigate();
-
-  let partObj = {    
-    count : 6, 
-    pList : [ 
-      { product_nm  : "부품명1", 
-        product_id  : "cap_2349809" ,
-        image       : "/assets/Img/img1.png",
-        price       : "20000",
-        count       : "3"
-      }, 
-      { product_nm  : "부품명2", 
-        product_id  : "cap_2349810" ,
-        image       : "/assets/Img/img2.png",
-        price       : "40000",
-        count       : "1"
-      },
-      { product_nm  : "부품명3", 
-        product_id  : "cap_2349811" ,
-        image       : "/assets/Img/img3.png",
-        price       : "50000",
-        count       : "5"
-      }, 
-      { product_nm  : "부품명3", 
-        product_id  : "cap_2349811" ,
-        image       : "/assets/Img/img3.png",
-        price       : "50000",
-        count       : "5"
-      },  
-      { product_nm  : "부품명3", 
-        product_id  : "cap_2349811" ,
-        image       : "/assets/Img/img3.png",
-        price       : "50000",
-        count       : "5"
-      },  
-      { product_nm  : "부품명3", 
-        product_id  : "cap_2349811" ,
-        image       : "/assets/Img/img3.png",
-        price       : "50000",
-        count       : "5"
-      },   
-    ]    
-  }
 
 
   useEffect(() => {
     /* 부품목록 불러오기 */
-    searchResParts();
+    searchCharvesParts();
 
     // 세션에서 사용자 아이디를 가져와서 username에 설정
     const savedUsername = sessionStorage.getItem('username');
@@ -105,29 +65,93 @@ const PartList = () =>{
   };
 
 
-  // 소요수량 초기화
+  // 부품 주문 수량 초기화 기본 1개로 고정, 재고가 0인경우 0으로 설정
   const initializeOrderCnt = (partList) => {    
     const initOrderCnt = [];
     for (let i = 0; i < partList.length; i++) {
-      initOrderCnt.push(partList[i].count);
+      initOrderCnt.push(partList[i].CNT > 0 ? 1 : 0);
     }
     return initOrderCnt;
   };
 
+  //***********************************************************************************************
+  // (주)차베스 부품 주문
+  //***********************************************************************************************
+  const orderPart = async(prductId, count)=>{
+    try{
+      const res = await axios.post('http://localhost:7943/order/new',{
+        user_id : username,
+        company_id : "esupply",
+        orderInfo : [
+            { "product_id" : prductId, "count" : count },
+        ]
+      })
 
-  // 전체 부품 목록 가져오기 or 검색시 대상 부품 목록 가져오기
-  const searchResParts = async () => {    
-    try{        
-      // 부품 재고 개수 설정
-      setOrderCnt(initializeOrderCnt(partObj.pList));        
+      console.log('주문 결과~');    
+      console.log(res);
+
     }catch(e){
-      console.log('부품 목록 가져오기 애러: ' + e);
+      console.log('부품주문 에러: ' + e);      
     }
-  };
+  }
+  //***********************************************************************************************
 
 
   //***********************************************************************************************
-  //부품 목록 렌더링
+  // (주)차베스 전체 부품 목록 가져오기 or 검색시 대상 부품 목록 가져오기
+  //***********************************************************************************************
+  const searchCharvesParts = async () => {    
+    try{        
+      const orderNumber = getOrderNo();
+// console.log(orderNumber);
+// console.log(partNm);
+      
+      
+      const res = await axios.post('http://localhost:7943/goods/list',{
+        optionNo:  orderNumber,
+        searchTxt: orderNumber === '1' ? partNm : partId        
+      })
+// console.log('(주)차베스 부품목록가져오기: ');
+// console.log(res);
+      
+      setPartObj({ count: res.data.length, pList: res.data });
+
+      // 부품 주문 수량 초기화, 기본 1로 설정, 재고가 0인경우 0으로 설정
+      setOrderCnt(initializeOrderCnt(res.data));        
+
+      // 검색 키워드 초기화
+      setPartNm('');
+      setPartId('');
+
+      // Esupply에서 부품 재고 수량 검색...하려다가 중단
+      // for (let i = 0; i < res.data.length; i++) {
+        // console.log(res.data[i].PRODUCT_ID);        
+        // partDetail('');        
+      // }
+    }catch(e){
+      console.log('부품 목록 가져오기 에러: ' + e);
+    }
+  };
+  //***********************************************************************************************
+
+
+  //***********************************************************************************************
+  // Esupply 대상 부품 재고 정보 가져오기
+  //***********************************************************************************************
+  // const partDetail = async(productId) => {
+  //   const res = await axios.post('http://localhost:7943/product/part/detail',{
+  //     part_no: 'CAF054GU8901X',
+  //   })
+  //   console.log('Esupply 부품 재고 개수 가져오기: ');
+    
+  //   console.log(res);    
+  //   // return res.data.COUNT;
+  // }
+  //***********************************************************************************************
+
+
+  //***********************************************************************************************
+  // 부품 목록 렌더링
   //***********************************************************************************************
   const partRender = () =>{    
     const partList = [];
@@ -136,40 +160,55 @@ const PartList = () =>{
 
     for (let i = 0; i < p_count; i++) {
       const part = pList[i];
-      let   price   = parseFloat(part.price).toLocaleString('ko-KR');
+      let   price   = parseFloat(part.PRICE).toLocaleString('ko-KR');
+
+      //(주)charves에서 재고 개수가 없을경우 출력하지 않고 건너뜀
+      // if(part.CNT <= 0){        
+      //   continue;
+      // }
+
       partList.push(
         <div className='list-item a_i_center' key={part.product_id}>
           <figure className="thumb-photo" style={{ backgroundImage: `url(/assets/Img/img1.png)` }}></figure>            
           <div className='desc relative h100'>
               <a>
                 <div className='product_nm'>
-                  {part.product_nm}
+                  {part.PRODUCT_NM}
                 </div>
                 <div className='priceText'>
-                  00원
+                  {price}원
                 </div>
                 <div className='product_detail'>
-                  높이: 00 mm
+                  높이: {part.SIZE_Z} mm
                 </div>
                 <div className='product_detail'>
-                  너비: 00 mm
+                  너비: {part.SIZE_H} mm
                 </div>
                 <div className='product_detail'>
-                  길이: 00 mm
+                  길이: {part.SIZE_V} mm
                 </div>
                 <div className='product_detail'>
-                  무게: 00 g
+                  무게: {part.WEIGHT} g
                 </div>
               </a>                
           </div>
           <div className='ml20 flex f_d_column a_i_center j_c_center'>
               <p className='mb10 pt5 pb5 fs16 w100 t_a_center border-top-bottom'>수량</p>
               <Counter 
-                count={orderCnt[i]}
+                count={part.CNT <= 0 ? '재고없음' : orderCnt[i]}
                 onIncrement={() => handleIncrement(i)}
                 onDecrement={() => handleDecrement(i)}
               />
-              <div className="partOrderBtn w100 flex a_i_center j_c_center">주문</div>
+              <div 
+                className={part.CNT <= 0 ? `partOrderBtn disabled` : `partOrderBtn`}
+                onClick={(e) => {
+                  if (part.CNT > 0) {
+                    orderPart(part.PRODUCT_ID, orderCnt[i]);
+                  }
+                }}
+              >
+                {part.CNT <= 0 ? '주문불가' : '주문'}
+              </div>
           </div>
         </div>
       )
@@ -185,14 +224,20 @@ const PartList = () =>{
     {value: '2', label: '부품번호'}
   ]
 
+
+  // (주)차베스로 이동
+  const charvesGo = () => {
+    window.location.href = 'http://localhost:7943/parts_show';
+  }
+
   return(
     <div className='adminWrap'>
       <AdminHeader currentView={currentView} setCurrentView={handleMenuClick} />       
       <div className='partListContent content mt67'>
-        <FilterSearchBar initialOptionObj={optionObj} setProductNm={setPartNm} setProductId={setPartId} searchRes={searchResParts}/> 
+        <FilterSearchBar initialOptionObj={optionObj} setProductNm={setPartNm} setProductId={setPartId} searchRes={searchCharvesParts}/> 
         {/* 부품목록 */}        
         {orderCnt.length > 0 && <PageNation data = {partRender()} itemsPerPage={5}/>}
-        <div className="charvesPartsBtn">부품<br/>더보기</div>
+        <div className="charvesPartsBtn" onClick={charvesGo}>부품<br/>더보기</div>
       </div>
     </div>
   )
