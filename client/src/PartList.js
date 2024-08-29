@@ -1,19 +1,20 @@
 import React, {useEffect, useState, useCallback} from "react";
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import AdminHeader from "./AdminHeader";
 import FilterSearchBar, {getOrderNo} from "./FilterSearchBar";
 import Counter from './Counter';
 import PageNation from './PagiNation';
 import axios from "axios";
+import CommonAlert from './CommonAlert';
 
-const PartList = () =>{
-  const location = useLocation();
+const PartList = () =>{  
   const [currentView, setCurrentView] = useState('partList');
   const [partNm, setPartNm]           = useState('');
   const [partId, setPartId]           = useState('');
   const [orderCnt, setOrderCnt]       = useState([]);
   const [username, setUsername]       = useState(null);
   const [partObj , setPartObj]        = useState([]);
+  const [alert, setAlert]             = useState({ visible: false, type: '', text: '', reload: false });
   const navigate = useNavigate();
 
 
@@ -89,6 +90,22 @@ const PartList = () =>{
 
       console.log('주문 결과~');    
       console.log(res);
+
+      if (res.data.result == "Success") {
+        setAlert({
+          visible: true,
+          type: 'ok',
+          text: '주문이 완료되었습니다.',
+          reload: true
+        });        
+      }else{
+        setAlert({
+          visible: true,
+          type: 'faile',
+          text: '주문 실패: ' + res.data.message,
+          reload: false
+        }); 
+      }      
 
     }catch(e){
       console.log('부품주문 에러: ' + e);      
@@ -230,6 +247,10 @@ const PartList = () =>{
     window.location.href = 'http://localhost:7943/parts_show';
   }
 
+  const setCloseAlert = () => {
+    setAlert({ ...alert, visible: false });
+  };
+
   return(
     <div className='adminWrap'>
       <AdminHeader currentView={currentView} setCurrentView={handleMenuClick} />       
@@ -239,6 +260,16 @@ const PartList = () =>{
         {orderCnt.length > 0 && <PageNation data = {partRender()} itemsPerPage={5}/>}
         <div className="charvesPartsBtn" onClick={charvesGo}>부품<br/>더보기</div>
       </div>
+      <div className='alertBg w100 h100' id='customAlertBg'></div>
+      {alert.visible && (
+        <CommonAlert
+          type={alert.type}
+          text={alert.text}
+          reload={alert.reload}
+          reloadPage={'/partList'}
+          onClose={setCloseAlert}          
+        />
+      )}
     </div>
   )
 }
