@@ -228,6 +228,7 @@ ul{
 .mt25{margin-top: 25px;}
 .mt30{margin-top: 30px;}
 .mt32{margin-top: 32px;}
+.mt36{margin-top: 36px;}
 .mt40{margin-top: 40px;}
 .mt46{margin-top: 46px;}
 .mt50{margin-top: 50px;}
@@ -1303,6 +1304,32 @@ justify-content: center;
   transform: translate(-50%, 0px);
 }
 /* 페이지네이션 스타일 e */
+
+/* 주문목록 s */
+.OrderListWrap .countBox{
+  border-bottom: 1px solid #000;
+}
+.OrderListWrap .list-inner-item{
+  border-top: 1px solid #c9c9c9;
+  border-bottom: 1px solid #c9c9c9;
+}
+.group-first .desc{
+  border-top: 0;
+  border-bottom: 0;
+}
+.thumb-list .order-date:first-of-type{
+  margin-top: 36px;
+}
+.order-date{
+  margin-top: 80px;
+  padding-block: 8px;
+  border-top: 1px solid #c9c9c9;
+  margin-bottom: -32px;
+  font-size: 16px;
+  color: #464646;
+  line-height: 1.0;
+}
+/* 주문목록 e */
 
 /* 반응형 */
 

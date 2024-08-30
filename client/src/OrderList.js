@@ -10,8 +10,56 @@ const OrderList = () => {
   const [optionObj, setOptionObj]       = useState([]);    
   const [optionNo, setOptionNo]         = useState('1');
   const [openIndex, setOpenIndex]       = useState(null);  // 열려 있는 셀렉트 박스의 인덱스를 저장
+  const [orderCnt, setOrderCnt]   = useState([]);
+
+  let testData = [
+    {
+      PRODUCT_NM  : "aaaaa",
+      COUNT       : 100,
+      ORDER_NO    : '1',
+      ORDER_DTTM  : '2024-08-30',
+      PURCHASE    : 30000,
+      BILL_NO     : 'INV-2024-0831-00123',
+      DLV_ADDR    : '경기도 안양시 땡떙땡',
+      ARRIVE_YN   : 'N'
+    },
+    {
+      PRODUCT_NM  : "bbb",
+      COUNT       : 100,
+      ORDER_NO    : '2',
+      ORDER_DTTM  : '2024-08-30',
+      PURCHASE    : 30000,
+      BILL_NO     : 'INV-2024-0831-00123',
+      DLV_ADDR    : '경기도 안양시 땡떙땡',
+      ARRIVE_YN   : 'N'
+    },
+    {
+      PRODUCT_NM  : "ccc",
+      COUNT       : 100,
+      ORDER_NO    : '3',
+      ORDER_DTTM  : '2024-09-01',
+      PURCHASE    : 30000,
+      BILL_NO     : 'INV-2024-0831-00123',
+      DLV_ADDR    : '경기도 안양시 땡떙땡',
+      ARRIVE_YN   : 'N'
+    },
+    {
+      PRODUCT_NM  : "ddd",
+      COUNT       : 100,
+      ORDER_NO    : '3',
+      ORDER_DTTM  : '2024-09-02',
+      PURCHASE    : 30000,
+      BILL_NO     : 'INV-2024-0831-00123',
+      DLV_ADDR    : '경기도 안양시 땡떙땡',
+      ARRIVE_YN   : 'N'
+    },
+  ]
 
   useEffect(() => {
+    // 상품 리스트 설정
+    setProductObj({ count: 4, pList: testData});
+    // 상품 주문 개수 설정
+    setOrderCnt(initializeOrderCnt(testData));
     setOptionObj([
       {value: '1', label: '제품명'},
       {value: '2', label: '제품코드'}
@@ -19,11 +67,116 @@ const OrderList = () => {
   },[])
 
 
+  //**********************************************************************************************
+  // 상품 주문수 초기화
+  //**********************************************************************************************
+  const initializeOrderCnt = (productList) => {
+    const initOrderCnt = [];
+    for (let i = 0; i < productList.length; i++) {
+      initOrderCnt.push(productList[i].COUNT);
+    }
+    return initOrderCnt;
+  };
+  //**********************************************************************************************
+
+
   // 전체 주문 목록 가져오기 또는 검색시 대상 제품 가져오기
   const searchResProducts = async () => {
-    const search_key_word = searchKeyWord;
-    
+    const search_key_word = searchKeyWord;    
   };
+
+
+  //**********************************************************************************************
+  // 주문 상품 목록 렌더링
+  //**********************************************************************************************
+  const productRender = () => {
+    const productList = [];
+    const p_count = productObj.count; 
+    const pList = productObj.pList; 
+    let pDateGroup = 0;
+    
+    for (let i = 0; i < p_count; i++) {
+      const product = pList[i];      
+      const prevProduct = i > 0 ? pList[i - 1] : null;
+      let price = parseFloat(product.PURCHASE).toLocaleString('ko-KR');
+
+      if (prevProduct && product.ORDER_DTTM === prevProduct.ORDER_DTTM) {
+        productList.push(
+          <div className='list-item' key={product.CLASS_ID + '_' + product.PRODUCT_ID}>
+            <figure
+              className='thumb-photo'
+              style={{ backgroundImage: `url(/assets/Img/img1.png)` }}
+            ></figure>
+            <div className='desc relative'>
+              <a>
+                <div className='product_nm'>{product.PRODUCT_NM}</div>
+                <div className='priceText'>{price}원</div>
+                <div className='product_detail'>
+                  <span className='label'>주문번호</span> {product.ORDER_NO}
+                </div>
+                <div className='product_detail'>
+                  <span className='label'>배송주소</span> {product.DLV_ADDR}
+                </div>
+                <div className='product_detail'>
+                  <span className='label'>송장번호</span> {product.BILL_NO}
+                </div>
+                <div className='product_detail'>
+                  <span className='label'>배송상태</span> { product.ARRIVE_YN === 'N' ? '배송중' : '도착'}
+                </div>
+              </a>
+            </div>
+            <div className='countBox ml20 flex f_d_column a_i_center'>
+              <p className='mb40 pt5 pb5 fs16 w100 t_a_center border-top-bottom'>주문개수</p>
+              <div className='productCount flex f_d_column a_i_center j_c_center'>
+                <p>{orderCnt[i]}</p>
+              </div>
+            </div>
+          </div>
+        );        
+      }else{
+        productList.push(<div className="order-date custom-item mt36">{product.ORDER_DTTM}</div>)
+        productList.push(
+          <div className='list-item group-first' key={product.CLASS_ID + '_' + product.PRODUCT_ID}>
+            <div className="list-inner-item flex w100">
+              <figure
+                className='thumb-photo'
+                style={{ backgroundImage: `url(/assets/Img/img1.png)` }}
+              ></figure>
+              <div className='desc relative'>
+                <a>
+                  <div className='product_nm'>{product.PRODUCT_NM}</div>
+                  <div className='priceText'>{price}원</div>
+                  <div className='product_detail'>
+                    <span className='label'>주문번호</span> {product.ORDER_NO}
+                  </div>
+                  <div className='product_detail'>
+                    <span className='label'>배송주소</span> {product.DLV_ADDR}
+                  </div>
+                  <div className='product_detail'>
+                    <span className='label'>송장번호</span> {product.BILL_NO}
+                  </div>
+                  <div className='product_detail'>
+                    <span className='label'>배송상태</span> { product.ARRIVE_YN === 'N' ? '배송중' : '도착'}
+                  </div>
+                </a>
+              </div>
+            </div>
+            <div className='countBox ml20 flex f_d_column a_i_center'>
+              <p className='mb40 pt5 pb5 fs16 w100 t_a_center border-top-bottom'>주문개수</p>
+              <div className='productCount flex f_d_column a_i_center j_c_center'>
+                <p>{orderCnt[i]}</p>
+              </div>
+            </div>
+          </div>
+        );
+      }
+    }
+    
+    return productList;
+  };
+  //**********************************************************************************************
+
+
 
   // 검색 엔터 이벤트
   const handleKeyPress = (event) => {
@@ -33,7 +186,7 @@ const OrderList = () => {
   };
 
   return(
-    <div className="MainWrap">
+    <div className="MainWrap OrderListWrap">
       <div className="MainContent content">
         <AppHeader/>
         <div className="order-list-wrap w100 h100 mt67">
@@ -58,6 +211,7 @@ const OrderList = () => {
             </section>  
           </section>
         </div>
+        {productObj.pList.length > 0 && <PageNation data={productRender()} itemsPerPage={5}/>}
       </div>
     </div>
   )
