@@ -1310,12 +1310,17 @@ justify-content: center;
   border-bottom: 1px solid #000;
 }
 .OrderListWrap .list-inner-item{
+  width: calc(100% - 140px);
   border-top: 1px solid #c9c9c9;
   border-bottom: 1px solid #c9c9c9;
 }
-.group-first .desc{
+.OrderListWrap .desc{
+  width: calc(100% - 180px);
   border-top: 0;
   border-bottom: 0;
+}
+.OrderListWrap .label{
+  white-space: nowrap;
 }
 .thumb-list .order-date:first-of-type{
   margin-top: 36px;
@@ -1329,6 +1334,64 @@ justify-content: center;
   color: #464646;
   line-height: 1.0;
 }
+  /* toolTip s*/
+  /* Tooltip container */
+  .OrderListWrap .thumb-list.row-line2 .desc a{
+    overflow: visible;
+  }
+
+  .tooltip {
+    position: relative;
+    display: flex;    
+  }
+
+  .tooltipTitBox{
+    overflow: hidden;
+  }
+
+  .tooltip .tooltipTit{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  /* Tooltip text */
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 54px;
+    width: calc(100% - 10%);
+    background-color: #8a94ee;
+    color: #fff;
+    line-height: 1.19;
+    text-align: left;
+    padding: 9px 9px 7px 14px;
+    border-radius: 5px;
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25);
+    position: absolute;
+    left: 93px;
+    top: calc(-100% - 8px);
+    transform: translate(0px, -50%);
+    z-index: 1;
+  }
+
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
+
+  .tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    top: calc(100% - 1px);
+    right: 24px;
+    margin-left: -5px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: #8a94ee transparent transparent transparent;
+  }
+  /* toolTip e */
 /* 주문목록 e */
 
 /* 반응형 */

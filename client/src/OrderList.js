@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import AppHeader from "./AppHeader";
 import PageNation,{resetPageNum} from './PagiNation';
 import axios from 'axios';
@@ -6,10 +6,13 @@ import SelectBox from "./SelectBox";
 
 const OrderList = () => {
   const [searchKeyWord, setSearchKeyWord] = useState('');
-  const [productObj, setProductObj] = useState({ count: 0, pList: [] });  
-  const [optionObj, setOptionObj]       = useState([]);    
-  const [optionNo, setOptionNo]         = useState('1');
-  const [openIndex, setOpenIndex]       = useState(null);  // 열려 있는 셀렉트 박스의 인덱스를 저장
+  const [productObj, setProductObj]       = useState({ count: 0, pList: [] });  
+  const [optionObj, setOptionObj]         = useState([]);    
+  const [optionNo, setOptionNo]           = useState('1');
+  const [openIndex, setOpenIndex]         = useState(null);  // 열려 있는 셀렉트 박스의 인덱스를 저장
+  const tooltipRef                        = useRef(null);
+  const labelRef                          = useRef(null);
+  const [tooltipWidth, setTooltipWidth]   = useState('auto');
   const [orderCnt, setOrderCnt]   = useState([]);
 
   let testData = [
@@ -20,7 +23,7 @@ const OrderList = () => {
       ORDER_DTTM  : '2024-08-30',
       PURCHASE    : 30000,
       BILL_NO     : 'INV-2024-0831-00123',
-      DLV_ADDR    : '경기도 안양시 땡떙땡',
+      DLV_ADDR    : '경기도 성남시 분당구 판교로 235, 네이버 그린팩토리 16층, 비상출입구 옆 복도 끝, 오른쪽 끝에서 두 번째 사무실, 000호',
       ARRIVE_YN   : 'N'
     },
     {
@@ -30,7 +33,7 @@ const OrderList = () => {
       ORDER_DTTM  : '2024-08-30',
       PURCHASE    : 30000,
       BILL_NO     : 'INV-2024-0831-00123',
-      DLV_ADDR    : '경기도 안양시 땡떙땡',
+      DLV_ADDR    : '경기도 안양시 동안구 경수대로 500번길 00-00 00층 000호',
       ARRIVE_YN   : 'N'
     },
     {
@@ -64,7 +67,9 @@ const OrderList = () => {
       {value: '1', label: '제품명'},
       {value: '2', label: '제품코드'}
     ])
+
   },[])
+
 
 
   //**********************************************************************************************
@@ -103,27 +108,33 @@ const OrderList = () => {
       if (prevProduct && product.ORDER_DTTM === prevProduct.ORDER_DTTM) {
         productList.push(
           <div className='list-item' key={product.CLASS_ID + '_' + product.PRODUCT_ID}>
-            <figure
-              className='thumb-photo'
-              style={{ backgroundImage: `url(/assets/Img/img1.png)` }}
-            ></figure>
-            <div className='desc relative'>
-              <a>
-                <div className='product_nm'>{product.PRODUCT_NM}</div>
-                <div className='priceText'>{price}원</div>
-                <div className='product_detail'>
-                  <span className='label'>주문번호</span> {product.ORDER_NO}
-                </div>
-                <div className='product_detail'>
-                  <span className='label'>배송주소</span> {product.DLV_ADDR}
-                </div>
-                <div className='product_detail'>
-                  <span className='label'>송장번호</span> {product.BILL_NO}
-                </div>
-                <div className='product_detail'>
-                  <span className='label'>배송상태</span> { product.ARRIVE_YN === 'N' ? '배송중' : '도착'}
-                </div>
-              </a>
+            <div className="list-inner-item flex w100">
+              <figure
+                className='thumb-photo'
+                style={{ backgroundImage: `url(/assets/Img/img1.png)` }}
+              ></figure>
+              <div className='desc relative'>
+                <a>
+                  <div className='product_nm'>{product.PRODUCT_NM}</div>
+                  <div className='priceText'>{price}원</div>
+                  <div className='product_detail'>
+                    <span className='label'>주문번호</span> {product.ORDER_NO} {tooltipWidth}
+                  </div>
+                  <div className='product_detail flex tooltip cursor'>
+                    <span className='label'>배송주소</span>                     
+                    <div className="tooltipTitBox">
+                      <div className="tooltipTit">{product.DLV_ADDR}</div>                        
+                    </div>
+                    <div className="tooltiptext">{product.DLV_ADDR}</div>                    
+                  </div>
+                  <div className='product_detail'>
+                    <span className='label'>송장번호</span> {product.BILL_NO}
+                  </div>
+                  <div className='product_detail'>
+                    <span className='label'>배송상태</span> { product.ARRIVE_YN === 'N' ? '배송중' : '도착'}
+                  </div>
+                </a>
+              </div>
             </div>
             <div className='countBox ml20 flex f_d_column a_i_center'>
               <p className='mb40 pt5 pb5 fs16 w100 t_a_center border-top-bottom'>주문개수</p>
@@ -149,8 +160,12 @@ const OrderList = () => {
                   <div className='product_detail'>
                     <span className='label'>주문번호</span> {product.ORDER_NO}
                   </div>
-                  <div className='product_detail'>
-                    <span className='label'>배송주소</span> {product.DLV_ADDR}
+                  <div className='product_detail flex tooltip cursor'>
+                    <span className='label'>배송주소</span>                     
+                    <div className="tooltipTitBox">
+                      <div className="tooltipTit">{product.DLV_ADDR}</div>                        
+                    </div>
+                    <div className="tooltiptext">{product.DLV_ADDR}</div>                    
                   </div>
                   <div className='product_detail'>
                     <span className='label'>송장번호</span> {product.BILL_NO}
