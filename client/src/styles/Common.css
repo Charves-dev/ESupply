@@ -251,6 +251,7 @@ ul{
 .mb40{margin-bottom: 40px;}
 .mb44{margin-bottom: 44px;}
 .mb60{margin-bottom: 60px;}
+.mb68{margin-bottom: 68px;}
 
 .mr0{margin-right: 0px !important;}
 .mr3{margin-right: 3px;}
@@ -289,6 +290,7 @@ ul{
 .fs14{font-size: 14px;}
 .fs16{font-size: 16px;}
 .fs18{font-size: 18px;}
+.fs24{font-size: 24px;}
 
 .t_a_center{text-align: center;}
 
@@ -385,7 +387,7 @@ ul{
 
 .custom-alert .alert-tit{
   text-align: center;
-  margin-bottom: 34px;
+  margin-bottom: 40px;
   margin-top: 65px;
 }
 
@@ -419,6 +421,21 @@ ul{
 .custom-alert.faile-alert .alert-btn:hover {
   background: #fff0f0;
   border: 1px solid #ffb19c;
+}
+
+.custom-alert .close-r{
+  width: 40px;
+  height: 40px;  
+  margin: 0;
+  margin-left: 0;    
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  flex-shrink: 0;  
+  position: absolute;
+  right: 16px;
+  top: 14px;
+  cursor: pointer;
 }
 
 .custom-alert .deco-pin-r{
@@ -1163,13 +1180,17 @@ justify-content: center;
   width: 50%;
   height: calc(100% - 340px);
   overflow: auto;
-  padding-left: 40px;  
+  /* padding-left: 40px;   */
 }
 
 .partPopup.custom-alert .alert-tit{
   margin: 65px 0 0;
   font-size: 22px;
   font-weight: bold;
+}
+
+.partPopup .inputList {
+  padding-left: 20px;
 }
 
 .partPopup .thumb-list.row-line2{
@@ -1393,6 +1414,103 @@ justify-content: center;
   }
   /* toolTip e */
 /* 주문목록 e */
+
+/* 장바구니 s */
+.orderAdddBtn{
+  width: auto;
+  height: auto;
+  right: 10px;
+  bottom: 12.4px;
+  border: 1px solid #219fd5;
+  border-radius: 6px;
+}
+
+.orderListCont{
+  width: 100%;
+  padding-inline: 80px;
+}
+
+.orderListPopup{
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 61.3%;
+  max-width: 800px;
+  height: auto;
+  max-height: calc(100% - 200px);
+  overflow: auto;  
+}
+
+.orderListPopup .desc{
+  border-top: solid 1px #c9c9c9;
+  border-bottom: solid 1px #c9c9c9;
+}
+
+.orderListPopup .desc a{
+  padding-left: 5.3px;
+  text-decoration: none;
+  color: #333;  
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+}
+
+.orderListPopup .countBox{
+  border-bottom: 1px solid #000;
+}
+
+.custom-alert .cancle{
+  margin-right: 0;
+}
+
+.totalCntDesc {
+  position: absolute;
+  right: 10px;
+  bottom: 43.4px;
+  padding: 10px;
+  background-color: hsl(200, 26%, 54%);
+  color: #fff;
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out; /* 0.5초 동안 서서히 변함 */
+}
+
+.marketIco{
+  position: absolute;
+  bottom: 8.8rem;
+  width: 100px;
+  height: 100px;
+  margin-right: 0;
+  margin-left: 0;
+  border-radius: 4px;  
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  flex-shrink: 0;  
+}
+
+.trashBasket{
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  border-radius: 4px;  
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  flex-shrink: 0;  
+}
+/* 장바구니 e */
+
+
+.fade-in {
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
+}
 
 /* 반응형 */
 
