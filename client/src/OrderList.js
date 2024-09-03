@@ -10,13 +10,13 @@ const OrderList = () => {
   const [optionObj, setOptionObj]         = useState([]);    
   const [optionNo, setOptionNo]           = useState('1');
   const [openIndex, setOpenIndex]         = useState(null);  // 열려 있는 셀렉트 박스의 인덱스를 저장
-  const tooltipRef                        = useRef(null);
-  const labelRef                          = useRef(null);
   const [tooltipWidth, setTooltipWidth]   = useState('auto');
   const [orderCnt, setOrderCnt]   = useState([]);
 
   let testData = [
     {
+      CLASS_ID    : "test-cid1",
+      PRODUCT_ID  : 'test_pid1',
       PRODUCT_NM  : "aaaaa",
       COUNT       : 100,
       ORDER_NO    : '1',
@@ -27,32 +27,38 @@ const OrderList = () => {
       ARRIVE_YN   : 'N'
     },
     {
+      CLASS_ID    : "test-cid2",
+      PRODUCT_ID  : 'test_pid2',
       PRODUCT_NM  : "bbb",
       COUNT       : 100,
       ORDER_NO    : '2',
       ORDER_DTTM  : '2024-08-30',
       PURCHASE    : 30000,
-      BILL_NO     : 'INV-2024-0831-00123',
+      BILL_NO     : 'INV-2024-0831-00124',
       DLV_ADDR    : '경기도 안양시 동안구 경수대로 500번길 00-00 00층 000호',
       ARRIVE_YN   : 'N'
     },
     {
+      CLASS_ID    : "test-cid3",
+      PRODUCT_ID  : 'test_pid3',
       PRODUCT_NM  : "ccc",
       COUNT       : 100,
       ORDER_NO    : '3',
       ORDER_DTTM  : '2024-09-01',
       PURCHASE    : 30000,
-      BILL_NO     : 'INV-2024-0831-00123',
+      BILL_NO     : 'INV-2024-0831-00125',
       DLV_ADDR    : '경기도 안양시 땡떙땡',
       ARRIVE_YN   : 'N'
     },
     {
+      CLASS_ID    : "test-cid4",
+      PRODUCT_ID  : 'test_pid4',
       PRODUCT_NM  : "ddd",
       COUNT       : 100,
       ORDER_NO    : '3',
       ORDER_DTTM  : '2024-09-02',
       PURCHASE    : 30000,
-      BILL_NO     : 'INV-2024-0831-00123',
+      BILL_NO     : 'INV-2024-0831-00126',
       DLV_ADDR    : '경기도 안양시 땡떙땡',
       ARRIVE_YN   : 'N'
     },
@@ -98,7 +104,6 @@ const OrderList = () => {
     const productList = [];
     const p_count = productObj.count; 
     const pList = productObj.pList; 
-    let pDateGroup = 0;
     
     for (let i = 0; i < p_count; i++) {
       const product = pList[i];      
@@ -145,7 +150,7 @@ const OrderList = () => {
           </div>
         );        
       }else{
-        productList.push(<div className="order-date custom-item mt36">{product.ORDER_DTTM}</div>)
+        productList.push(<div key={product.ORDER_DTTM} className="order-date custom-item mt36">{product.ORDER_DTTM}</div>)
         productList.push(
           <div className='list-item group-first' key={product.CLASS_ID + '_' + product.PRODUCT_ID}>
             <div className="list-inner-item flex w100">
