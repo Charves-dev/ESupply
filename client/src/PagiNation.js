@@ -82,7 +82,7 @@ const PageNation = ({data, itemsPerPage, type = '', onPageChange}) => {
         <ul className="thumb-list row-line2">
           {currentData.map((item, index) => {
             if(item.props && item.props.className && item.props.className.includes('custom-item')){
-              return(<>{item}</>)
+              return(<div key={index}>{item}</div>)
             }else{
               return(<li key={index} className="mt32 mb32"> {item} </li>)
             }
