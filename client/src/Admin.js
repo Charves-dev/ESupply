@@ -4,12 +4,15 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import AdminHeader from './AdminHeader';
 import { AdminRenderContent } from './AdminRenderContent';
+import FilterSearchBar from './FilterSearchBar';
+import {resetPageNum}  from './PagiNation';
 
 function Admin() {
   const [currentView, setCurrentView] = useState('default');
   const [orderCnt, setOrderCnt]   = useState([]);
   const [username, setUsername]   = useState(null);
   const [productNm, setProductNm] = useState('');
+  const [productId, setProductId]   = useState('');
   const [productObj, setProductObj] = useState({ count: 0, pList: [] });      
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,7 +43,7 @@ function Admin() {
     try {
       const res = await axios.post('http://localhost:1092/product/goodList', {
         product_nm: search_key_word, // 상품명
-        product_id: '', // 상품 ID
+        product_id: productId,       // 상품 ID
       });
 
       // 상품 리스트 설정
@@ -48,6 +51,13 @@ function Admin() {
 
       // 상품 재고 개수 설정
       setOrderCnt(initializeOrderCnt(res.data));
+
+      // 페이지 넘버 초기화
+      resetPageNum();
+
+      // 검색 키워드 초기화
+      setProductNm('');
+      setProductId('');
     } catch (e) {
       console.log('상품 목록 가져오기 애러: ' + e);
     }
@@ -147,35 +157,10 @@ function Admin() {
 
 
   //**********************************************************************************************
-  // 엔터 키 눌렀을 때 검색 실행
-  //**********************************************************************************************
-  const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      searchResProducts();
-    }
-  };
-  //**********************************************************************************************
-
-
-  //**********************************************************************************************
   // 검색 바와 검색 버튼 JSX 요소
   //**********************************************************************************************
   const searchContent = () => {
-    return (
-      <section className='w100'>
-        <div className='flex mt32'>
-          <input
-            type='text'
-            className='search'
-            onChange={(e) => setProductNm(e.target.value)}
-            onKeyDown={handleKeyPress}
-          />
-          <div onClick={searchResProducts} className='searchBtn bgSlate100 fs16 flex a_i_center j_c_center'>
-            검색
-          </div>
-        </div>
-      </section>
-    );
+    return <FilterSearchBar setProductNm={setProductNm} setProductId={setProductId} searchRes={searchResProducts}/>;
   };
   //**********************************************************************************************
 
