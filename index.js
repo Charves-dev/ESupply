@@ -1268,9 +1268,107 @@ app.post('/part/save', async (req, res) => {
 });
 //*************************************************************************************************
 
+
+//*************************************************************************************************
+// 신규주문
+//*************************************************************************************************
+app.post('/product/neworder', async(req, res) =>{
+	const { company_id, user_id, order } = req.body;
+	let conn = null;
+	let lastProdId = '';
+	let order_no = '';
+	let totalprice = 0;
+	try{
+		conn = await pool.getConnection();
+		//*********************************************************************************************
+		// [0] 주문자 정보가져오기 (배송지를 남겨야 하기 때문)
+		//*********************************************************************************************
+		const userInfo = await conn.query(env.QG.GET_USER_INFO, [company_id,  user_id]);
+		if(userInfo.length < 1){
+			const result = {
+        result : 'Failed',
+        order_no : '',
+        msg : 'USER INFO NOT FOUND'
+      }
+      return res.json(result);
+		}
+		//*********************************************************************************************
+
+
+		//*********************************************************************************************
+		// [1] 상품 재고가 남아있는지 체크 + 동시주문 방지 (PK를 활용한 세마포어)
+		//*********************************************************************************************
+		for(let i=0;i<order.length;i++){
+			lastProdId = order[i].product_id;
+			//*******************************************************************************************
+			// [2] 상품 시리얼 번호를 가져온다.
+			//*******************************************************************************************
+			const serials = await conn.query(env.QG.GET_GOOD_SERIALS, [order[i].class_id, order[i].product_id, order[i].qty]);
+			if(serials.length < order[i].qty){
+				const result = {
+					result : 'Failed',
+					order_no : '',
+					msg : 'Sold Out [' + order[i].product_id + ']'
+				}
+				return res.json(result);
+			}
+			//*******************************************************************************************
+			// [3] 상품 시리얼 번호를 Insert 한다 (중첩될 경우 에러 발생)
+			//*******************************************************************************************
+			console.log("serials.length = " + serials.length);
+			for(let j=0;j<serials.length; j++){
+console.log("SERIAL_NO = " + serials[j].SERIAL_NO);				
+				const igresult = conn.query(env.QG.ADD_ORDER_OUT_GOOD, [order[i].product_id, serials[j].SERIAL_NO]);
+				totalprice += parseInt(serials[j].PRICE);
+			}
+		}
+		//*********************************************************************************************
+		// [4] OrderNo 채번
+		//*********************************************************************************************
+		let orderInfo = await conn.query(env.QG.GET_NEW_ORDER_NO);
+		order_no = orderInfo[0].ORDER_NO;
+		//*********************************************************************************************
+
+		//*********************************************************************************************
+		// [5] 주문정보 저장
+		//*********************************************************************************************
+		await conn.query(env.QG.ADD_NEW_ORDER, [order_no, company_id, user_id, totalprice, totalprice, userInfo[0].ADDRESS]);
+		for(let i=0;i<order.length;i++){
+			await conn.query(env.QG.Add_NEW_ORDER_GOOD, [order_no, order[i].product_id, order[i].qty]);
+			//await conn.query(env.QG.UPD_ORDER_OUT_GOOD, ['SALE', order_no, order[0].class_id, order[0].product_id]);
+		}
+console.log("Commit 문제인가...");
+		await conn.commit();
+
+		let rtn = {
+      result  : 'Success',
+      order_no : order_no,
+      msg : ''
+    }
+    return res.json(rtn);
+
+	}catch(err){
+		await conn.rollback();
+		console.log(err.toString());
+    await conn.rollback();
+    const result = {
+      result : 'Failed',
+      order_no : '',
+      msg : 'PK Error SOLD OUT [' + lastProdId + ']'
+    }
+		return res.json(result);
+	}finally{
+		if(conn) conn.release();
+	}
+});
+//*************************************************************************************************
+
 app.get('/part/show', async(req, res)=> {
 	res.redirect('http://localhost:7943/parts_show');
 });
+
+
+
 
 //******************************* */
 app.listen(port, () => {

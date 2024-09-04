@@ -8,6 +8,16 @@
   select PRODUCT_ID, PRODUCT_NM from esupply.product_master where CLASS_ID = ? 
 </GET_COMM_PRODUCT_LIST>
 
+<GET_USER_INFO>
+  select COMPANY_ID
+       , CUSTOM_ID 
+       , CUSTOM_NM 
+       , concat (ADDR1 , ' ', ADDR2, ' ', ADDR3) as ADDRESS
+       , PHONE_NO 
+    from esupply.account_customer 
+   where COMPANY_ID = ? 
+     and CUSTOM_ID  = ?
+</GET_USER_INFO>
 <!-- ==============================================================================================
   제품관리
 =============================================================================================== -->
@@ -167,5 +177,86 @@ SELECT ppl.PART_NO
        , SIZE_Z  = ?
    WHERE PART_NO = ?
 </UPD_PART_INFO>
+<!-- ========================================================================================== --> 
+
+
+<!-- ==============================================================================================
+  주문관리
+=============================================================================================== -->
+<GET_GOOD_INVENTORY>
+  select pm.CLASS_ID
+       , pm.PRODUCT_ID
+       , pm.PRODUCT_NM 
+       , CAST(g.CNT AS CHAR) as CNT
+    from esupply.product_master pm
+   inner join (select CLASS_ID 
+                    , PRODUCT_ID 
+                    , count(*) as CNT 
+                 from esupply.good 
+                group by CLASS_ID, PRODUCT_ID
+              ) g  on pm.CLASS_ID = g.CLASS_ID 
+                  and pm.PRODUCT_ID = g.PRODUCT_ID 
+    where pm.CLASS_ID = ?
+      and pm.PRODUCT_ID = ?
+</GET_GOOD_INVENTORY>
+<GET_GOOD_SERIALS>
+  select pm.PRODUCT_NM
+       , g.SERIAL_NO
+       , pm.PRICE 
+    from esupply.good g
+   inner join esupply.product_master pm 
+      on pm.CLASS_ID = g.CLASS_ID 
+     and pm.PRODUCT_ID = g.PRODUCT_ID
+   where g.CLASS_ID   = ? 
+     and g.PRODUCT_ID = ?
+   limit ?
+</GET_GOOD_SERIALS>
+<ADD_ORDER_OUT_GOOD>
+  insert into esupply.order_out_good(
+         PRODUCT_ID
+       , SERIAL_NO
+  ) values (?, ?)
+</ADD_ORDER_OUT_GOOD>
+<UPD_ORDER_OUT_GOOD>
+  update esupply.order_out_good 
+     set OUT_TYPE = ? 
+       , ORDER_NO = ?
+   where PRODUCT_ID = ? 
+     and SERIAL_NO = ?
+</UPD_ORDER_OUT_GOOD>
+<GET_NEW_ORDER_NO>
+  select concat('EO-', date_format(current_timestamp(), '%y%m%d%H%i%s'), '-', lpad(nextval(esupply.seqorder), 12, '0')) as ORDER_NO from dual
+</GET_NEW_ORDER_NO>
+<ADD_NEW_ORDER>
+  insert into order_master ( 
+              ORDER_NO
+            , ORDER_DTTM
+            , COMPANY_ID
+            , CUSTOM_ID
+            , TOTAL_PRICE
+            , PURCHASE
+            , BILL_NO
+            , BILL_DTTM
+            , DLV_ADDR
+            , ARRIVE_YN
+  ) values ( ?
+           , date_format(current_timestamp(), '%y%m%d%H%i%s')
+           , ?
+           , ?
+           , ?
+           , ?
+           , null
+           , null
+           , ?
+           , 'N'
+  )
+</ADD_NEW_ORDER>
+<Add_NEW_ORDER_GOOD>
+  insert into order_good (
+         ORDER_NO
+       , PRODUCT_ID
+       , COUNT
+  ) values (?, ?, ?)
+</Add_NEW_ORDER_GOOD>
 <!-- ========================================================================================== --> 
 </query>
