@@ -1272,7 +1272,7 @@ app.post('/part/save', async (req, res) => {
 //*************************************************************************************************
 // 신규주문
 //*************************************************************************************************
-app.post('/product/neworder', async(req, res) =>{
+app.post('/order/new', async(req, res) =>{
 	const { company_id, user_id, order } = req.body;
 	let conn = null;
 	let lastProdId = '';
