@@ -312,8 +312,8 @@ const GoodsForm = ({detail='false', detailData=[], setViewDetail}) => {
                   {previewUrl && previewUrl !== 'null' ? (                
                     <div>
                       {isLoading && (
-                        <div style={{ width: '100%', textAlign: 'center', color: '#a9a9a9' }}>
-                          로딩 중...
+                        <div className="noneImgBox flex a_i_center j_c_center">
+                          <img src="/assets/Img/Spinner@200px-200px.gif" alt="로딩" width={'200px'} height={'200px'}/>
                         </div>
                       )}
                       <img

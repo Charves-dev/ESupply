@@ -6,6 +6,8 @@ import axios from 'axios';
 import PageNation,{resetPageNum} from './PagiNation';
 import AppHeader from './AppHeader';
 import FilterSearchBar from './FilterSearchBar';
+import CommonAlert from './CommonAlert';
+const API_URL = process.env.REACT_APP_API_URL;
 
 function Main() {  
   const [orderCnt, setOrderCnt]     = useState([]);
@@ -18,9 +20,10 @@ function Main() {
   const [totalCnt, setTotalCnt] = useState([]);
   const [showMessage, setShowMessage] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
+  const [alert, setAlert] = useState({ visible: false, type: '', text: '', reload: false });  
   const navigate = useNavigate();
 
-  useEffect(() => {
+  useEffect(() => {        
     /* 제품목록 불러오기 */
     searchResProducts();
     
@@ -50,7 +53,7 @@ function Main() {
   // 전체 제품 목록 가져오기 or 검색시 대상 제품 목록 가져오기
   const searchResProducts = async () => {       
     try{                
-      const res = await axios.post('http://localhost:1092/product/goodList',{
+      const res = await axios.post(`${API_URL}/product/goodList`,{
         product_nm : productNm,            // 제품명
         product_id : productId,            // 제품ID
       });        
@@ -115,10 +118,9 @@ function Main() {
 
 
   //***********************************************************************************************
-  // todo 제품 주문 API 요청
+  // 제품 주문 API 요청
   //***********************************************************************************************
-  const handleOrder = async() => {
-    /* /product/neworder API 개발중..*/
+  const handleOrder = async() => {    
     const orderDetails = [];
     const p_count = orderList.length;   // 주문 품목 전체 개수    
     
@@ -129,28 +131,42 @@ function Main() {
       // }            
       
       orderDetails.push({
-        product_id : product.PRODUCT_ID,
-        qty   : orderCnt[product.originalIndex]
+        class_id    : product.CLASS_ID,
+        product_id  : product.PRODUCT_ID,
+        qty         : orderCnt[product.originalIndex]
       });
     }
     
-    let orderData = {};
-    orderData = {
+    // let orderData = {};
+    // orderData = {
+    //   user_id : username,
+    //   order   : orderDetails
+    // }
+
+    const res = await axios.post(`${API_URL}/order/new`,{
+      company_id : 'esupply',
       user_id : username,
-      order   : orderDetails
-    }
-console.log('주문 받아요~');    
-console.log(orderData.order);
+      order   : orderDetails,
+    })
 
-    // const res = await axios.post('http://localhost:1092/product/neworder',{
-    //   user_id : orderData.user_id,
-    //   order   : orderData.order,
-    // })
-
-    // console.log('주문 결과~');
-    
+    // console.log('주문 결과~');    
     // console.log(res);
-    
+    if(res.data.result === 'Success'){
+      addProductClose();
+      setAlert({
+        visible: true,
+        type: 'ok',
+        text: '주문이 완료되었습니다.',
+        reload: true
+      });        
+    }else{
+      setAlert({
+        visible: true,
+        type: 'faile',
+        text: '주문 실패: ' + res.data.msg,
+        reload: false
+      }); 
+    }
   };
   //***********************************************************************************************
 
@@ -357,14 +373,18 @@ console.log(orderData.order);
 
 
   const addProduct = () => {
-    document.getElementById('customAlert').style.display = 'flex';
+    document.getElementById('marketPopup').style.display = 'flex';
     document.getElementById('customAlertBg').style.display = 'flex';
   };
 
   const addProductClose = () => {
     document.getElementById('customAlertBg').style.display = 'none';
-    document.getElementById('customAlert').style.display = 'none';
+    document.getElementById('marketPopup').style.display = 'none';
   }
+
+  const setCloseAlert = () => {
+    setAlert({ ...alert, visible: false });
+  };
 
   return (
     <div className='MainWrap'>
@@ -386,7 +406,7 @@ console.log(orderData.order);
         <div className='alertBg w100 h100' id='customAlertBg'></div>
 
         {/* 장바구니 팝업 */}
-        <div id='customAlert' className='custom-alert orderListPopup productPopup formWrap flex f_d_column a_i_center'>        
+        <div id='marketPopup' className='custom-alert orderListPopup productPopup formWrap flex f_d_column a_i_center'>        
           <span className='alert-tit fs24 fw700'>장바구니</span>
           <div className='orderListCont'>{orderList.length > 3 ? <PageNation data={renderOrderList()} itemsPerPage={3}/> : renderOrderList()}</div>
           <div className='w100 flex a_i_center j_c_center mb19'>
@@ -402,6 +422,17 @@ console.log(orderData.order);
           <div className='deco-pin-l'></div>          
           <figure className="close-r" onClick={addProductClose} style={{ backgroundImage: `url(/assets/Img/close_ico.png)` }}></figure> 
         </div>
+
+        {/* 주문 완료 알림 */}        
+        {alert.visible && (
+          <CommonAlert
+            type={alert.type}
+            text={alert.text}
+            reload={alert.reload}
+            reloadPage={'/main'}
+            onClose={setCloseAlert}          
+          />
+        )}
       </div>
     </div>
   );
