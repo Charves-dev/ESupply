@@ -209,6 +209,10 @@ SELECT ppl.PART_NO
      and pm.PRODUCT_ID = g.PRODUCT_ID
    where g.CLASS_ID   = ? 
      and g.PRODUCT_ID = ?
+     and g.SERIAL_NO not in (select SERIAL_NO 
+                               from esupply.order_out_good 
+                              where PRODUCT_ID = ?
+                            )
    limit ?
 </GET_GOOD_SERIALS>
 <ADD_ORDER_OUT_GOOD>

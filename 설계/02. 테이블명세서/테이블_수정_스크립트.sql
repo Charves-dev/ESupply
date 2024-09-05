@@ -125,3 +125,11 @@ select 'THPD-4565-1526-46375', 'THPD-20240826-000002', '20240826185508', 'R4-11'
 select 'THPD-4565-1526-46375', 'THPD-20240826-000003', '20240826185508', 'R4-15' from dual;
 ;
 commit;
+
+
+-- 2024.09.05 : esupply 주문번호처리를 위한 시퀀스 등록
+CREATE OR REPLACE SEQUENCE esupply.seqorder 
+    start with 1 minvalue 1 
+ maxvalue 99999999 
+increment by 1 cache 1000 cycle ENGINE=InnoDB;
+

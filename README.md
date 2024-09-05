@@ -42,3 +42,12 @@ ESupply/
 └── ...
 
 ```
+
+### DataBase 트랜젝션 설정
+```
+(1) my.ini파일 열기
+(2) [mysqld] 란을 찾는다.
+(3) autocommit=0  로 설정(없으면 추가)
+(4) transaction-isolation = READ-COMMITTED 로 설정 (없으면 추가)
+(5) DB를 내렸다 올린다.
+```

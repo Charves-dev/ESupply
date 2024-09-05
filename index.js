@@ -364,7 +364,7 @@ app.post('/product/add', upload.single('image'), async (req, res) => {
 			// 						+ 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
 			const query = env.QG.ADD_PRODUCT;
 			const result = await conn.query(query, [class_id, product_id, product_nm, price, weight, size_h, size_v, size_z, file_id]);
-			const rst = await conn.commit();
+			await conn.commit();
 
 			let rtnMsg = {
 				result : 'Success',
@@ -467,6 +467,8 @@ app.post('/product/addgoods', async (req, res) => {
 	const checkQuery = env.QG.GET_INVENTORY;
 	// const insertQuery = 'insert into good_inventory (CLASS_ID, PRODUCT_ID, COUNT) '
 	// 				+ 'VALUES (?, ?, ?)';
+
+	
 	const insertQuery = env.QG.ADD_INVENTORY;
 	
 	//const updQuery = `update good_inventory set COUNT = COUNT + ${count} where CLASS_ID = ? and PRODUCT_ID  = ?`;
@@ -1303,7 +1305,7 @@ app.post('/order/new', async(req, res) =>{
 			//*******************************************************************************************
 			// [2] 상품 시리얼 번호를 가져온다.
 			//*******************************************************************************************
-			const serials = await conn.query(env.QG.GET_GOOD_SERIALS, [order[i].class_id, order[i].product_id, order[i].qty]);
+			const serials = await conn.query(env.QG.GET_GOOD_SERIALS, [order[i].class_id, order[i].product_id, order[i].product_id, order[i].qty]);
 			if(serials.length < order[i].qty){
 				const result = {
 					result : 'Failed',
