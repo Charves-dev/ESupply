@@ -214,7 +214,7 @@ function ProductPartList() {
           continue;
         }    
         
-        res = await axios.post('http://localhost:1092/product/part/save',{
+        res = await axios.post(`${API_URL}/product/part/save`,{
           class_id    : classId,
           product_id  : productId,
           part_no     : part.PART_NO,
@@ -257,7 +257,7 @@ function ProductPartList() {
   //***********************************************************************************************
   const savePart = async(partNo, qty) => {
     try{            
-      const res = await axios.post('http://localhost:1092/product/part/save',{
+      const res = await axios.post(`${API_URL}/product/part/save`,{
         class_id    : classId,
         product_id  : productId,
         part_no     : partNo,
