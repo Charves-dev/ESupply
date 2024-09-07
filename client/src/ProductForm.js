@@ -4,6 +4,7 @@ import SelectBox from './SelectBox';
 import CommonAlert from './CommonAlert';
 import AdminHeader from "./AdminHeader";
 import { useNavigate } from 'react-router-dom';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const ProductForm = () => {
   const [image, setImage] = useState(null);
@@ -24,7 +25,11 @@ const ProductForm = () => {
 
   const commCodeList = async () => {
     try {
-      const res = await axios.get('http://localhost:1092/comm/codelist', {
+      console.log('공통코드 가져오기 URL: ');
+      console.log(`${API_URL}/comm/codelist`);
+      
+      
+      const res = await axios.get(`${API_URL}/comm/codelist`, {
         params: {
           group_id: 'CLASS',
         },
@@ -34,7 +39,9 @@ const ProductForm = () => {
         value: item.CODE_ID,
         label: `${item.CODE_ID} (${item.CODE_NM})`,
       }));
-
+      console.log('공통코드_res: ');      
+      console.log(resCodes);
+      
       setCommCode(resCodes);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -85,13 +92,17 @@ const ProductForm = () => {
     formData.append('size_z', sizeZ);
 
     try {
-      const response = await axios.post('http://localhost:1092/product/add', formData, {
+      console.log('제품등록URL: ');
+      console.log(`${API_URL}/product/add`);      
+      
+      const response = await axios.post(`${API_URL}/product/add`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });      
       
       if (response.data.result == "Success") {
+        console.log(response);        
         setAlert({
           visible: true,
           type: 'ok',
@@ -99,6 +110,8 @@ const ProductForm = () => {
           reload: true
         });        
       }else{
+        console.log('제품등록 실패: ');
+        console.log(response);        
         setAlert({
           visible: true,
           type: 'faile',
@@ -125,7 +138,7 @@ const ProductForm = () => {
   //*************************************************************************************************
   const deleteProduct = async (e) => {
     try {
-      const response = await axios.post('http://localhost:1092/product/delete', {
+      const response = await axios.post(`${API_URL}/product/delete`, {
           class_id: classId,
           product_id: productId
       });     

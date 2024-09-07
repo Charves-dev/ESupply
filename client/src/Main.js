@@ -399,7 +399,7 @@ function Main() {
 
   return (
     <div className='MainWrap'>
-      {/* <AppHeader/>       */}
+      <AppHeader/>      
       <div className='MainContent content'>
 
         {/* 공통 검색 바 */}
