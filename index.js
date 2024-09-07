@@ -51,8 +51,9 @@ app.use(bodyParser.json());
 
 app.use(express.static(path.join(__dirname, 'client/build')));
 
-app.get('/', (req, res) => {
-	res.sendFile(path.join(__dirname, '/client/build/index.html'));
+// 모든 경로에서 index.html을 반환하도록 설정
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build/index.html'));
 });
 
 
