@@ -40,7 +40,7 @@
 	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 </ADD_PRODUCT>
 <ADD_GOOD>
-  insert into GOOD (CLASS_ID, PRODUCT_ID, SERIAL_NO, MANUFACTURING_DTTM, LOT_NO)
+  insert into good (CLASS_ID, PRODUCT_ID, SERIAL_NO, MANUFACTURING_DTTM, LOT_NO)
   VALUES ( ?, ?, concat(? , ?), DATE_FORMAT(CURRENT_TIMESTAMP(), '%Y%m%d%H%i%s'), ? )
 </ADD_GOOD>
 <GET_INVENTORY>
