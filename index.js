@@ -568,12 +568,16 @@ app.post('/product/addgoods', async (req, res) => {
  */
 app.get('/comm/codelist', async (req, res) => {
 	const { group_id } = req.query;
+	console.log(group_id);
+	
 	let conn = null;
 	// const codeQuery = 'select CODE_ID, CODE_NM from comm_code where GROUP_ID = ? ';
 	const codeQuery = env.QG.GET_COMM_CODE;
 	try{
 		conn = await pool.getConnection();
 		const result = await conn.query(codeQuery, [group_id]);
+		console.log(result);
+		
 		res.send(result);
 	}catch(err){
 		res.status(500).send(err.toString());
