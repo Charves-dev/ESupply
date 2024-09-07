@@ -83,7 +83,7 @@ app.post('/upload', upload.single('image'), (req, res) => {
 	const originName = req.file.originalname;
 	const storedName = req.file.filename;
 
-	const imageUrl = `http://localhost:${port}/uploads/${req.file.filename}`;
+	const imageUrl = `http://3.39.248.72:${port}/uploads/${req.file.filename}`;
 	res.send(`
 	  <h2>Image Uploaded</h2>
 	  <img src="${imageUrl}" alt="Uploaded Image" />
@@ -440,10 +440,10 @@ app.post('/product/add', upload.single('image'), async (req, res) => {
  */
 app.post('/product/addgoods', async (req, res) => {
 	const { class_id, product_id, manufacturing_dttm, lot_no, count } = req.body;
-	// console.log("****************************************************");
-	// console.log("req.body");
-	// console.log(req.body);
-	// console.log("****************************************************");
+	console.log("****************************************************");
+	console.log("req.body");
+	console.log(req.body);
+	console.log("****************************************************");
 	const prod = product_id.replace(class_id, '');
 	const serial_h = class_id.substring(0,3) + prod.substring(0,4) + manufacturing_dttm.substring(0,8);
 	const seqName  = 'seq' + class_id.substring(0,3).toLowerCase();
