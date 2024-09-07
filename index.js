@@ -1374,7 +1374,7 @@ app.get('/part/show', async(req, res)=> {
 
 //******************************* */
 app.listen( port, () => {
-	console.log(`서버가 실행됩니다. http://115.85.183.77:${port}`);
+	console.log(`서버가 실행됩니다. http://3.39.248.72:${port}`);
 });
 
 

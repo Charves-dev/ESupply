@@ -1,10 +1,10 @@
 const mariadb = require('mariadb');
 
 const pool = mariadb.createPool({
-  host: 'localhost',
+  host: 'esupply.cji06244ciln.ap-northeast-2.rds.amazonaws.com',
   user: 'root',
-  password: '',
-  database: 'ESupply',
+  password: '1q2w3e4!',
+  database: 'esupply',
   connectionLimit: 5
 });
 
