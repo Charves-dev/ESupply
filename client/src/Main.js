@@ -24,6 +24,8 @@ function Main() {
   const navigate = useNavigate();
 
   useEffect(() => {        
+    console.log('테스트 메인화면 진입');
+    
     /* 제품목록 불러오기 */
     searchResProducts();
     
@@ -52,11 +54,20 @@ function Main() {
 
   // 전체 제품 목록 가져오기 or 검색시 대상 제품 목록 가져오기
   const searchResProducts = async () => {       
+    console.log('전체 제품목록 가져오기 URL: ');
+    console.log(`${API_URL}/product/goodList`);
+    
+    
     try{                
-      const res = await axios.post(`${API_URL}/product/goodList`,{
+      const res = await axios.post(`http://3.39.248.72:1092/product/goodList`,{
         product_nm : productNm,            // 제품명
         product_id : productId,            // 제품ID
       });        
+
+      console.log('res: ');
+      console.log(res);
+      
+      
       
       // 제품 리스트 설정
       setProductObj({ count: res.data.length, pList: res.data }); 
@@ -388,7 +399,7 @@ function Main() {
 
   return (
     <div className='MainWrap'>
-      <AppHeader/>      
+      {/* <AppHeader/>       */}
       <div className='MainContent content'>
 
         {/* 공통 검색 바 */}
