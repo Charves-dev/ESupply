@@ -35,12 +35,13 @@ const ProductForm = () => {
         },
       });
 
+      console.log('공통코드_res: ');      
+      console.log(res);
+
       const resCodes = res.data.map((item) => ({
         value: item.CODE_ID,
         label: `${item.CODE_ID} (${item.CODE_NM})`,
       }));
-      console.log('공통코드_res: ');      
-      console.log(resCodes);
       
       setCommCode(resCodes);
     } catch (error) {
