@@ -94,9 +94,9 @@ const ProductForm = () => {
 
     try {
       console.log('제품등록URL: ');
-      console.log(`${API_URL}/product/addgoods`);      
+      console.log(`${API_URL}/product/add`);      
       
-      const response = await axios.post(`${API_URL}/product/addgoods`, formData, {
+      const response = await axios.post(`${API_URL}/product/add`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
