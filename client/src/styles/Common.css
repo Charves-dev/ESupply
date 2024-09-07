@@ -1177,8 +1177,8 @@ justify-content: center;
 .partPopup{
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 50%;
-  height: calc(100% - 340px);
+  width: 600px;
+  height: auto;
   overflow: auto;
   /* padding-left: 40px;   */
 }

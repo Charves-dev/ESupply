@@ -59,7 +59,7 @@ function Main() {
     
     
     try{                
-      const res = await axios.post(`http://3.39.248.72:1092/product/goodList`,{
+      const res = await axios.post(`${API_URL}/product/goodList`,{
         product_nm : productNm,            // 제품명
         product_id : productId,            // 제품ID
       });        
