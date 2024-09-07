@@ -51,12 +51,6 @@ app.use(bodyParser.json());
 
 app.use(express.static(path.join(__dirname, 'client/build')));
 
-// 모든 경로에서 index.html을 반환하도록 설정
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client/build/index.html'));
-});
-
-
 
 //*********** */
 // 요고는 테스트용
@@ -1375,6 +1369,10 @@ app.get('/part/show', async(req, res)=> {
 });
 
 
+// 모든 경로에서 index.html을 반환하도록 설정
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build/index.html'));
+});
 
 
 //******************************* */
