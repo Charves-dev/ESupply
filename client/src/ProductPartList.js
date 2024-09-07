@@ -7,6 +7,7 @@ import AdminHeader from './AdminHeader';
 import PageNation from './PagiNation';
 import FilterSearchBar from './FilterSearchBar';
 import CommonAlert from './CommonAlert';
+const API_URL = process.env.REACT_APP_API_URL;
 
 function ProductPartList() {
   const location = useLocation();
@@ -105,7 +106,7 @@ function ProductPartList() {
   //***********************************************************************************************
   const searchResProduct = async () =>{ 
     try {           
-      const res = await axios.post('http://localhost:1092/product/goodList', {
+      const res = await axios.post(`${API_URL}/product/goodList`, {
         product_nm: productNm, // 상품명
         product_id: productId, // 상품 ID
       });
@@ -125,7 +126,7 @@ function ProductPartList() {
   //***********************************************************************************************
   const searchResParts = async () => {
     try{            
-      const res = await axios.post('http://localhost:1092/product/part/list',{
+      const res = await axios.post(`${API_URL}/product/part/list`,{
         product_id : productId,    // 상품 ID
       });
 

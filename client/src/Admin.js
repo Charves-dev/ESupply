@@ -6,6 +6,7 @@ import AdminHeader from './AdminHeader';
 import { AdminRenderContent } from './AdminRenderContent';
 import FilterSearchBar from './FilterSearchBar';
 import {resetPageNum}  from './PagiNation';
+const API_URL = process.env.REACT_APP_API_URL;
 
 function Admin() {
   const [currentView, setCurrentView] = useState('default');
@@ -41,7 +42,7 @@ function Admin() {
   const searchResProducts = async () => {
     const search_key_word = productNm;
     try {
-      const res = await axios.post('http://localhost:1092/product/goodList', {
+      const res = await axios.post(`${API_URL}/product/goodList`, {
         product_nm: search_key_word, // 상품명
         product_id: productId,       // 상품 ID
       });

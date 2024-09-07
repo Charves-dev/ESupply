@@ -5,6 +5,7 @@ import PageNation,{resetPageNum} from './PagiNation';
 import GoodsForm from "./GoodsForm";
 import AdminHeader from "./AdminHeader";
 import { useNavigate } from 'react-router-dom';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const GoodsTable = ({ resetKey, onBackToList }) => {
   const [data, setData] = useState([]);                    // 상품 목록 데이터
@@ -29,7 +30,7 @@ const GoodsTable = ({ resetKey, onBackToList }) => {
   //********************************************************************************************
   const searchResGoods = async() => {
     try {
-      const res = await axios.post('http://localhost:1092/product/goodListAdm',{
+      const res = await axios.post(`${API_URL}/product/goodListAdm`,{
         optionNo   : optionNo === '' ? '1' : optionNo,  // 옵션선택이 없을경우 기본 1: 제품명
         search_txt : searchText
       });
@@ -138,7 +139,7 @@ const GoodsTable = ({ resetKey, onBackToList }) => {
         let cur_product_id = checkedItems[i].productId; 
 
         try {
-          res = await axios.post('http://localhost:1092/product/gooddel',{
+          res = await axios.post(`${API_URL}/product/gooddel`,{
             class_id    : cur_class_id,
             product_id  : cur_product_id,
             serial_no   : cur_serial_no,
@@ -164,7 +165,7 @@ const GoodsTable = ({ resetKey, onBackToList }) => {
     //*********************************************************************************************
     if(checkedItems.length <= 0){
       try {
-        const res = await axios.post('http://localhost:1092/product/gooddel',{
+        const res = await axios.post(`${API_URL}/product/gooddel`,{
           class_id    : classId,
           product_id  : productId,
           serial_no   : serialNo,

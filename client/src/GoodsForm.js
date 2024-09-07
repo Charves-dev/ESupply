@@ -4,6 +4,7 @@ import SelectBox from './SelectBox';
 import CommonAlert from './CommonAlert';
 import AdminHeader from "./AdminHeader";
 import { useNavigate } from 'react-router-dom';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const GoodsForm = ({detail='false', detailData=[], setViewDetail}) => {  
   const [classId, setClassId] = useState('');
@@ -30,7 +31,7 @@ const GoodsForm = ({detail='false', detailData=[], setViewDetail}) => {
   //***********************************************************************************************
   const commCodeList = async () => {    
     try {
-      const res = await axios.get('http://localhost:1092/comm/codelist', {
+      const res = await axios.get(`${API_URL}/comm/codelist`, {
         params: {
           group_id: 'CLASS',
         },
@@ -57,7 +58,7 @@ const GoodsForm = ({detail='false', detailData=[], setViewDetail}) => {
   //***********************************************************************************************
   const commProductList = async () =>{
     try {
-      const res = await axios.get('http://localhost:1092/comm/productlist',{
+      const res = await axios.get(`${API_URL}/comm/productlist`,{
         params: {
           class_id: classId,
         },
@@ -92,7 +93,7 @@ const GoodsForm = ({detail='false', detailData=[], setViewDetail}) => {
   const searchResProducts = async () => {
     const search_key_word = productName;
     try{
-      const res = await axios.post('http://localhost:1092/product/goodList',{
+      const res = await axios.post(`${API_URL}/product/goodList`,{
         product_nm : search_key_word,            // 상품명
         product_id : productId,                  // 상품 ID
       });
@@ -191,7 +192,7 @@ const GoodsForm = ({detail='false', detailData=[], setViewDetail}) => {
 
 
     try {
-      const response = await axios.post('http://localhost:1092/product/addgoods', {
+      const response = await axios.post(`${API_URL}/product/addgoods`, {
         class_id: classId,
         product_id: productId,
         product_nm: productName,

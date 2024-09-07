@@ -6,6 +6,7 @@ import Counter from './Counter';
 import PageNation from './PagiNation';
 import axios from "axios";
 import CommonAlert from './CommonAlert';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const PartList = () =>{  
   const [currentView, setCurrentView] = useState('partList');
@@ -80,7 +81,7 @@ const PartList = () =>{
   //***********************************************************************************************
   const orderPart = async(prductId, count)=>{
     try{
-      const res = await axios.post('http://localhost:7943/order/new',{
+      const res = await axios.post(`${API_URL}/:7943/order/new`,{
         user_id : username,
         company_id : "esupply",
         orderInfo : [
@@ -124,7 +125,7 @@ const PartList = () =>{
 // console.log(partNm);
       
       
-      const res = await axios.post('http://localhost:7943/goods/list',{
+      const res = await axios.post(`${API_URL}/goods/list`,{
         optionNo:  orderNumber,
         searchTxt: orderNumber === '1' ? partNm : partId        
       })
