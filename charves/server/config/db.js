@@ -1,13 +1,22 @@
 const mariadb = require('mariadb');
 
+// 운영
 const pool = mariadb.createPool({
-  host: 'localhost',
+  host: 'esupply.cji06244ciln.ap-northeast-2.rds.amazonaws.com',
   user: 'root',
-  password: '',
+  password: '1q2w3e4!',
   database: 'charves',
   connectionLimit: 5
 });
 
+// 개발
+// const pool = mariadb.createPool({
+//   host: 'localhost',
+//   user: 'root',
+//   password: '',
+//   database: 'charves',
+//   connectionLimit: 5
+// });
 
 
 //*************************************************************************************************
