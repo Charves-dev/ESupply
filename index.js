@@ -1376,9 +1376,16 @@ app.get('*', (req, res) => {
 
 
 //******************************* */
+
+// 운영
 app.listen( port, () => {
-	console.log(`서버가 실행됩니다. http://localhost:${port}`);
+	console.log(`서버가 실행됩니다. http://3.39.248.72:${port}`);
 });
+
+// 개발
+// app.listen( port, () => {
+// 	console.log(`서버가 실행됩니다. http://localhost:${port}`);
+// });
 
 
 
