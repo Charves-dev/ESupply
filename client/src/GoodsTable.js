@@ -143,6 +143,8 @@ const GoodsTable = ({ resetKey, onBackToList }) => {
             class_id    : cur_class_id,
             product_id  : cur_product_id,
             serial_no   : cur_serial_no,
+            out_type    : 'DISPOSE',
+            order_no    : null,
           });
 
           serial_no_message += i == checkedItems.length-1 ? cur_serial_no : cur_serial_no+', ';
@@ -169,6 +171,8 @@ const GoodsTable = ({ resetKey, onBackToList }) => {
           class_id    : classId,
           product_id  : productId,
           serial_no   : serialNo,
+          out_type    : 'DISPOSE',
+          order_no    : null,
         });
 
         console.log('상품삭제결과:', res);

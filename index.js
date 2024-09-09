@@ -912,7 +912,7 @@ app.post('/product/gooddel', async (req, res) => {
 		conn = await pool.getConnection();
 		const result = await conn.query(env.QG.DEL_GOOD, [serial_no]);
 		const invRst = await conn.query(env.QG.UPD_INVENTORY_DN, [class_id, product_id ]);
-		const insOut = await conn.query(env.INS_GOOD_OUT, [product_id, serial_no, out_type, order_no]);
+		const insOut = await conn.query(env.QG.INS_GOOD_OUT, [product_id, serial_no, out_type, order_no]);
 		await conn.commit();
 		let rtnMsg = {
 			result : 'Success',
@@ -1377,7 +1377,7 @@ app.get('*', (req, res) => {
 
 //******************************* */
 app.listen( port, () => {
-	console.log(`서버가 실행됩니다. http://3.39.248.72:${port}`);
+	console.log(`서버가 실행됩니다. http://localhost:${port}`);
 });
 
 
