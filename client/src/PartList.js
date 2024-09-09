@@ -6,7 +6,7 @@ import Counter from './Counter';
 import PageNation from './PagiNation';
 import axios from "axios";
 import CommonAlert from './CommonAlert';
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.CHARVES_REACT_APP_API_URL;
 
 const PartList = () =>{  
   const [currentView, setCurrentView] = useState('partList');
@@ -81,7 +81,7 @@ const PartList = () =>{
   //***********************************************************************************************
   const orderPart = async(prductId, count)=>{
     try{
-      const res = await axios.post(`${API_URL}/:7943/order/new`,{
+      const res = await axios.post(`${API_URL}/order/new`,{
         user_id : username,
         company_id : "esupply",
         orderInfo : [
@@ -129,8 +129,8 @@ const PartList = () =>{
         optionNo:  orderNumber,
         searchTxt: orderNumber === '1' ? partNm : partId        
       })
-// console.log('(주)차베스 부품목록가져오기: ');
-// console.log(res);
+console.log('(주)차베스 부품목록가져오기: ');
+console.log(res);
       
       setPartObj({ count: res.data.length, pList: res.data });
 
@@ -245,7 +245,7 @@ const PartList = () =>{
 
   // (주)차베스로 이동
   const charvesGo = () => {
-    window.location.href = 'http://localhost:7943/parts_show';
+    window.location.href = `${API_URL}/parts_show`;
   }
 
   const setCloseAlert = () => {
