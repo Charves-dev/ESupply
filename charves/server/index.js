@@ -135,10 +135,15 @@ app.post('/goods/list', async (req, res) => {
 app.post('/order/new', OrderManager.ORDER_NEW);
 
 
-
-app.listen(port, () => {
-	console.log(`서버가 실행됩니다. http://localhost:${port}`);
+// 운영
+app.listen( port, () => {
+	console.log(`서버가 실행됩니다. http://3.39.248.72:${port}`);
 });
+
+// 개발
+// app.listen(port, () => {
+// 	console.log(`서버가 실행됩니다. http://localhost:${port}`);
+// });
 
 
 
