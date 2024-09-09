@@ -81,7 +81,7 @@ const PartList = () =>{
   //***********************************************************************************************
   const orderPart = async(prductId, count)=>{
     try{
-      const res = await axios.post(`${API_URL}/order/new`,{
+      const res = await axios.post(`http://3.39.248.72:7943/order/new`,{
         user_id : username,
         company_id : "esupply",
         orderInfo : [
@@ -125,7 +125,7 @@ const PartList = () =>{
 // console.log(partNm);
       
       
-      const res = await axios.post(`${API_URL}/goods/list`,{
+      const res = await axios.post(`http://3.39.248.72:7943/goods/list`,{
         optionNo:  orderNumber,
         searchTxt: orderNumber === '1' ? partNm : partId        
       })
@@ -245,7 +245,7 @@ console.log(res);
 
   // (주)차베스로 이동
   const charvesGo = () => {
-    window.location.href = `${API_URL}/parts_show`;
+    window.location.href = `http://3.39.248.72:7943/parts_show`;
   }
 
   const setCloseAlert = () => {
