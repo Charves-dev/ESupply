@@ -353,7 +353,7 @@ function Main() {
            });
           handleShowMessage();
         }else{
-          alert('최대 재고 개수: ' + productObj.pList[index].COUNT + '를 담으셨습니다')          
+          window.alert('최대 재고 개수: ' + productObj.pList[index].COUNT + '를 담으셨습니다')          
         }
         return prevOrderList; // orderList는 그대로 유지
       }else{    
