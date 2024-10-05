@@ -105,7 +105,7 @@ function Main() {
         hasAlerted = false;
       }else{
         if (!hasAlerted) {
-          alert('더 이상 재고가 없습니다.')
+          window.alert('더 이상 재고가 없습니다.')
           hasAlerted = true;
         }
         return newCounts;
